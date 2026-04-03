@@ -1,0 +1,113 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --bg-color: #f3e5f5;
+    --grad-1: #b2ebf2;
+    --grad-2: #f8bbd0;
+    --accent-color: #ff69b4;
+}
+
+body {
+    display: flex; justify-content: center; align-items: center; 
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif; 
+    background-color: var(--bg-color);
+    background-image: radial-gradient(at 0% 0%, var(--grad-1) 0px, transparent 50%), 
+                      radial-gradient(at 100% 100%, var(--grad-2) 0px, transparent 50%);
+    transition: background 0.8s ease; 
+    overflow: hidden; 
+    user-select: none; /* Запрет выделения текста при кликах */
+}
+
+.main-content-wrapper {
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.75); 
+    backdrop-filter: blur(10px); 
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+    width: 440px; max-width: 95vw;
+}
+
+.tabs-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
+
+.tab-btn {
+    flex: 1; height: 42px; border: 2px solid var(--accent-color);
+    background: transparent; border-radius: 20px; cursor: pointer;
+    font-weight: bold; color: var(--accent-color); transition: 0.3s;
+    display: flex; align-items: center; justify-content: center; font-size: 0.85em;
+}
+
+.tab-btn.active { background: var(--accent-color); color: white; }
+
+.image-container {
+    width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.5); 
+    cursor: pointer; 
+    transition: transform 0.1s; 
+    position: relative;
+}
+
+#catImage { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.image-container:active { transform: scale(0.94); }
+
+#coin-info { font-size: 0.9em; font-weight: bold; color: #b8860b; margin-bottom: 5px; }
+
+.progress-wrapper { 
+    width: 220px; height: 12px; background: rgba(0,0,0,0.05); 
+    border-radius: 10px; margin: 12px 0; overflow: hidden; 
+}
+
+#progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease; }
+
+#notification {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.85); color: white; padding: 10px 20px; border-radius: 50px; z-index: 9999;
+}
+
+#notification.hidden { display: none; }
+
+#achievements-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0; width: 100%; }
+
+.achievement { background: #ffd700; padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: bold; animation: pop 0.4s; }
+
+.extra-menu { margin-top: 10px; font-size: 0.75em; color: #888; }
+.menu-link { cursor: pointer; }
+.menu-link:hover { color: var(--accent-color); }
+
+/* Исправленное модальное окно */
+#modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
+    z-index: 10000; backdrop-filter: blur(3px);
+}
+#modal-overlay.hidden { display: none; }
+
+.modal-content { background: white; padding: 25px; border-radius: 20px; width: 320px; text-align: center; }
+
+#close-modal { 
+    margin-top: 15px; padding: 8px 20px; 
+    background: var(--accent-color); color: white; 
+    border: none; border-radius: 10px; cursor: pointer; 
+}
+
+/* Анимации частиц */
+.paw-particle { position: fixed; pointer-events: none; font-size: 24px; animation: fly 0.8s forwards; z-index: 5000; }
+
+@keyframes fly {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5) rotate(var(--tr)); opacity: 0; }
+}
+
+@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+#changeCatButton { 
+    margin-top: 5px; padding: 10px 20px; background: var(--accent-color); 
+    color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; 
+}
+
+#resetButton { 
+    margin-top: 10px; background: transparent; border: none; 
+    color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; 
+}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кото-Кликкер: Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-content-wrapper">
+        <!-- Контейнер для динамических ачивок -->
+        <div id="achievements-container"></div>
+
+        <!-- Переключатели персонажей -->
+        <div class="tabs-container">
+            <button type="button" class="tab-btn active" data-cat="basya">Бася</button>
+            <button type="button" class="tab-btn" data-cat="savely">Савелий</button>
+            <button type="button" class="tab-btn" id="custom-tab-btn" data-cat="custom">Свой котик</button>
+        </div>
+
+        <!-- Скрытый инпут для загрузки своего фото -->
+        <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+        <!-- Основная область клика -->
+        <div class="image-container" id="cat-image-section">
+            <img src="images/cats/basya/b01.jpg" alt="Котик" id="catImage">
+        </div>
+
+        <!-- Игровая статистика -->
+        <div class="stats-container">
+            <div id="coin-info">💰 Кото-коины: <span id="coins">0</span></div>
+            <div id="counter">Бася: 0</div>
+            <div class="progress-wrapper">
+                <div id="progress-fill"></div>
+            </div>
+            <div id="rank">Ранг: <span id="rank-text">Новичок</span> <span id="rank-icon">☁️</span></div>
+        </div>
+
+        <button type="button" id="changeCatButton">Сменить фото</button>
+        
+        <div class="extra-menu">
+            <span class="menu-link" id="view-album">Галерея</span> | 
+            <span class="menu-link" id="view-stats">Рекорды</span>
+        </div>
+
+        <button type="button" id="resetButton">Сбросить всё</button>
+    </div>
+
+    <!-- Модальное окно для Галереи и Рекордов -->
+    <div id="modal-overlay" class="hidden">
+        <div class="modal-content">
+            <div id="modal-body"></div>
+            <button type="button" id="close-modal">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- Уведомления (система совести) -->
+    <div id="notification" class="hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
