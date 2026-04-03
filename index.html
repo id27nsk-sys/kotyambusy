@@ -5,21 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>КОТЯМБУСЫ!!! v2.1m</title>
     
-    <!-- Самый стабильный способ: иконка-эмодзи через проверенный сервис -->
+    <!-- Гарантированные лапки -->
     <link rel="icon" href="https://fav.farm🐾">
     
-    <!-- Запасной вариант для Safari (SVG) -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://w3.org' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E🐾%3C/text%3E%3C/svg%3E">
-
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Стили для карусели в модалке */
-        .carousel { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
-        .carousel img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-color); flex-shrink: 0; }
-        .carousel::-webkit-scrollbar { height: 6px; }
-        .carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+        /* Стиль для вылетающих лапок */
+        .paw-print {
+            position: absolute;
+            font-size: 24px;
+            pointer-events: none;
+            animation: fly-up 1s ease-out forwards;
+            z-index: 9999;
+        }
+        @keyframes fly-up {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
+        }
+        /* Золотой режим */
+        .golden-mode {
+            filter: sepia(0.5) saturate(5) hue-rotate(-10deg) drop-shadow(0 0 15px gold);
+            transition: all 0.5s;
+        }
     </style>
 </head>
+
 
 <body>
     <div class="main-content-wrapper">
