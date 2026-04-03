@@ -248,4 +248,3 @@ window.onload = function() {
     // Первый запуск
     update(true);
 };
->>>>>>> f5f0ce37e47a42aa49eb69a3ad3efd2bd7f47169
