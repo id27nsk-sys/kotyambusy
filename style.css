@@ -108,3 +108,50 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 .carousel img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-color); flex-shrink: 0; }
 .carousel::-webkit-scrollbar { height: 6px; }
 .carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+/* ФИНАЛЬНОЕ ИСПРАВЛЕНИЕ МАСШТАБА */
+@media screen and (max-width: 480px) {
+    /* 1. Заставляем контент занимать всю ширину, убираем центрирование, которое сжимает сайт */
+    body {
+        display: block !important; 
+        padding: 10px !important;
+        overflow-x: hidden;
+    }
+
+    /* 2. Обертка теперь тянется по экрану, а не сжимается до 440px */
+    .main-content-wrapper {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 auto !important;
+        padding: 20px 10px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* 3. Делаем кнопки вкладок крупнее для пальцев */
+    .tabs-container {
+        gap: 5px !important;
+    }
+    .tab-btn {
+        height: 50px !important; /* Кнопки стали выше */
+        font-size: 16px !important; /* Текст стал крупнее */
+    }
+
+    /* 4. Увеличиваем котика */
+    .image-container {
+        width: 280px !important; 
+        height: 280px !important;
+        margin: 15px auto !important;
+    }
+
+    /* 5. ИСПРАВЛЯЕМ МЕЛКИЙ ПРОГРЕСС-БАР */
+    .progress-wrapper {
+        width: 100% !important; /* Теперь полоска на всю ширину */
+        height: 20px !important; /* И она стала толще */
+    }
+
+    /* 6. Кнопки действий */
+    #changeCatButton {
+        width: 100% !important;
+        font-size: 18px !important;
+        padding: 15px !important;
+    }
+}
