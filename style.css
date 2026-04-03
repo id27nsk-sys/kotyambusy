@@ -5,6 +5,18 @@
     --grad-1: #b2ebf2;
     --grad-2: #f8bbd0;
     --accent-color: #ff69b4;
+    --text-main: #333;
+    --card-bg: rgba(255, 255, 255, 0.75);
+}
+
+/* Стили для ночного режима (Dark Mode) */
+body.dark-mode {
+    --bg-color: #1a1a2e;
+    --grad-1: #16213e;
+    --grad-2: #0f3460;
+    --accent-color: #e94560;
+    --text-main: #ffffff;
+    --card-bg: rgba(22, 33, 62, 0.85);
 }
 
 body {
@@ -14,19 +26,21 @@ body {
     background-color: var(--bg-color);
     background-image: radial-gradient(at 0% 0%, var(--grad-1) 0px, transparent 50%), 
                       radial-gradient(at 100% 100%, var(--grad-2) 0px, transparent 50%);
-    transition: background 0.8s ease; 
+    transition: background 0.8s ease, color 0.3s ease; 
     overflow: hidden; 
-    user-select: none; /* Запрет выделения текста при кликах */
+    user-select: none;
+    color: var(--text-main);
 }
 
 .main-content-wrapper {
     display: flex; flex-direction: column; align-items: center; 
     padding: 25px;
-    background: rgba(255, 255, 255, 0.75); 
+    background: var(--card-bg); 
     backdrop-filter: blur(10px); 
     border-radius: 25px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
     width: 440px; max-width: 95vw;
+    transition: background 0.5s ease;
 }
 
 .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
@@ -42,7 +56,7 @@ body {
 
 .image-container {
     width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
-    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.5); 
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3); 
     cursor: pointer; 
     transition: transform 0.1s; 
     position: relative;
@@ -52,12 +66,15 @@ body {
 
 .image-container:active { transform: scale(0.94); }
 
+/* Цвет статов в светлой теме закрепим, в темной он станет белым через var */
 #coin-info { font-size: 0.9em; font-weight: bold; color: #b8860b; margin-bottom: 5px; }
+body.dark-mode #coin-info { color: #ffd700; }
 
 .progress-wrapper { 
     width: 220px; height: 12px; background: rgba(0,0,0,0.05); 
     border-radius: 10px; margin: 12px 0; overflow: hidden; 
 }
+body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 
 #progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease; }
 
@@ -70,21 +87,21 @@ body {
 
 #achievements-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0; width: 100%; }
 
-.achievement { background: #ffd700; padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: bold; animation: pop 0.4s; }
+.achievement { background: #ffd700; color: #333; padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: bold; animation: pop 0.4s; }
 
 .extra-menu { margin-top: 10px; font-size: 0.75em; color: #888; }
 .menu-link { cursor: pointer; }
 .menu-link:hover { color: var(--accent-color); }
 
-/* Исправленное модальное окно */
 #modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center;
     z-index: 10000; backdrop-filter: blur(3px);
 }
 #modal-overlay.hidden { display: none; }
 
-.modal-content { background: white; padding: 25px; border-radius: 20px; width: 320px; text-align: center; }
+.modal-content { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 320px; text-align: center; color: var(--text-main); }
+body.dark-mode .modal-content { background: #16213e; }
 
 #close-modal { 
     margin-top: 15px; padding: 8px 20px; 
@@ -92,7 +109,6 @@ body {
     border: none; border-radius: 10px; cursor: pointer; 
 }
 
-/* Анимации частиц */
 .paw-particle { position: fixed; pointer-events: none; font-size: 24px; animation: fly 0.8s forwards; z-index: 5000; }
 
 @keyframes fly {
@@ -110,4 +126,12 @@ body {
 #resetButton { 
     margin-top: 10px; background: transparent; border: none; 
     color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; 
+}
+
+/* Центрируем кнопку луны */
+#theme-toggle {
+    transition: transform 0.3s ease;
+}
+#theme-toggle:hover {
+    transform: scale(1.2);
 }
