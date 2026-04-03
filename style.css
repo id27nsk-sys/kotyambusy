@@ -102,3 +102,36 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 /* Красивый скроллбар для карусели */
 .carousel::-webkit-scrollbar { height: 6px; }
 .carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
+/* Адаптация для мобильных устройств */
+@media (max-width: 600px) {
+    .main-content-wrapper {
+        width: 95%; /* Занимаем почти всю ширину экрана */
+        margin: 10px auto;
+        padding: 10px;
+    }
+
+    .image-container img {
+        width: 100%;    /* Картинка котика на весь экран */
+        height: auto;   /* Пропорционально */
+        max-width: 400px; 
+    }
+
+    .tabs-container {
+        display: flex;
+        flex-wrap: wrap; /* Кнопки переносятся, если не влезают */
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .tab-btn {
+        flex: 1 1 30%; /* Кнопки становятся крупнее для пальцев */
+        padding: 12px 5px;
+        font-size: 14px;
+    }
+
+    #changeCatButton, #resetButton {
+        width: 100%;   /* Кнопки действий во всю ширину */
+        padding: 15px;
+        font-size: 18px;
+    }
+}
