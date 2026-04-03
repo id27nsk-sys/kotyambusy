@@ -1,3 +1,4 @@
+/* Сохраняем все твои базовые настройки */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
@@ -10,20 +11,28 @@ body.dark-mode {
     --text-main: #ffffff; --card-bg: rgba(22, 33, 62, 0.85);
 }
 
+/* ИСПРАВЛЕНИЕ: убрали overflow: hidden и добавили правильный скролл для мобилок */
 body {
     display: flex; justify-content: center; align-items: center; min-height: 100vh;
     font-family: 'Arial', sans-serif; background-color: var(--bg-color);
     background-image: radial-gradient(at 0% 0%, var(--grad-1) 0px, transparent 50%), 
                       radial-gradient(at 100% 100%, var(--grad-2) 0px, transparent 50%);
-    transition: background 0.8s ease; overflow: hidden; user-select: none; color: var(--text-main);
+    transition: background 0.8s ease; 
+    overflow-x: hidden; /* Запрещаем только горизонтальный скролл */
+    user-select: none; color: var(--text-main);
 }
 
+/* ИСПРАВЛЕНИЕ: Адаптивная ширина обертки */
 .main-content-wrapper {
     display: flex; flex-direction: column; align-items: center; padding: 25px;
     background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 440px; max-width: 95vw;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
+    width: 440px; 
+    max-width: 90vw; /* Не дает вылезать за края экрана */
+    margin: 20px auto;
 }
 
+/* Твой функционал вкладок */
 .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
 .tab-btn {
     flex: 1; height: 42px; border: 2px solid var(--accent-color);
@@ -33,6 +42,7 @@ body {
 }
 .tab-btn.active { background: var(--accent-color); color: white; }
 
+/* Твой функционал контейнера фото */
 .image-container {
     width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
     box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3); cursor: pointer; 
@@ -41,6 +51,7 @@ body {
 #catImage { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .image-container:active { transform: scale(0.94); }
 
+/* Остальной твой функционал без изменений */
 #coin-info { font-size: 0.9em; font-weight: bold; color: #b8860b; margin-bottom: 5px; }
 body.dark-mode #coin-info { color: #ffd700; }
 
@@ -71,6 +82,7 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 #close-modal, #changeCatButton { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 #resetButton { margin-top: 10px; background: transparent; border: none; color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; }
 
+/* Твои лапки */
 .paw-particle { position: fixed; pointer-events: none; font-size: 24px; animation: fly 0.8s forwards; z-index: 5000; }
 @keyframes fly {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -78,60 +90,21 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 }
 @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
+/* ИСПРАВЛЕННЫЙ мобильный блок */
 @media (max-width: 480px) {
-    .main-content-wrapper { width: 92vw; padding: 15px; }
-    .image-container { width: 220px; height: 220px; }
-    .tab-btn { height: 48px; font-size: 0.9em; }
+    body { align-items: flex-start; } /* Чтобы на маленьких экранах контент не улетал вверх */
+    .main-content-wrapper { 
+        width: 95vw; 
+        padding: 15px; 
+        margin-top: 10px;
+    }
+    .image-container { width: 200px; height: 200px; }
+    .tab-btn { height: 40px; font-size: 0.8em; }
+    .tabs-container { gap: 5px; }
 }
-/* Стили для карусели в модальном окне */
-.carousel { 
-    display: flex; 
-    gap: 10px; 
-    overflow-x: auto; 
-    padding: 10px 0; 
-    scroll-behavior: smooth; 
-}
-.carousel img { 
-    width: 80px; 
-    height: 80px; 
-    object-fit: cover; 
-    border-radius: 10px; 
-    border: 2px solid var(--accent-color); 
-    flex-shrink: 0; 
-}
-/* Красивый скроллбар для карусели */
+
+/* Стили карусели */
+.carousel { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
+.carousel img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-color); flex-shrink: 0; }
 .carousel::-webkit-scrollbar { height: 6px; }
 .carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-/* Адаптация для мобильных устройств */
-@media (max-width: 600px) {
-    .main-content-wrapper {
-        width: 95%; /* Занимаем почти всю ширину экрана */
-        margin: 10px auto;
-        padding: 10px;
-    }
-
-    .image-container img {
-        width: 100%;    /* Картинка котика на весь экран */
-        height: auto;   /* Пропорционально */
-        max-width: 400px; 
-    }
-
-    .tabs-container {
-        display: flex;
-        flex-wrap: wrap; /* Кнопки переносятся, если не влезают */
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .tab-btn {
-        flex: 1 1 30%; /* Кнопки становятся крупнее для пальцев */
-        padding: 12px 5px;
-        font-size: 14px;
-    }
-
-    #changeCatButton, #resetButton {
-        width: 100%;   /* Кнопки действий во всю ширину */
-        padding: 15px;
-        font-size: 18px;
-    }
-}
