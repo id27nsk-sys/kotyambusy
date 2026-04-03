@@ -111,39 +111,4 @@ body {
     margin-top: 10px; background: transparent; border: none; 
     color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; 
 }
-/* Стили для темной темы */
-body.dark-mode {
-    --bg-color: #1a1a2e;
-    --grad-1: #16213e;
-    --grad-2: #0f3460;
-    --accent-color: #e94560;
-    color: #ffffff; /* Белый текст для всего тела */
-}
-
-body.dark-mode .main-content-wrapper {
-    background: rgba(22, 33, 62, 0.85); /* Темная подложка */
-    color: #ffffff;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-}
-
-body.dark-mode .modal-content {
-    background: #16213e;
-    color: white;
-}
-
-body.dark-mode .tab-btn {
-    color: #e94560;
-    border-color: #e94560;
-}
-
-body.dark-mode .tab-btn.active {
-    background: #e94560;
-    color: white;
-}
-
-/* Чтобы текст в статах тоже был виден */
-body.dark-mode #coin-info, 
-body.dark-mode #counter, 
-body.dark-mode #rank {
-    color: #ffffff;
-}
+>>>>>>> f5f0ce37e47a42aa49eb69a3ad3efd2bd7f47169
