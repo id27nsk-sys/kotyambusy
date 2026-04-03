@@ -71,7 +71,6 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 #close-modal, #changeCatButton { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 #resetButton { margin-top: 10px; background: transparent; border: none; color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; }
 
-/* Анимации частиц */
 .paw-particle { position: fixed; pointer-events: none; font-size: 24px; animation: fly 0.8s forwards; z-index: 5000; }
 @keyframes fly {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
@@ -79,9 +78,27 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 }
 @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-/* Адаптация под мобильные */
 @media (max-width: 480px) {
     .main-content-wrapper { width: 92vw; padding: 15px; }
     .image-container { width: 220px; height: 220px; }
     .tab-btn { height: 48px; font-size: 0.9em; }
 }
+/* Стили для карусели в модальном окне */
+.carousel { 
+    display: flex; 
+    gap: 10px; 
+    overflow-x: auto; 
+    padding: 10px 0; 
+    scroll-behavior: smooth; 
+}
+.carousel img { 
+    width: 80px; 
+    height: 80px; 
+    object-fit: cover; 
+    border-radius: 10px; 
+    border: 2px solid var(--accent-color); 
+    flex-shrink: 0; 
+}
+/* Красивый скроллбар для карусели */
+.carousel::-webkit-scrollbar { height: 6px; }
+.carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
