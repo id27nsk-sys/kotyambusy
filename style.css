@@ -1,4 +1,3 @@
-/* Сохраняем все твои базовые настройки */
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 :root {
@@ -11,28 +10,21 @@ body.dark-mode {
     --text-main: #ffffff; --card-bg: rgba(22, 33, 62, 0.85);
 }
 
-/* ИСПРАВЛЕНИЕ: убрали overflow: hidden и добавили правильный скролл для мобилок */
 body {
     display: flex; justify-content: center; align-items: center; min-height: 100vh;
     font-family: 'Arial', sans-serif; background-color: var(--bg-color);
     background-image: radial-gradient(at 0% 0%, var(--grad-1) 0px, transparent 50%), 
                       radial-gradient(at 100% 100%, var(--grad-2) 0px, transparent 50%);
     transition: background 0.8s ease; 
-    overflow-x: hidden; /* Запрещаем только горизонтальный скролл */
-    user-select: none; color: var(--text-main);
+    overflow-x: hidden; user-select: none; color: var(--text-main);
 }
 
-/* ИСПРАВЛЕНИЕ: Адаптивная ширина обертки */
 .main-content-wrapper {
     display: flex; flex-direction: column; align-items: center; padding: 25px;
     background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); 
-    width: 440px; 
-    max-width: 90vw; /* Не дает вылезать за края экрана */
-    margin: 20px auto;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 440px; max-width: 90vw; margin: 20px auto;
 }
 
-/* Твой функционал вкладок */
 .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
 .tab-btn {
     flex: 1; height: 42px; border: 2px solid var(--accent-color);
@@ -42,7 +34,6 @@ body {
 }
 .tab-btn.active { background: var(--accent-color); color: white; }
 
-/* Твой функционал контейнера фото */
 .image-container {
     width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
     box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3); cursor: pointer; 
@@ -51,12 +42,13 @@ body {
 #catImage { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 .image-container:active { transform: scale(0.94); }
 
-/* Остальной твой функционал без изменений */
+/* Золотой режим */
+.golden-mode { filter: sepia(0.5) saturate(5) hue-rotate(-10deg) drop-shadow(0 0 15px gold); transition: all 0.5s; }
+
 #coin-info { font-size: 0.9em; font-weight: bold; color: #b8860b; margin-bottom: 5px; }
 body.dark-mode #coin-info { color: #ffd700; }
 
 .progress-wrapper { width: 220px; height: 12px; background: rgba(0,0,0,0.05); border-radius: 10px; margin: 12px 0; overflow: hidden; }
-body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 #progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease; }
 
 #notification {
@@ -65,108 +57,25 @@ body.dark-mode .progress-wrapper { background: rgba(255,255,255,0.1); }
 }
 #notification.hidden { display: none; }
 
-#achievements-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 10px 0; width: 100%; }
-.achievement { background: #ffd700; color: #333; padding: 4px 10px; border-radius: 12px; font-size: 0.7em; font-weight: bold; animation: pop 0.4s; }
-
-.extra-menu { margin-top: 10px; font-size: 0.75em; color: #888; }
-.menu-link { cursor: pointer; }
-
-#modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center;
-    z-index: 10000; backdrop-filter: blur(3px);
+/* Лапки при клике */
+.paw-particle { 
+    position: fixed; pointer-events: none; font-size: 24px; z-index: 5000;
+    animation: fly 0.8s forwards; 
 }
-#modal-overlay.hidden { display: none; }
-.modal-content { background: var(--card-bg); padding: 25px; border-radius: 20px; width: 320px; text-align: center; color: var(--text-main); }
-
-#close-modal, #changeCatButton { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-#resetButton { margin-top: 10px; background: transparent; border: none; color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; }
-
-/* Твои лапки */
-.paw-particle { position: fixed; pointer-events: none; font-size: 24px; animation: fly 0.8s forwards; z-index: 5000; }
 @keyframes fly {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5) rotate(var(--tr)); opacity: 0; }
 }
-@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 
-/* ИСПРАВЛЕННЫЙ мобильный блок */
-@media (max-width: 480px) {
-    body { align-items: flex-start; } /* Чтобы на маленьких экранах контент не улетал вверх */
-    .main-content-wrapper { 
-        width: 95vw; 
-        padding: 15px; 
-        margin-top: 10px;
-    }
-    .image-container { width: 200px; height: 200px; }
-    .tab-btn { height: 40px; font-size: 0.8em; }
-    .tabs-container { gap: 5px; }
-}
+#changeCatButton { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+#resetButton { margin-top: 10px; background: transparent; border: none; color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; }
 
-/* Стили карусели */
-.carousel { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; scroll-behavior: smooth; }
-.carousel img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 2px solid var(--accent-color); flex-shrink: 0; }
-.carousel::-webkit-scrollbar { height: 6px; }
-.carousel::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 10px; }
-
-/* УЛЬТИМАТИВНАЯ АДАПТАЦИЯ */
+/* Мобильная адаптация */
 @media screen and (max-width: 480px) {
-    body {
-        display: block !important;
-        padding: 5px !important;
-        background-attachment: fixed; /* Ускоряет работу на мобилках */
-    }
-
-    .main-content-wrapper {
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 20px 15px !important;
-        border-radius: 0 !important; /* Убираем скругления по бокам, чтобы не терять место */
-        box-shadow: none !important;
-        min-height: 100vh;
-    }
-
-    /* Делаем всё КРУПНЫМ */
-    .image-container {
-        width: 80vw !important; /* 80% от ширины экрана */
-        height: 80vw !important;
-        max-width: 300px !important;
-        max-height: 300px !important;
-        margin: 20px auto !important;
-    }
-
-    .tab-btn {
-        height: 55px !important; /* Жирные кнопки для пальцев */
-        font-size: 18px !important;
-        border-width: 3px !important;
-    }
-
-    .tabs-container {
-        gap: 8px !important;
-        margin-bottom: 25px !important;
-    }
-
-    #coin-info {
-        font-size: 1.2em !important;
-        margin-bottom: 10px !important;
-    }
-
-    .progress-wrapper {
-        width: 90% !important;
-        height: 25px !important; /* Толстая полоска прогресса */
-        border-radius: 15px !important;
-    }
-
-    #changeCatButton {
-        width: 100% !important;
-        height: 60px !important;
-        font-size: 20px !important;
-        margin-top: 20px !important;
-    }
-
-    .extra-menu {
-        font-size: 1em !important; /* Крупные ссылки внизу */
-        margin-top: 20px !important;
-    }
+    body { align-items: flex-start; }
+    .main-content-wrapper { width: 95vw; padding: 15px; margin-top: 10px; }
+    .image-container { width: 220px; height: 220px; }
+    .tab-btn { height: 50px; font-size: 0.9em; }
+    .progress-wrapper { width: 100%; height: 18px; }
+    #changeCatButton { width: 100%; height: 55px; font-size: 1.1em; }
 }

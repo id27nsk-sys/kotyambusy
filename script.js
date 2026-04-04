@@ -1,57 +1,90 @@
-// === УЛУЧШЕННОЕ ГОЛОСОВОЕ УПРАВЛЕНИЕ ===
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition = null;
-let isListening = false; // Флаг: реагируем ли мы на команды "Бася/Савелий"
+// === ИНИЦИАЛИЗАЦИЯ ===
+let coins = parseInt(localStorage.getItem('coins')) || 0;
+let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
+let currentCat = 'basya';
 
-if (SpeechRecognition) {
-    recognition = new SpeechRecognition();
-    recognition.lang = 'ru-RU';
-    recognition.continuous = true; // Слушаем долго
-    recognition.interimResults = false;
+const catImages = {
+    basya: 'images/cats/basya/b01.jpg',
+    savely: 'images/cats/savely/s01.jpg'
+};
 
-    recognition.onresult = (event) => {
-        const last = event.results.length - 1;
-        const command = event.results[last].transcript.toLowerCase().trim();
-        console.log('Голос услышал:', command);
-
-        // Команды активации системы
-        if (command.includes('включи голос') || command.includes('слушай')) {
-            isListening = true;
-            showNotification("Голосовые команды ВКЛЮЧЕНЫ 🎤");
-            return;
-        }
-
-        // Команды ПОЛНОГО засыпания
-        if (command.includes('отключи голос') || command.includes('тишина') || command.includes('отдыхай')) {
-            isListening = false;
-            showNotification("Голосовые команды ОТКЛЮЧЕНЫ 🤫");
-            // Мы НЕ останавливаем recognition совсем, чтобы он мог услышать "Включи голос" позже,
-            // но он больше не будет "пиликать" перезапусками, так как continuous = true
-            return;
-        }
-
-        // Выполнение действий (только если мы в режиме прослушки)
-        if (isListening) {
-            if (command.includes('бася')) {
-                const btn = document.querySelector('[data-cat="basya"]');
-                if (btn) btn.click();
-            } 
-            else if (command.includes('савелий') || command.includes('савель')) {
-                const btn = document.querySelector('[data-cat="savely"]');
-                if (btn) btn.click();
-            }
-        }
-    };
-
-    // Чтобы не было постоянных "пиликаний" при перезапуске:
-    // Мы запускаем его один раз и полагаемся на continuous = true.
-    recognition.onend = () => {
-        // Перезапускаем только если произошла ошибка или системный сбой
-        // В нормальном режиме continuous держит связь долго
-        recognition.start();
-    };
-
-    window.addEventListener('DOMContentLoaded', () => {
-        recognition.start();
-    });
+// === ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
+function updateUI() {
+    document.getElementById('coins').innerText = coins;
+    const clicks = catStats[currentCat];
+    const catName = currentCat === 'basya' ? 'Бася' : currentCat === 'savely' ? 'Савелий' : 'Свой котик';
+    document.getElementById('counter').innerText = `${catName}: ${clicks}`;
+    
+    document.getElementById('progress-fill').style.width = (clicks % 100) + '%';
+    
+    updateRank(clicks);
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('catStats', JSON.stringify(catStats));
 }
+
+function updateRank(clicks) {
+    let rank = "Новичок", icon = "☁️";
+    if (clicks >= 100) { rank = "Любитель"; icon = "🌟"; }
+    if (clicks >= 200) { rank = "Мастер"; icon = "🔥"; }
+    if (clicks >= 300) { rank = "Легенда"; icon = "👑"; }
+    if (clicks >= 500) { 
+        rank = "БОГ КОТОВ"; icon = "✨"; 
+        document.getElementById('catImage').classList.add('golden-mode');
+    }
+    document.getElementById('rank-text').innerText = rank;
+    document.getElementById('rank-icon').innerText = icon;
+}
+
+// === ЭФФЕКТЫ ===
+function createPaw(e) {
+    const paw = document.createElement('div');
+    paw.className = 'paw-particle';
+    paw.innerHTML = `<img src="images/favicon.png" style="width:35px; height:35px;">`;
+    
+    const x = e.clientX || (e.touches && e.touches[0].clientX);
+    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    paw.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
+    paw.style.setProperty('--ty', (Math.random() * -150 - 50) + 'px');
+    paw.style.setProperty('--tr', (Math.random() * 360) + 'deg');
+    
+    paw.style.left = x + 'px';
+    paw.style.top = y + 'px';
+    
+    document.body.appendChild(paw);
+    setTimeout(() => paw.remove(), 800);
+}
+
+// === ОБРАБОТЧИКИ СОБЫТИЙ ===
+document.getElementById('catImage').parentElement.addEventListener('pointerdown', (e) => {
+    coins++;
+    catStats[currentCat]++;
+    createPaw(e);
+    updateUI();
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector('.tab-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        currentCat = btn.dataset.cat;
+        if (currentCat !== 'custom') {
+            document.getElementById('catImage').src = catImages[currentCat];
+        }
+        updateUI();
+    });
+});
+
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+});
+
+document.getElementById('resetButton').addEventListener('click', () => {
+    if(confirm("Сбросить весь прогресс?")) {
+        localStorage.clear();
+        location.reload();
+    }
+});
+
+window.addEventListener('DOMContentLoaded', updateUI);

@@ -2,31 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>КОТЯМБУСЫ!!! v2.2</title>
     
-    <title>КОТЯМБУСЫ!!! v2.1m</title>
-        <!-- Исправленная ссылка на фавикон -->
+    <!-- Фавикон (рыжая лапка) -->
     <link rel="icon" type="image/png" href="images/favicon.png">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Стиль для вылетающих лапок */
-        .paw-print {
-            position: absolute;
-            font-size: 24px;
-            pointer-events: none;
-            animation: fly-up 1s ease-out forwards;
-            z-index: 9999;
-        }
-        @keyframes fly-up {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            100% { transform: translate(-50%, -150%) scale(1.5); opacity: 0; }
-        }
-        /* Золотой режим */
-        .golden-mode {
-            filter: sepia(0.5) saturate(5) hue-rotate(-10deg) drop-shadow(0 0 15px gold);
-            transition: all 0.5s;
-        }
-    </style>
 </head>
 
 <body>
@@ -66,13 +48,7 @@
         <button type="button" id="resetButton">Сбросить всё</button>
     </div>
 
-    <div id="modal-overlay" class="hidden">
-        <div class="modal-content">
-            <div id="modal-body"></div>
-            <button type="button" id="close-modal">Закрыть</button>
-        </div>
-    </div>
-
+    <!-- Уведомление -->
     <div id="notification" class="hidden"></div>
 
     <script src="script.js"></script>
