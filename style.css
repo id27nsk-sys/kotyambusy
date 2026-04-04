@@ -1,4 +1,5 @@
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
 :root {
     --bg-color: #f3e5f5; 
     --grad-1: #b2ebf2; 
@@ -6,10 +7,12 @@
     --accent-color: #ff69b4;
     --text-main: #333; --card-bg: rgba(255, 255, 255, 0.75);
 }
+
 body.dark-mode {
     --bg-color: #1a1a2e; --accent-color: #e94560;
     --text-main: #ffffff; --card-bg: rgba(22, 33, 62, 0.85);
 }
+
 body {
     display: flex; justify-content: center; align-items: center; min-height: 100vh;
     font-family: 'Arial', sans-serif; background-color: var(--bg-color);
@@ -18,12 +21,15 @@ body {
         radial-gradient(at 100% 100%, var(--grad-2) 0px, transparent 50%);
     transition: background 1.2s ease, --grad-1 1.2s ease, --grad-2 1.2s ease; 
     overflow-x: hidden; user-select: none; color: var(--text-main);
+    touch-action: manipulation; /* Запрещает лишний зум при кликах */
 }
+
 .main-content-wrapper {
     display: flex; flex-direction: column; align-items: center; padding: 25px;
     background: var(--card-bg); backdrop-filter: blur(10px); border-radius: 25px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); width: 440px; max-width: 90vw; margin: 20px auto;
 }
+
 .tabs-container { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; justify-content: center; }
 .tab-btn {
     flex: 1; height: 42px; border: 2px solid var(--accent-color);
@@ -32,30 +38,43 @@ body {
     display: flex; align-items: center; justify-content: center; font-size: 0.85em;
 }
 .tab-btn.active { background: var(--accent-color); color: white; }
+
 .image-container {
     width: 260px; height: 260px; border-radius: 50%; overflow: hidden;
     box-shadow: 0 0 0 8px rgba(255, 255, 255, 0.3); cursor: pointer; 
-    transition: transform 0.1s; position: relative; touch-action: manipulation;
+    transition: transform 0.1s; position: relative;
 }
 #catImage { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.image-container:active { transform: scale(0.94); }
+
 .golden-mode { filter: sepia(0.5) saturate(5) hue-rotate(-10deg) drop-shadow(0 0 15px gold); transition: all 0.5s; }
+
 .progress-wrapper { width: 220px; height: 12px; background: rgba(0,0,0,0.05); border-radius: 10px; margin: 12px 0; overflow: hidden; }
 #progress-fill { width: 0%; height: 100%; background: var(--accent-color); transition: width 0.4s ease; }
+
 #notification {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
     background: rgba(0, 0, 0, 0.85); color: white; padding: 10px 20px; border-radius: 50px; z-index: 9999;
 }
 #notification.hidden { display: none; }
-.paw-particle { position: fixed; pointer-events: none; z-index: 5000; animation: fly 0.8s forwards; }
+
+.paw-particle { 
+    position: fixed; pointer-events: none; z-index: 5000;
+    animation: fly 0.8s forwards; 
+    will-change: transform, opacity; /* Оптимизация для мобилок */
+}
 @keyframes fly {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
     100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.5) rotate(var(--tr)); opacity: 0; }
 }
+
 #changeCatButton, #close-modal { padding: 10px 20px; background: var(--accent-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 #resetButton { margin-top: 10px; background: transparent; border: none; color: #999; text-decoration: underline; font-size: 0.7em; cursor: pointer; }
+
 @media screen and (max-width: 480px) {
     body { align-items: flex-start; }
     .main-content-wrapper { width: 95vw; padding: 15px; margin-top: 10px; }
     .image-container { width: 220px; height: 220px; }
     .tab-btn { height: 50px; font-size: 0.9em; }
+    .progress-wrapper { width: 100%; height: 16px; }
 }
