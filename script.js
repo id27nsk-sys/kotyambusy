@@ -1,19 +1,45 @@
-// === 1. ДАННЫЕ ===
+// === 1. ИНИЦИАЛИЗАЦИЯ ДАННЫХ ===
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
 let currentCat = 'basya';
 let photoIndexes = { basya: 0, savely: 0 };
 
+// Пустые массивы, которые заполнит "Сканер"
 const catImages = {
-    basya: ['images/cats/basya/b01.jpg', 'images/cats/basya/b02.jpg', 'images/cats/basya/b03.jpg'],
-    savely: ['images/cats/savely/s01.jpg', 'images/cats/savely/s02.jpg', 'images/cats/savely/s03.jpg']
+    basya: [],
+    savely: []
 };
 
 const catImage = document.getElementById('catImage');
 const fileInput = document.getElementById('file-input');
 const notification = document.getElementById('notification');
 
-// === 2. ФУНКЦИИ ===
+// === 2. АВТО-СКАНЕР ФОТОГРАФИЙ ===
+// Эта функция ищет файлы b01, b02... пока они не закончатся
+async function discoverImages(cat, path, prefix) {
+    let found = [];
+    for (let i = 1; i <= 30; i++) { // Проверяем до 30 файлов для каждого кота
+        let num = i.toString().padStart(2, '0'); // Делает из 1 -> "01"
+        let testPath = `${path}${prefix}${num}.jpg`;
+        
+        try {
+            // Проверяем, существует ли файл на сервере
+            const response = await fetch(testPath, { method: 'HEAD' });
+            if (response.ok) {
+                found.push(testPath);
+            } else {
+                break; // Если файл не найден (404), выходим из цикла
+            }
+        } catch (e) {
+            break;
+        }
+    }
+    catImages[cat] = found;
+    console.log(`Найдено фото для ${cat}:`, found.length);
+}
+
+// === 3. СИСТЕМНЫЕ ФУНКЦИИ ===
+
 function setRandomGradient() {
     const randomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 65%, 85%)`;
     document.documentElement.style.setProperty('--grad-1', randomColor());
@@ -73,7 +99,8 @@ function createPaw(e) {
     setTimeout(() => paw.remove(), 850);
 }
 
-// === 3. ОБРАБОТЧИКИ ===
+// === 4. ОБРАБОТЧИКИ СОБЫТИЙ ===
+
 catImage.parentElement.addEventListener('pointerdown', (e) => {
     triggerVibration(25);
     if (e.pointerType === 'touch') e.preventDefault();
@@ -89,8 +116,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         document.querySelector('.tab-btn.active').classList.remove('active');
         btn.classList.add('active');
         currentCat = targetCat;
+        
         if (targetCat !== 'custom') {
-            catImage.src = catImages[currentCat][photoIndexes[currentCat]];
+            // Если фото еще не загружены сканером, ставим дефолтное
+            catImage.src = catImages[currentCat][photoIndexes[currentCat]] || `images/cats/${currentCat}/${currentCat === 'basya' ? 'b' : 's'}01.jpg`;
             setRandomGradient();
         } else {
             fileInput.click();
@@ -105,18 +134,19 @@ document.getElementById('changeCatButton').addEventListener('click', () => {
         fileInput.click();
     } else {
         const photos = catImages[currentCat];
-        photoIndexes[currentCat] = (photoIndexes[currentCat] + 1) % photos.length;
-        catImage.src = photos[photoIndexes[currentCat]];
-        setRandomGradient();
-        showNotification("Фото изменено! 🐾");
+        if (photos.length > 0) {
+            photoIndexes[currentCat] = (photoIndexes[currentCat] + 1) % photos.length;
+            catImage.src = photos[photoIndexes[currentCat]];
+            setRandomGradient();
+            showNotification("Фото обновлено! 🐾");
+        } else {
+            showNotification("Ищу новые фото... 🔎");
+        }
     }
 });
 
-document.getElementById('view-album').addEventListener('click', () => showNotification("Галерея скоро будет! 📸"));
-document.getElementById('view-stats').addEventListener('click', () => alert(`Бася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`));
-
 fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files;
     if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (ev) => {
@@ -142,4 +172,13 @@ document.getElementById('resetButton').addEventListener('click', () => {
     if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); }
 });
 
-window.addEventListener('load', () => { setRandomGradient(); updateUI(); });
+// === ЗАПУСК ===
+window.addEventListener('load', async () => {
+    setRandomGradient();
+    
+    // Запускаем автоматический поиск фотографий в папках
+    await discoverImages('basya', 'images/cats/basya/', 'b');
+    await discoverImages('savely', 'images/cats/savely/', 's');
+    
+    updateUI();
+});
