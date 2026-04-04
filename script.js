@@ -1,4 +1,3 @@
-// === 1. ИНИЦИАЛИЗАЦИЯ ===
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
 let currentCat = 'basya';
@@ -12,21 +11,26 @@ const catImage = document.getElementById('catImage');
 const fileInput = document.getElementById('file-input');
 const notification = document.getElementById('notification');
 
-// === 2. РАНДОМНЫЙ ФОН ===
+// РАНДОМНЫЙ ФОН
 function setRandomGradient() {
     const randomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 65%, 85%)`;
     document.documentElement.style.setProperty('--grad-1', randomColor());
     document.documentElement.style.setProperty('--grad-2', randomColor());
 }
 
-// === 3. ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ===
+// ТАКТИЛЬНАЯ ОТДАЧА (Вибрация)
+function triggerVibration(pattern = 10) {
+    if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+    }
+}
+
 function updateUI() {
     document.getElementById('coins').innerText = coins;
     const clicks = catStats[currentCat] || 0;
     const catName = currentCat === 'basya' ? 'Бася' : currentCat === 'savely' ? 'Савелий' : 'Свой котик';
     document.getElementById('counter').innerText = `${catName}: ${clicks}`;
     document.getElementById('progress-fill').style.width = (clicks % 100) + '%';
-    
     updateRank(clicks);
     localStorage.setItem('coins', coins);
     localStorage.setItem('catStats', JSON.stringify(catStats));
@@ -40,8 +44,7 @@ function updateRank(clicks) {
     if (clicks >= 500) { 
         rank = "БОГ КОТОВ"; icon = "✨"; 
         catImage.classList.add('golden-mode');
-    } else {
-        catImage.classList.remove('golden-mode');
+        triggerVibration([50, 30, 50]); // Особая вибрация для рекорда
     }
     document.getElementById('rank-text').innerText = rank;
     document.getElementById('rank-icon').innerText = icon;
@@ -54,36 +57,27 @@ function showNotification(text) {
     window.notifTimeout = setTimeout(() => notification.classList.add('hidden'), 2000);
 }
 
-// === 4. ЭФФЕКТЫ (Оптимизировано для Mobile) ===
+// ЭФФЕКТЫ
 function createPaw(e) {
-    // Ограничение по количеству лапок на экране для защиты от тормозов
     if (document.querySelectorAll('.paw-particle').length > 15) return;
-
     const paw = document.createElement('div');
     paw.className = 'paw-particle';
     paw.innerHTML = `<img src="images/favicon.png" style="width:35px; height:35px; pointer-events:none;">`;
-    
-    const x = e.clientX || (e.touches && e.touches[0].clientX) || (e.changedTouches && e.changedTouches[0].clientX);
-    const y = e.clientY || (e.touches && e.touches[0].clientY) || (e.changedTouches && e.changedTouches[0].clientY);
-    
+    const x = e.clientX || (e.touches && e.touches[0].clientX);
+    const y = e.clientY || (e.touches && e.touches[0].clientY);
     paw.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
     paw.style.setProperty('--ty', (Math.random() * -150 - 50) + 'px');
     paw.style.setProperty('--tr', (Math.random() * 360) + 'deg');
-    
     paw.style.left = x + 'px';
     paw.style.top = y + 'px';
-    
     document.body.appendChild(paw);
     setTimeout(() => paw.remove(), 850);
 }
 
-// === 5. ОБРАБОТЧИКИ ===
-
-// Поддержка быстрых нажатий на мобилках
+// ОБРАБОТЧИКИ
 catImage.parentElement.addEventListener('pointerdown', (e) => {
-    // Убираем лишние эффекты браузера при касании
-    if (e.pointerType === 'touch') e.preventDefault();
-    
+    e.preventDefault(); // Полная блокировка системных действий
+    triggerVibration(15); // Лёгкий отклик при клике
     coins++;
     catStats[currentCat]++;
     createPaw(e);
@@ -93,7 +87,6 @@ catImage.parentElement.addEventListener('pointerdown', (e) => {
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const targetCat = btn.dataset.cat;
-        
         if (targetCat === 'custom') {
             fileInput.click();
         } else {
@@ -113,14 +106,12 @@ fileInput.addEventListener('change', (e) => {
         const reader = new FileReader();
         reader.onload = (event) => {
             catImage.src = event.target.result;
-            
             document.querySelector('.tab-btn.active').classList.remove('active');
             document.getElementById('custom-tab-btn').classList.add('active');
-            
             currentCat = 'custom';
             setRandomGradient();
             updateUI();
-            showNotification("Котик загружен! 🐾");
+            showNotification("Твой котик загружен! 🐾");
         };
         reader.readAsDataURL(file);
     }
@@ -129,6 +120,7 @@ fileInput.addEventListener('change', (e) => {
 document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+    triggerVibration(20);
 });
 
 document.getElementById('resetButton').addEventListener('click', () => {
