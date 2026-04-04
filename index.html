@@ -2,41 +2,62 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <!-- Блокировка зума и адаптация под челки смартфонов -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!! v2.6</title>
+    <title>КОТЯМБУСЫ!!! v2.7</title>
+    
     <link rel="icon" type="image/png" href="images/favicon.png">
-    <link rel="stylesheet" href="style.css?v=2.6">
+    
+    <!-- Версия v2.7 для принудительного сброса кэша браузера -->
+    <link rel="stylesheet" href="style.css?v=2.7">
 </head>
+
 <body>
     <div class="main-content-wrapper">
         <div id="achievements-container"></div>
+
+        <!-- Кнопки выбора персонажей -->
         <div class="tabs-container">
-            <button type="button" class="tab-btn active" data-cat="basya">Бася</button>
-            <button type="button" class="tab-btn" data-cat="savely">Савелий</button>
+            <button type="button" class="tab-btn active" data-cat="basya" id="tab-basya">Бася</button>
+            <button type="button" class="tab-btn" data-cat="savely" id="tab-savely">Савелий</button>
             <button type="button" class="tab-btn" id="custom-tab-btn" data-cat="custom">Свой котик</button>
         </div>
+
         <input type="file" id="file-input" accept="image/*" style="display: none;">
+
+        <!-- Главное окно кликера -->
         <div class="image-container" id="cat-image-section">
             <img src="images/cats/basya/b01.jpg" alt="Котик" id="catImage">
         </div>
+
+        <!-- Статистика и Прогресс-бар -->
         <div class="stats-container">
             <div id="coin-info">💰 Кото-коины: <span id="coins">0</span></div>
             <div id="counter">Бася: 0</div>
             <div class="progress-wrapper"><div id="progress-fill"></div></div>
             <div id="rank">Ранг: <span id="rank-text">Новичок</span> <span id="rank-icon">☁️</span></div>
         </div>
+
+        <!-- Кнопка цикличной смены фото -->
         <button type="button" id="changeCatButton">Сменить фото</button>
+        
+        <!-- Меню с увеличенной зоной нажатия (Tap Zone) -->
         <div class="extra-menu">
             <span class="menu-link" id="view-album">Галерея</span>
             <span class="divider">|</span> 
             <span class="menu-link" id="view-stats">Рекорды</span>
         </div>
+
         <div class="theme-wrapper">
             <button type="button" id="theme-toggle">🌙</button>
         </div>
+
         <button type="button" id="resetButton">Сбросить всё</button>
     </div>
+
+    <!-- Всплывающие уведомления (Ревность, Бонусы) -->
     <div id="notification" class="hidden"></div>
-    <script src="script.js?v=2.6"></script>
+
+    <script src="script.js?v=2.7"></script>
 </body>
 </html>
