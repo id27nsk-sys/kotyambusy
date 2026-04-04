@@ -1,41 +1,36 @@
-// === 1. ИНИЦИАЛИЗАЦИЯ ДАННЫХ ===
+// === 1. ДАННЫЕ ===
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
+let seenPhotos = JSON.parse(localStorage.getItem('seenPhotos')) || { basya: [], savely: [] };
 let currentCat = 'basya';
 let photoIndexes = { basya: 0, savely: 0 };
 
-// Массивы, которые заполнит "Авто-сканер"
-const catImages = {
-    basya: [],
-    savely: []
-};
+const catImages = { basya: [], savely: [] };
 
 const catImage = document.getElementById('catImage');
 const fileInput = document.getElementById('file-input');
 const notification = document.getElementById('notification');
 
-// === 2. АВТО-СКАНЕР ФОТОГРАФИЙ (v2.5) ===
+// === 2. ФУНКЦИИ ===
 async function discoverImages(cat, path, prefix) {
     let found = [];
     for (let i = 1; i <= 30; i++) {
         let num = i.toString().padStart(2, '0');
         let testPath = `${path}${prefix}${num}.jpg`;
-        
         try {
             const response = await fetch(testPath, { method: 'HEAD' });
-            if (response.ok) {
-                found.push(testPath);
-            } else {
-                break; 
-            }
-        } catch (e) {
-            break;
-        }
+            if (response.ok) found.push(testPath);
+            else break;
+        } catch (e) { break; }
     }
     catImages[cat] = found;
 }
 
-// === 3. СИСТЕМНЫЕ ФУНКЦИИ ===
+function saveProgress() {
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('catStats', JSON.stringify(catStats));
+    localStorage.setItem('seenPhotos', JSON.stringify(seenPhotos));
+}
 
 function setRandomGradient() {
     const randomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 65%, 85%)`;
@@ -53,10 +48,8 @@ function updateUI() {
     const catName = currentCat === 'basya' ? 'Бася' : currentCat === 'savely' ? 'Савелий' : 'Свой котик';
     document.getElementById('counter').innerText = `${catName}: ${clicks}`;
     document.getElementById('progress-fill').style.width = (clicks % 100) + '%';
-    
     updateRank(clicks);
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('catStats', JSON.stringify(catStats));
+    saveProgress();
 }
 
 function updateRank(clicks) {
@@ -67,9 +60,7 @@ function updateRank(clicks) {
     if (clicks >= 500) { 
         rank = "БОГ КОТОВ"; icon = "✨"; 
         catImage.classList.add('golden-mode');
-    } else {
-        catImage.classList.remove('golden-mode');
-    }
+    } else { catImage.classList.remove('golden-mode'); }
     document.getElementById('rank-text').innerText = rank;
     document.getElementById('rank-icon').innerText = icon;
 }
@@ -78,7 +69,7 @@ function showNotification(text) {
     notification.innerText = text;
     notification.classList.remove('hidden');
     clearTimeout(window.notifTimeout);
-    window.notifTimeout = setTimeout(() => notification.classList.add('hidden'), 2000);
+    window.notifTimeout = setTimeout(() => notification.classList.add('hidden'), 3000);
 }
 
 function createPaw(e) {
@@ -88,18 +79,16 @@ function createPaw(e) {
     paw.innerHTML = `<img src="images/favicon.png" style="width:35px; height:35px; pointer-events:none;">`;
     const x = e.clientX || (e.touches && e.touches.clientX);
     const y = e.clientY || (e.touches && e.touches.clientY);
+    paw.style.left = x + 'px';
+    paw.style.top = y + 'px';
     paw.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
     paw.style.setProperty('--ty', (Math.random() * -150 - 50) + 'px');
     paw.style.setProperty('--tr', (Math.random() * 360) + 'deg');
-    paw.style.left = x + 'px';
-    paw.style.top = y + 'px';
     document.body.appendChild(paw);
     setTimeout(() => paw.remove(), 850);
 }
 
-// === 4. ОБРАБОТЧИКИ СОБЫТИЙ ===
-
-// Кликер с вибрацией
+// === 3. ОБРАБОТЧИКИ ===
 catImage.parentElement.addEventListener('pointerdown', (e) => {
     triggerVibration(25);
     if (e.pointerType === 'touch') e.preventDefault();
@@ -109,42 +98,51 @@ catImage.parentElement.addEventListener('pointerdown', (e) => {
     updateUI();
 });
 
-// Переключение табов
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const targetCat = btn.dataset.cat;
-        if (targetCat === 'custom') {
-            fileInput.click();
-        } else {
-            document.querySelector('.tab-btn.active').classList.remove('active');
-            btn.classList.add('active');
-            currentCat = targetCat;
+        document.querySelector('.tab-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        currentCat = targetCat;
+        if (targetCat !== 'custom') {
             catImage.src = catImages[currentCat][photoIndexes[currentCat]] || `images/cats/${currentCat}/${currentCat === 'basya' ? 'b' : 's'}01.jpg`;
             setRandomGradient();
-            updateUI();
-        }
+        } else { fileInput.click(); }
+        updateUI();
     });
 });
 
-// КНОПКА "СМЕНИТЬ ФОТО" (Без лишних уведомлений)
 document.getElementById('changeCatButton').addEventListener('click', () => {
     triggerVibration(20);
-    if (currentCat === 'custom') {
-        fileInput.click();
-    } else {
+    if (currentCat === 'custom') { fileInput.click(); }
+    else {
         const photos = catImages[currentCat];
         if (photos.length > 0) {
             photoIndexes[currentCat] = (photoIndexes[currentCat] + 1) % photos.length;
-            catImage.src = photos[photoIndexes[currentCat]];
+            const newPhoto = photos[photoIndexes[currentCat]];
+            catImage.src = newPhoto;
+            if (!seenPhotos[currentCat].includes(newPhoto)) {
+                seenPhotos[currentCat].push(newPhoto);
+                if (seenPhotos[currentCat].length === photos.length) {
+                    coins += 500;
+                    showNotification(`БОНУС! Вся галерея ${currentCat === 'basya' ? 'Баси' : 'Савелия'} открыта! +500 💰`);
+                    triggerVibration(100);
+                }
+            }
             setRandomGradient();
-            // Уведомление убрано для чистоты интерфейса
-        } else {
-            showNotification("Ищу новые фото... 🔎");
+            updateUI();
         }
     }
 });
 
-// Загрузка своего котика (Без лишних уведомлений)
+document.getElementById('view-album').addEventListener('click', () => {
+    const bSeen = seenPhotos.basya.length, bTotal = catImages.basya.length;
+    const sSeen = seenPhotos.savely.length, sTotal = catImages.savely.length;
+    showNotification(`Альбом: Бася ${bSeen}/${bTotal}, Савелий ${sSeen}/${sTotal} 📸`);
+});
+
+document.getElementById('view-stats').addEventListener('click', () => alert(`Бася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`));
+
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files;
     if (file && file.type.startsWith('image/')) {
@@ -156,14 +154,10 @@ fileInput.addEventListener('change', (e) => {
             currentCat = 'custom';
             setRandomGradient();
             updateUI();
-            // Уведомление убрано для чистоты интерфейса
         };
         reader.readAsDataURL(file);
     }
 });
-
-document.getElementById('view-album').addEventListener('click', () => showNotification("Галерея скоро будет! 📸"));
-document.getElementById('view-stats').addEventListener('click', () => alert(`Бася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`));
 
 document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
@@ -171,15 +165,15 @@ document.getElementById('theme-toggle').addEventListener('click', () => {
     triggerVibration(20);
 });
 
-document.getElementById('resetButton').addEventListener('click', () => {
-    if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); }
-});
+document.getElementById('resetButton').addEventListener('click', () => { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } });
 
-// === ЗАПУСК ===
 window.addEventListener('load', async () => {
     setRandomGradient();
-    // Поиск фото в папках
     await discoverImages('basya', 'images/cats/basya/', 'b');
     await discoverImages('savely', 'images/cats/savely/', 's');
+    // Помечаем первые фото
+    const bFirst = `images/cats/basya/b01.jpg`, sFirst = `images/cats/savely/s01.jpg`;
+    if (catImages.basya.length > 0 && !seenPhotos.basya.includes(bFirst)) seenPhotos.basya.push(bFirst);
+    if (catImages.savely.length > 0 && !seenPhotos.savely.includes(sFirst)) seenPhotos.savely.push(sFirst);
     updateUI();
 });
