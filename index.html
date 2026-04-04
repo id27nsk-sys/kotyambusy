@@ -2,25 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Улучшенный viewport для блокировки фантомных зумов -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!! v2.4</title>
-    
+    <title>КОТЯМБУСЫ!!! v2.4.2</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
-    
-    <!-- Сброс кэша для новой версии -->
-    <link rel="stylesheet" href="style.css?v=2.4">
+    <!-- Версия v2.4.2 для сброса кэша -->
+    <link rel="stylesheet" href="style.css?v=2.4.2">
 </head>
-
 <body>
     <div class="main-content-wrapper">
         <div id="achievements-container"></div>
 
-        <!-- Табы стали крупнее (оптимизация Tap Zone) -->
         <div class="tabs-container">
-            <button type="button" class="tab-btn active" data-cat="basya" id="tab-basya">Бася</button>
-            <button type="button" class="tab-btn" data-cat="savely" id="tab-savely">Савелий</button>
-            <button type="button" class="tab-btn" data-cat="custom" id="custom-tab-btn">Свой котик</button>
+            <button type="button" class="tab-btn active" data-cat="basya">Бася</button>
+            <button type="button" class="tab-btn" data-cat="savely">Савелий</button>
+            <button type="button" class="tab-btn" id="custom-tab-btn" data-cat="custom">Свой котик</button>
         </div>
 
         <input type="file" id="file-input" accept="image/*" style="display: none;">
@@ -38,7 +33,6 @@
 
         <button type="button" id="changeCatButton">Сменить фото</button>
         
-        <!-- Увеличенные отступы для ссылок (Tap Zone) -->
         <div class="extra-menu">
             <span class="menu-link" id="view-album">Галерея</span>
             <span class="divider">|</span> 
@@ -53,7 +47,6 @@
     </div>
 
     <div id="notification" class="hidden"></div>
-
-    <script src="script.js?v=2.4"></script>
+    <script src="script.js?v=2.4.2"></script>
 </body>
 </html>

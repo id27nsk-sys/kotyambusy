@@ -1,21 +1,19 @@
-// === 1. ИНИЦИАЛИЗАЦИЯ ДАННЫХ ===
+// === 1. ДАННЫЕ ===
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
 let currentCat = 'basya';
+let photoIndexes = { basya: 0, savely: 0 };
 
-// Конфиг картинок (для смены фото)
 const catImages = {
-    basya: ['images/cats/basya/b01.jpg'], 
-    savely: ['images/cats/savely/s01.jpg'],
-    custom: []
+    basya: ['images/cats/basya/b01.jpg', 'images/cats/basya/b02.jpg', 'images/cats/basya/b03.jpg'],
+    savely: ['images/cats/savely/s01.jpg', 'images/cats/savely/s02.jpg', 'images/cats/savely/s03.jpg']
 };
 
 const catImage = document.getElementById('catImage');
 const fileInput = document.getElementById('file-input');
 const notification = document.getElementById('notification');
 
-// === 2. СИСТЕМНЫЕ ФУНКЦИИ ===
-
+// === 2. ФУНКЦИИ ===
 function setRandomGradient() {
     const randomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 65%, 85%)`;
     document.documentElement.style.setProperty('--grad-1', randomColor());
@@ -23,7 +21,7 @@ function setRandomGradient() {
 }
 
 function triggerVibration(ms = 20) {
-    if ("vibrate" in navigator) { navigator.vibrate([ms]); }
+    if (navigator.vibrate) navigator.vibrate([ms]);
 }
 
 function updateUI() {
@@ -59,14 +57,13 @@ function showNotification(text) {
     window.notifTimeout = setTimeout(() => notification.classList.add('hidden'), 2000);
 }
 
-// === 3. ЭФФЕКТЫ (РЫЖИЕ ЛАПКИ) ===
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 15) return;
     const paw = document.createElement('div');
     paw.className = 'paw-particle';
     paw.innerHTML = `<img src="images/favicon.png" style="width:35px; height:35px; pointer-events:none;">`;
-    const x = e.clientX || (e.touches && e.touches.clientX) || (e.changedTouches && e.changedTouches.clientX);
-    const y = e.clientY || (e.touches && e.touches.clientY) || (e.changedTouches && e.changedTouches.clientY);
+    const x = e.clientX || (e.touches && e.touches.clientX);
+    const y = e.clientY || (e.touches && e.touches.clientY);
     paw.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
     paw.style.setProperty('--ty', (Math.random() * -150 - 50) + 'px');
     paw.style.setProperty('--tr', (Math.random() * 360) + 'deg');
@@ -76,9 +73,7 @@ function createPaw(e) {
     setTimeout(() => paw.remove(), 850);
 }
 
-// === 4. ОБРАБОТЧИКИ СОБЫТИЙ ===
-
-// Кликер
+// === 3. ОБРАБОТЧИКИ ===
 catImage.parentElement.addEventListener('pointerdown', (e) => {
     triggerVibration(25);
     if (e.pointerType === 'touch') e.preventDefault();
@@ -88,47 +83,44 @@ catImage.parentElement.addEventListener('pointerdown', (e) => {
     updateUI();
 });
 
-// Табы
 document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         const targetCat = btn.dataset.cat;
-        if (targetCat === 'custom') {
-            fileInput.click();
-        } else {
-            document.querySelector('.tab-btn.active').classList.remove('active');
-            btn.classList.add('active');
-            currentCat = targetCat;
-            catImage.src = catImages[currentCat][0];
+        document.querySelector('.tab-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        currentCat = targetCat;
+        if (targetCat !== 'custom') {
+            catImage.src = catImages[currentCat][photoIndexes[currentCat]];
             setRandomGradient();
-            updateUI();
+        } else {
+            fileInput.click();
         }
+        updateUI();
     });
 });
 
-// Смена фото (changeCatButton) - ВОССТАНОВЛЕНО
 document.getElementById('changeCatButton').addEventListener('click', () => {
+    triggerVibration(20);
     if (currentCat === 'custom') {
         fileInput.click();
     } else {
-        showNotification("Для этого котика пока одно фото! 🐾");
+        const photos = catImages[currentCat];
+        photoIndexes[currentCat] = (photoIndexes[currentCat] + 1) % photos.length;
+        catImage.src = photos[photoIndexes[currentCat]];
+        setRandomGradient();
+        showNotification("Фото изменено! 🐾");
     }
 });
 
-// Галерея и Рекорды - ВОССТАНОВЛЕНО
-document.getElementById('view-album').addEventListener('click', () => {
-    showNotification("Галерея в разработке... 📸");
-});
-document.getElementById('view-stats').addEventListener('click', () => {
-    alert(`Рекорды:\nБася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`);
-});
+document.getElementById('view-album').addEventListener('click', () => showNotification("Галерея скоро будет! 📸"));
+document.getElementById('view-stats').addEventListener('click', () => alert(`Бася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`));
 
-// Загрузка файла
 fileInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file && file.type.startsWith('image/')) {
         const reader = new FileReader();
-        reader.onload = (event) => {
-            catImage.src = event.target.result;
+        reader.onload = (ev) => {
+            catImage.src = ev.target.result;
             document.querySelector('.tab-btn.active').classList.remove('active');
             document.getElementById('custom-tab-btn').classList.add('active');
             currentCat = 'custom';
@@ -140,19 +132,14 @@ fileInput.addEventListener('change', (e) => {
     }
 });
 
-// Тема
 document.getElementById('theme-toggle').addEventListener('click', () => {
     document.body.classList.toggle('dark-mode');
     document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
     triggerVibration(20);
 });
 
-// Сброс
 document.getElementById('resetButton').addEventListener('click', () => {
     if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); }
 });
 
-window.addEventListener('load', () => {
-    setRandomGradient();
-    updateUI();
-});
+window.addEventListener('load', () => { setRandomGradient(); updateUI(); });
