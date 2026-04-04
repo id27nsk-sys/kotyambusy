@@ -3,54 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!! v2.2</title>
-    
-    <!-- Фавикон (рыжая лапка) -->
+    <title>КОТЯМБУСЫ!!! v2.3</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
-    
-    <link rel="stylesheet" href="style.css">
+    <!-- Добавлена версия для сброса кэша -->
+    <link rel="stylesheet" href="style.css?v=2.3">
 </head>
-
 <body>
     <div class="main-content-wrapper">
         <div id="achievements-container"></div>
-
         <div class="tabs-container">
-            <button type="button" class="tab-btn active" data-cat="basya">Бася</button>
-            <button type="button" class="tab-btn" data-cat="savely">Савелий</button>
-            <button type="button" class="tab-btn" id="custom-tab-btn" data-cat="custom">Свой котик</button>
+            <button type="button" class="tab-btn active" data-cat="basya" id="tab-basya">Бася</button>
+            <button type="button" class="tab-btn" data-cat="savely" id="tab-savely">Савелий</button>
+            <button type="button" class="tab-btn" data-cat="custom" id="custom-tab-btn">Свой котик</button>
         </div>
-
         <input type="file" id="file-input" accept="image/*" style="display: none;">
-
         <div class="image-container" id="cat-image-section">
             <img src="images/cats/basya/b01.jpg" alt="Котик" id="catImage">
         </div>
-
         <div class="stats-container">
             <div id="coin-info">💰 Кото-коины: <span id="coins">0</span></div>
             <div id="counter">Бася: 0</div>
             <div class="progress-wrapper"><div id="progress-fill"></div></div>
             <div id="rank">Ранг: <span id="rank-text">Новичок</span> <span id="rank-icon">☁️</span></div>
         </div>
-
         <button type="button" id="changeCatButton">Сменить фото</button>
-        
         <div class="extra-menu">
             <span class="menu-link" id="view-album">Галерея</span> | 
             <span class="menu-link" id="view-stats">Рекорды</span>
         </div>
-
         <div style="margin-top: 15px;">
             <button type="button" id="theme-toggle" style="background: none; border: none; cursor: pointer; font-size: 1.5em;">🌙</button>
         </div>
-
         <button type="button" id="resetButton">Сбросить всё</button>
     </div>
-
-    <!-- Уведомление -->
     <div id="notification" class="hidden"></div>
-
-    <script src="script.js"></script>
+    <script src="script.js?v=2.3"></script>
 </body>
 </html>
