@@ -248,3 +248,45 @@ window.onload = function() {
         update(true);
     })();
 };
+// Проверяем, поддерживает ли браузер распознавание речи
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ru-RU'; // Устанавливаем русский язык
+    recognition.continuous = true; // Не выключать после одной фразы
+    recognition.interimResults = false; // Нам нужен только финальный результат
+
+    recognition.onresult = (event) => {
+        // Берем последнее сказанное слово
+        const last = event.results.length - 1;
+        const command = event.results[last][0].transcript.toLowerCase().trim();
+        
+        console.log('Услышанная команда:', command); // Для отладки в консоли
+
+        // Логика переключения
+        if (command.includes('бася')) {
+            const btn = document.querySelector('[data-cat="basya"]');
+            if (btn) btn.click();
+            showNotification("Слушаюсь! Переключаю на Басю 🐾");
+        } 
+        else if (command.includes('савелий') || command.includes('савель')) {
+            const btn = document.querySelector('[data-cat="savely"]');
+            if (btn) btn.click();
+            showNotification("Понял! Открываю Савелия 🐾");
+        }
+    };
+
+    // Если распознавание прервалось (например, долгая пауза), запускаем снова
+    recognition.onend = () => {
+        recognition.start();
+    };
+
+    // Запускаем прослушивание при загрузке страницы
+    window.addEventListener('DOMContentLoaded', () => {
+        recognition.start();
+    });
+
+} else {
+    console.error("Ваш браузер не поддерживает голосовое управление.");
+}
