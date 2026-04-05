@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🐾 КОТЯМЬБУСЬ! v2.9.5 🐾</title>
-    <link rel="stylesheet" href="style.css?v=classic_final">
+    <link rel="stylesheet" href="style.css?v=sticky_paws">
 </head>
 <body id="body-bg">
     <div class="main-container">
         
-        <!-- 1. ВЕРХНИЙ БЛОК: АЧИВКИ -->
+        <!-- ПЛАШКА, КОТОРАЯ ПРИЛИПЛА -->
         <div class="achievements-box">
             🏆 Статус: <span id="rank-text">Новичок 🐾</span><br>
             <span class="ach-icons">🎁 💎 👑</span>
         </div>
 
-        <!-- 2. ЦЕНТР: КРУГЛЫЙ КОТ -->
         <div class="circle-section">
             <div id="cat-circle" onclick="handleMainClick()">
                 <img id="current-cat-img" src="images/cats/basya/b01.jpg" alt="Кот">
@@ -24,28 +23,25 @@
             <div class="coin-display">Монеты: <span id="coin-count">0</span> 💰</div>
         </div>
 
-        <!-- 3. КНОПКИ ВЫБОРА -->
         <div class="selector-group">
-            <button onclick="switchCat('basya')" id="btn-basya" class="sel-btn active">БАСЯ</button>
-            <button onclick="switchCat('savely')" id="btn-savely" class="sel-btn">САВЕЛИЙ</button>
-            <label class="sel-btn upload-btn">
+            <button onclick="switchCat('basya')" class="sel-btn active">БАСЯ</button>
+            <button onclick="switchCat('savely')" class="sel-btn">САВЕЛИЙ</button>
+            <label class="sel-btn">
                 СВОЙ КОТ 📸
                 <input type="file" accept="image/*" onchange="handleUserCat(this)" style="display:none">
             </label>
         </div>
 
-        <!-- 4. НИЖНЯЯ ПАНЕЛЬ -->
         <div class="action-group">
             <button class="menu-btn">ГАЛЕРЕЯ</button>
-            <button onclick="changeBackground()" class="menu-btn">СМЕНИТЬ ФОН</button>
+            <button onclick="changeBackground()" class="menu-btn">ФОН</button>
         </div>
 
-        <!-- 5. ПОДВАЛ: СБРОС -->
         <div class="danger-zone">
             <button onclick="resetData()" class="reset-link">СБРОСИТЬ ВСЁ (ОЧИСТИТЬ КЭШ)</button>
             <p class="version-tag">v2.9.5 Stable Build 🐾</p>
         </div>
     </div>
-    <script src="script.js?v=classic_final"></script>
+    <script src="script.js?v=sticky_paws"></script>
 </body>
 </html>

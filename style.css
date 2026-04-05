@@ -6,10 +6,9 @@
 
 body {
     margin: 0;
-    padding: 10px;
+    padding: 0;
     display: flex;
     justify-content: center;
-    align-items: center;
     min-height: 100vh;
     font-family: -apple-system, sans-serif;
     transition: background 0.5s ease;
@@ -17,7 +16,7 @@ body {
 
 .main-container {
     text-align: center;
-    padding: 20px;
+    padding: 0 20px 20px 20px; /* Убрали верхний паддинг для плашки */
     max-width: 380px;
     width: 100%;
     background: rgba(255, 255, 255, 0.7);
@@ -25,16 +24,22 @@ body {
     -webkit-backdrop-filter: blur(10px);
     border-radius: 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin: 10px;
+    overflow: hidden; /* Чтобы плашка не вылезала за скругления */
 }
 
+/* ЧЁРНАЯ ПЛАШКА ТЕПЕРЬ ПРИЛИПАЕТ */
 .achievements-box {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     background: #333;
     color: gold;
-    padding: 12px;
-    border-radius: 15px;
-    margin-bottom: 20px;
+    padding: 15px;
+    margin: 0 -20px 20px -20px; /* Растягиваем на всю ширину контейнера */
     font-size: 13px;
     font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .ach-icons {
@@ -46,7 +51,7 @@ body {
 #cat-circle {
     width: 190px;
     height: 190px;
-    margin: 0 auto;
+    margin: 10px auto;
     border-radius: 50%;
     border: 4px solid #fff;
     overflow: hidden;
@@ -58,60 +63,13 @@ body {
 #cat-circle:active { transform: scale(0.92); }
 #cat-circle img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
-.selector-group {
-    display: flex;
-    gap: 8px;
-    margin: 25px 0;
-}
+.selector-group { display: flex; gap: 8px; margin: 20px 0; }
+.sel-btn { flex: 1; padding: 10px 5px; border-radius: 12px; border: none; background: #eee; font-weight: bold; font-size: 11px; cursor: pointer; }
+.sel-btn.active { background: #333; color: #fff; }
 
-.sel-btn {
-    flex: 1;
-    padding: 10px 5px;
-    border-radius: 12px;
-    border: none;
-    background: #eee;
-    font-weight: bold;
-    font-size: 11px;
-    cursor: pointer;
-}
+.action-group { display: flex; gap: 10px; }
+.menu-btn { flex: 1; padding: 12px; border-radius: 15px; border: 1px solid #333; background: #fff; font-weight: bold; cursor: pointer; }
 
-.sel-btn.active {
-    background: #333;
-    color: #fff;
-}
-
-.action-group {
-    display: flex;
-    gap: 10px;
-}
-
-.menu-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 15px;
-    border: 1px solid #333;
-    background: #fff;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.danger-zone {
-    margin-top: 30px;
-    border-top: 1px solid rgba(0,0,0,0.1);
-    padding-top: 15px;
-}
-
-.reset-link {
-    background: none;
-    border: none;
-    color: #ff4444;
-    font-size: 10px;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
-.version-tag {
-    font-size: 9px;
-    color: #999;
-    margin-top: 5px;
-}
+.danger-zone { margin-top: 30px; border-top: 1px solid rgba(0,0,0,0.1); padding-top: 15px; }
+.reset-link { background: none; border: none; color: #ff4444; font-size: 10px; text-decoration: underline; cursor: pointer; }
+.version-tag { font-size: 9px; color: #999; margin-top: 5px; }
