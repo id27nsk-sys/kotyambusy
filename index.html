@@ -2,44 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>🐾 КОТЯМБУСЫ!!! v2.8.3</title>
-    <!-- Лапки в фавиконе сохранены -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>КОТЯМБУСЫ!!!</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="app-container">
-        <!-- Шапка с динамическим статусом -->
-        <div class="header">
-            <h1 id="status-text">🐾 Балансируй котов!</h1>
-            <!-- Шкала совести (Conscience Bar) -->
-            <div class="conscience-wrap">
-                <div class="bar-bg"><div id="indicator"></div></div>
-                <div class="labels">
-                    <span>Бася</span><span>Баланс</span><span>Савелий</span>
-                </div>
-            </div>
+    <div class="container">
+        <div class="stats">
+            Монеты: <span id="coin-count">0</span> 💰
+        </div>
+        
+        <div class="balance-container">
+            <div class="balance-label">Шкала совести</div>
+            <div class="balance-bar"><div id="balance-fill"></div></div>
         </div>
 
-        <!-- Игровая зона с карточками котов -->
-        <div class="game-area">
-            <div class="cat-card" id="basya-card">
-                <img src="images/b01.jpg" alt="Бася">
-                <div class="counter" id="basya-count">0</div>
+        <div class="cats-container">
+            <div class="cat-card" onclick="clickCat('basya')">
+                <img src="images/basya.png" alt="Бася">
+                <div class="counter">Бася: <span id="basya-count">0</span></div>
             </div>
-            <div class="cat-card" id="saveliy-card">
-                <img src="images/s01.jpg" alt="Савелий">
-                <div class="counter" id="saveliy-count">0</div>
+            <div class="cat-card" onclick="clickCat('savely')">
+                <img src="images/savely.png" alt="Савелий">
+                <div class="counter">Савелий: <span id="savely-count">0</span></div>
             </div>
-        </div>
-
-        <!-- Подвал со статистикой и кнопкой галереи -->
-        <div class="footer">
-            <div class="coins-display">Монеты: <span id="coins">0</span> 💰</div>
-            <button id="gallery-btn">ОТКРЫТЬ ГАЛЕРЕЮ</button>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,61 +1,56 @@
-// Инициализация данных
-let coins = parseInt(localStorage.getItem('coins')) || 0;
-let basyaClicks = parseInt(localStorage.getItem('basyaClicks')) || 0;
-let savelyClicks = parseInt(localStorage.getItem('savelyClicks')) || 0;
+// Ждем загрузки страницы, чтобы кнопки нашлись
+document.addEventListener('DOMContentLoaded', () => {
+    // Берем данные из памяти или ставим 0
+    let coins = parseInt(localStorage.getItem('coins')) || 0;
+    let basyaCount = parseInt(localStorage.getItem('basyaCount')) || 0;
+    let savelyCount = parseInt(localStorage.getItem('savelyCount')) || 0;
 
-// Элементы интерфейса
-const coinDisplay = document.getElementById('coin-count');
-const basyaDisplay = document.getElementById('basya-count');
-const savelyDisplay = document.getElementById('savely-count');
-const balanceBar = document.getElementById('balance-fill');
+    // Ищем твои элементы по ID из index.html
+    const coinElem = document.getElementById('coin-count');
+    const basyaElem = document.getElementById('basya-count');
+    const savelyElem = document.getElementById('savely-count');
+    const balanceFill = document.getElementById('balance-fill');
 
-// Обновление UI при загрузке
-function updateUI() {
-    coinDisplay.innerText = coins;
-    basyaDisplay.innerText = basyaClicks;
-    savelyDisplay.innerText = savelyClicks;
-    
-    // Расчет шкалы баланса (разница не более 30)
-    const diff = Math.abs(basyaClicks - savelyClicks);
-    const progress = Math.max(0, 100 - (diff * 3.33)); // 30 кликов = 100%
-    balanceBar.style.width = progress + "%";
-    
-    if (diff > 30) {
-        balanceBar.style.backgroundColor = "red";
-    } else {
-        balanceBar.style.backgroundColor = "#4caf50";
-    }
-}
+    function updateUI() {
+        if(coinElem) coinElem.innerText = coins;
+        if(basyaElem) basyaElem.innerText = basyaCount;
+        if(savelyElem) savelyElem.innerText = savelyCount;
 
-// Функция клика
-function clickCat(cat) {
-    const diff = Math.abs(basyaClicks - savelyClicks);
-    
-    if (cat === 'basya') {
-        if (basyaClicks - savelyClicks >= 30) {
-            alert("Нужен баланс! Погладь Савелия!");
-            return;
+        // Считаем разницу для шкалы совести
+        let diff = Math.abs(basyaCount - savelyCount);
+        let progress = Math.max(0, 100 - (diff * 3.33)); 
+        if(balanceFill) {
+            balanceFill.style.width = progress + "%";
+            balanceFill.style.backgroundColor = diff > 25 ? "red" : "#4caf50";
         }
-        basyaClicks++;
-    } else {
-        if (savelyClicks - basyaClicks >= 30) {
-            alert("Нужен баланс! Погладь Басю!");
-            return;
-        }
-        savelyClicks++;
     }
-    
-    coins++;
-    saveData();
+
+    // Глобальная функция для твоих onclick="clickCat(...)"
+    window.clickCat = function(type) {
+        let diff = basyaCount - savelyCount;
+
+        if (type === 'basya') {
+            if (diff >= 30) {
+                alert("Бася зажрался! Глади Савелия!");
+                return;
+            }
+            basyaCount++;
+        } else {
+            if (diff <= -30) {
+                alert("Савелий в ахуе! Глади Басю!");
+                return;
+            }
+            savelyCount++;
+        }
+
+        coins++;
+        // Сохраняем прогресс
+        localStorage.setItem('coins', coins);
+        localStorage.setItem('basyaCount', basyaCount);
+        localStorage.setItem('savelyCount', savelyCount);
+        
+        updateUI();
+    };
+
     updateUI();
-}
-
-// Сохранение
-function saveData() {
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('basyaClicks', basyaClicks);
-    localStorage.setItem('savelyClicks', savelyClicks);
-}
-
-// Инициализация
-updateUI();
+});
