@@ -3,41 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🐾 КОТЯМЬБУСЬ! v2.8.4 🐾</title>
-    <link rel="stylesheet" href="style.css?v=final_paws">
+    <title>🐾 КОТЯМЬБУСЬ! v2.9.5 🐾</title>
+    <link rel="stylesheet" href="style.css?v=classic_final">
 </head>
-<body style="transition: background 0.5s ease; margin: 0; display: flex; justify-content: center; font-family: sans-serif; min-height: 100vh; align-items: center;">
-    <div style="text-align:center; padding: 20px; max-width: 400px; width: 90%; background: rgba(255,255,255,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.3);">
+<body id="body-bg">
+    <div class="main-container">
         
-        <!-- ГЛАВНЫЙ ЗАГОЛОВОК С ЛАПКАМИ -->
-        <h1 style="margin: 0; letter-spacing: 2px; text-transform: uppercase;">🐾 КОТЯМЬБУСЬ! 🐾</h1>
-        <p style="margin: 5px 0 20px 0; font-size: 14px; color: #666; font-weight: bold;">Бася & Савелий: Баланс Добра 🐾</p>
-        
-        <div style="font-size: 26px; margin: 15px 0;">Монеты: <span id="coin-count">0</span> 💰</div>
-
-        <!-- Шкала совести -->
-        <div style="width: 250px; height: 12px; background: #ddd; margin: 15px auto; border-radius: 6px; overflow: hidden; border: 1.5px solid #333;">
-            <div id="balance-fill" style="width: 100%; height: 100%; background: #4caf50; transition: 0.3s;"></div>
+        <!-- 1. ВЕРХНИЙ БЛОК: АЧИВКИ -->
+        <div class="achievements-box">
+            🏆 Статус: <span id="rank-text">Новичок 🐾</span><br>
+            <span class="ach-icons">🎁 💎 👑</span>
         </div>
 
-        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
-            <!-- БАСЯ -->
-            <div onclick="handleCatClick('basya')" style="cursor: pointer; width: 45%;">
-                <img src="images/cats/basya/b01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); pointer-events: none;">
-                <p><b>🐾 Бася</b>: <span id="basya-count">0</span></p>
+        <!-- 2. ЦЕНТР: КРУГЛЫЙ КОТ -->
+        <div class="circle-section">
+            <div id="cat-circle" onclick="handleMainClick()">
+                <img id="current-cat-img" src="images/cats/basya/b01.jpg" alt="Кот">
             </div>
-            <!-- САВЕЛИЙ -->
-            <div onclick="handleCatClick('savely')" style="cursor: pointer; width: 45%;">
-                <img src="images/cats/savely/s01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); pointer-events: none;">
-                <p><b>🐾 Савелий</b>: <span id="savely-count">0</span></p>
-            </div>
+            <h2 id="current-cat-name">БАСЯ</h2>
+            <div class="coin-display">Монеты: <span id="coin-count">0</span> 💰</div>
         </div>
-        
-        <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 10px;">
-            <button onclick="changeBackground()" style="padding: 12px; border-radius: 20px; border: 2px solid #333; background: #fff; font-weight: bold; cursor: pointer;">🐾 СМЕНИТЬ ФОН 🐾</button>
-            <button style="padding: 12px; border-radius: 20px; border: none; background: #333; color: #fff; font-weight: bold;">ГАЛЕРЕЯ</button>
+
+        <!-- 3. КНОПКИ ВЫБОРА -->
+        <div class="selector-group">
+            <button onclick="switchCat('basya')" id="btn-basya" class="sel-btn active">БАСЯ</button>
+            <button onclick="switchCat('savely')" id="btn-savely" class="sel-btn">САВЕЛИЙ</button>
+            <label class="sel-btn upload-btn">
+                СВОЙ КОТ 📸
+                <input type="file" accept="image/*" onchange="handleUserCat(this)" style="display:none">
+            </label>
+        </div>
+
+        <!-- 4. НИЖНЯЯ ПАНЕЛЬ -->
+        <div class="action-group">
+            <button class="menu-btn">ГАЛЕРЕЯ</button>
+            <button onclick="changeBackground()" class="menu-btn">СМЕНИТЬ ФОН</button>
+        </div>
+
+        <!-- 5. ПОДВАЛ: СБРОС -->
+        <div class="danger-zone">
+            <button onclick="resetData()" class="reset-link">СБРОСИТЬ ВСЁ (ОЧИСТИТЬ КЭШ)</button>
+            <p class="version-tag">v2.9.5 Stable Build 🐾</p>
         </div>
     </div>
-    <script src="script.js?v=final_paws"></script>
+    <script src="script.js?v=classic_final"></script>
 </body>
 </html>

@@ -1,80 +1,117 @@
-/* Убираем лишние отступы и настраиваем базу */
 * {
     box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при клике на смартфонах */
-    user-select: none; /* Чтобы текст не выделялся, когда ты быстро кликаешь по котам */
-    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
 }
 
 body {
     margin: 0;
-    padding: 0;
-    background-color: #f4f4f9; /* Начальный фон */
-    transition: background 0.5s ease; /* Плавная смена фона из JS */
+    padding: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, sans-serif;
+    transition: background 0.5s ease;
 }
 
-/* Контейнер с эффектом стекла */
 .main-container {
     text-align: center;
     padding: 20px;
-    max-width: 400px;
-    width: 90%;
+    max-width: 380px;
+    width: 100%;
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
 
-/* Заголовок КОТЯМЬБУСЬ! */
-h1 {
-    margin: 0;
-    font-size: 2rem;
-    color: #333;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+.achievements-box {
+    background: #333;
+    color: gold;
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    font-weight: bold;
 }
 
-/* Шкала баланса */
-#balance-fill {
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+.ach-icons {
+    font-size: 18px;
+    display: inline-block;
+    margin-top: 5px;
 }
 
-/* Карточки котов */
-.cat-card {
-    transition: transform 0.1s ease;
+#cat-circle {
+    width: 190px;
+    height: 190px;
+    margin: 0 auto;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
 }
 
-/* Эффект "пружины" при клике */
-.cat-card:active {
-    transform: scale(0.92);
+#cat-circle:active { transform: scale(0.92); }
+#cat-circle img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.selector-group {
+    display: flex;
+    gap: 8px;
+    margin: 25px 0;
 }
 
-img {
-    pointer-events: none; /* Чтобы картинка не перехватывала клик и не вылезало меню "сохранить" */
-    display: block;
-    width: 100%;
+.sel-btn {
+    flex: 1;
+    padding: 10px 5px;
+    border-radius: 12px;
+    border: none;
+    background: #eee;
+    font-weight: bold;
+    font-size: 11px;
+    cursor: pointer;
 }
 
-/* Кнопки */
-button {
-    transition: all 0.2s ease;
+.sel-btn.active {
+    background: #333;
+    color: #fff;
 }
 
-button:active {
-    transform: scale(0.96);
-    filter: brightness(0.9);
+.action-group {
+    display: flex;
+    gap: 10px;
 }
 
-/* Адаптив для мелких экранов */
-@media (max-width: 360px) {
-    h1 { font-size: 1.5rem; }
-    .main-container { padding: 15px; }
+.menu-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 15px;
+    border: 1px solid #333;
+    background: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.danger-zone {
+    margin-top: 30px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-top: 15px;
+}
+
+.reset-link {
+    background: none;
+    border: none;
+    color: #ff4444;
+    font-size: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.version-tag {
+    font-size: 9px;
+    color: #999;
+    margin-top: 5px;
 }
