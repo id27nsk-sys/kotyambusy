@@ -10,32 +10,26 @@
     <div id="game-container">
         <header>
             <h1 id="cat-name">БАСЯ</h1>
-            <p id="cat-status">🏆 Статус: Новичок 🐾</p>
+            <div class="stat-box">Монеты: <span id="coins">0</span> 💰</div>
         </header>
 
-        <div id="main-ui">
-            <div class="stat-box">Монеты: <span id="coins">0</span> 💰</div>
-            <div class="stat-box">Совесть: <div id="patience-bar"><div id="patience-fill"></div></div></div>
-        </div>
-
         <div id="cat-area">
-            <img src="images/cats/basya/b01.jpg" id="cat-photo" alt="Котик">
-            <div id="bite-overlay">🩹 КУСЬ!</div>
+            <img src="images/cats/basya/b01.jpg" id="cat-photo" alt="Котямбусь">
         </div>
 
         <nav class="controls">
             <button onclick="switchCat('basya')">БАСЯ</button>
             <button onclick="switchCat('saveliy')">САВЕЛИЙ</button>
-            <button onclick="nextPhoto()">🖼️ СМЕНИТЬ ФОТО</button>
+            <button onclick="nextPhoto()">🖼️ ФОТО</button>
             <label class="custom-btn">
-                📸 СВОЙ КОТ
+                📸 СВОЙ
                 <input type="file" accept="image/*" onchange="uploadOwnCat(event)" style="display:none">
             </label>
         </nav>
 
         <footer>
-            <button onclick="resetGame()">СБРОСИТЬ ВСЁ</button>
-            <div class="version">v2.9.5 Stable Build 🐾</div>
+            <button onclick="resetGame()" class="reset-btn">СБРОСИТЬ ВСЁ</button>
+            <div class="version">v2.9.5 Mobile LTS 🐾</div>
         </footer>
     </div>
     <script src="script.js?v=final"></script>
