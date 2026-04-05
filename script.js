@@ -85,3 +85,32 @@ window.onload = function() {
 
     updateUI();
 };
+function createPaw(e) {
+    const paw = document.createElement('div');
+    paw.innerHTML = '🐾'; // Можно заменить на 🐱 или 🦴
+    paw.className = 'paw-particle';
+    
+    // Позиция клика
+    const x = e.clientX;
+    const y = e.clientY;
+    
+    paw.style.left = `${x}px`;
+    paw.style.top = `${y}px`;
+    
+    // Рандомное направление разлета
+    const destX = (Math.random() - 0.5) * 200;
+    const destY = (Math.random() - 0.5) * 200;
+    const rotation = Math.random() * 360;
+    
+    paw.style.setProperty('--tw-x', `${destX}px`);
+    paw.style.setProperty('--tw-y', `${destY}px`);
+    paw.style.setProperty('--tw-r', `${rotation}deg`);
+    
+    document.body.appendChild(paw);
+    
+    // Удаляем из DOM после анимации
+    setTimeout(() => paw.remove(), 1000);
+}
+
+// Привязываем к клику по фото кота
+document.querySelector('.cat-image').addEventListener('click', createPaw);
