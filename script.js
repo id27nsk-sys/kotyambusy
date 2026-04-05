@@ -1,56 +1,61 @@
-// Загрузка сохраненных данных из LocalStorage
-let b = parseInt(localStorage.getItem('basya')) || 0;
-let s = parseInt(localStorage.getItem('saveliy')) || 0;
-let c = parseInt(localStorage.getItem('coins')) || 0;
+// Инициализация данных
+let coins = parseInt(localStorage.getItem('coins')) || 0;
+let basyaClicks = parseInt(localStorage.getItem('basyaClicks')) || 0;
+let savelyClicks = parseInt(localStorage.getItem('savelyClicks')) || 0;
 
-/**
- * Функция синхронизации данных с интерфейсом
- */
+// Элементы интерфейса
+const coinDisplay = document.getElementById('coin-count');
+const basyaDisplay = document.getElementById('basya-count');
+const savelyDisplay = document.getElementById('savely-count');
+const balanceBar = document.getElementById('balance-fill');
+
+// Обновление UI при загрузке
 function updateUI() {
-    const bCount = document.getElementById('basya-count');
-    const sCount = document.getElementById('saveliy-count');
-    const cCount = document.getElementById('coins');
-    const ind = document.getElementById('indicator');
-    const status = document.getElementById('status-text');
-
-    if (bCount) bCount.innerText = b;
-    if (sCount) sCount.innerText = s;
-    if (cCount) cCount.innerText = c;
-
-    // Расчет положения индикатора шкалы (баланс в пределах 30 кликов)
-    const diff = s - b;
-    let p = 50 + (diff / 60) * 100;
-    p = Math.max(5, Math.min(95, p)); // Ограничиваем края полоски
-    if (ind) ind.style.width = p + '%';
-
-    // Проверка кошачьей совести (критическая разница — 30)
-    if (Math.abs(diff) >= 30) {
-        if (ind) ind.style.background = '#e74c3c'; // Красный цвет при обиде
-        if (status) status.innerText = "⚠️ КТО-ТО ОБИЖЕН!";
+    coinDisplay.innerText = coins;
+    basyaDisplay.innerText = basyaClicks;
+    savelyDisplay.innerText = savelyClicks;
+    
+    // Расчет шкалы баланса (разница не более 30)
+    const diff = Math.abs(basyaClicks - savelyClicks);
+    const progress = Math.max(0, 100 - (diff * 3.33)); // 30 кликов = 100%
+    balanceBar.style.width = progress + "%";
+    
+    if (diff > 30) {
+        balanceBar.style.backgroundColor = "red";
     } else {
-        if (ind) ind.style.background = '#2ecc71'; // Зеленый в балансе
-        if (status) status.innerText = "🐾 Балансируй котов!";
+        balanceBar.style.backgroundColor = "#4caf50";
     }
-
-    // Сохранение текущего прогресса
-    localStorage.setItem('basya', b);
-    localStorage.setItem('saveliy', s);
-    localStorage.setItem('coins', c);
 }
 
-// Обработка клика на Басю
-document.getElementById('basya-card').onclick = () => { 
-    b++; c++; 
-    if(navigator.vibrate) navigator.vibrate(12); // Вибрация для мобилок
-    updateUI(); 
-};
+// Функция клика
+function clickCat(cat) {
+    const diff = Math.abs(basyaClicks - savelyClicks);
+    
+    if (cat === 'basya') {
+        if (basyaClicks - savelyClicks >= 30) {
+            alert("Нужен баланс! Погладь Савелия!");
+            return;
+        }
+        basyaClicks++;
+    } else {
+        if (savelyClicks - basyaClicks >= 30) {
+            alert("Нужен баланс! Погладь Басю!");
+            return;
+        }
+        savelyClicks++;
+    }
+    
+    coins++;
+    saveData();
+    updateUI();
+}
 
-// Обработка клика на Савелия
-document.getElementById('saveliy-card').onclick = () => { 
-    s++; c++; 
-    if(navigator.vibrate) navigator.vibrate(12); 
-    updateUI(); 
-};
+// Сохранение
+function saveData() {
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('basyaClicks', basyaClicks);
+    localStorage.setItem('savelyClicks', savelyClicks);
+}
 
-// Первичная отрисовка данных при загрузке страницы
+// Инициализация
 updateUI();
