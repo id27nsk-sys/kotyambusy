@@ -1,9 +1,9 @@
-body { margin: 0; font-family: sans-serif; background: #f0f0f0; display: flex; justify-content: center; touch-action: manipulation; }
-.container { width: 100%; max-width: 400px; text-align: center; padding: 20px; }
-.progress-bar { width: 100%; height: 15px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 10px 0; }
-#balance-fill { height: 100%; width: 100%; background: #4caf50; transition: 0.2s; }
-.game-field { display: flex; justify-content: space-around; margin-top: 20px; }
-.cat-card { background: white; padding: 10px; border-radius: 15px; width: 45%; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-.cat-card:active { transform: scale(0.95); }
-.cat-card img { width: 100%; border-radius: 10px; }
-.gallery-btn { margin-top: 20px; padding: 10px 20px; border-radius: 20px; border: none; background: #333; color: white; }
+body { margin: 0; font-family: -apple-system, sans-serif; background: #f0f2f5; display: flex; justify-content: center; touch-action: manipulation; }
+.container { width: 100%; max-width: 420px; text-align: center; padding: 20px; }
+.progress-bar { width: 100%; height: 12px; background: #ddd; border-radius: 6px; overflow: hidden; margin: 10px 0; }
+#balance-fill { height: 100%; width: 100%; background: #4caf50; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+.game-field { display: flex; justify-content: space-between; margin-top: 25px; }
+.cat-card { background: #fff; padding: 12px; border-radius: 18px; width: 46%; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.cat-card:active { transform: scale(0.94); }
+.cat-card img { width: 100%; border-radius: 12px; pointer-events: none; }
+.gallery-btn { margin-top: 30px; padding: 12px 24px; border-radius: 25px; border: none; background: #222; color: #fff; font-weight: 600; width: 100%; }
