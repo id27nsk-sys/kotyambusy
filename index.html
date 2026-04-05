@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!! v2.8.3</title>
+    <title>КОТЯМБУСЫ!!!</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div style="text-align:center; padding: 20px; font-family: sans-serif;">
         <h1>КОТЯМБУСЫ!!!</h1>
-        <div class="stats">Монеты: <span id="coin-count">0</span> 💰</div>
+        <div style="font-size: 24px; margin: 10px 0;">Монеты: <span id="coin-count">0</span> 💰</div>
 
-        <div class="balance-container">
-            <p>Шкала совести</p>
-            <div class="progress-bar"><div id="balance-fill"></div></div>
+        <div style="width: 250px; height: 12px; background: #ddd; margin: 15px auto; border-radius: 6px; overflow: hidden;">
+            <div id="balance-fill" style="width: 100%; height: 100%; background: #4caf50; transition: 0.3s;"></div>
         </div>
 
-        <div class="game-field">
-            <div class="cat-card" onclick="handleCatClick('basya')">
-                <img src="images/b01.png" alt="Бася">
-                <div class="counter">Бася: <span id="basya-count">0</span></div>
+        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
+            <!-- Картинки строго .jpg как в репозитории -->
+            <div onclick="handleCatClick('basya')" style="cursor: pointer; width: 140px;">
+                <img src="images/b01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <p>Бася: <span id="basya-count">0</span></p>
             </div>
-            <div class="cat-card" onclick="handleCatClick('savely')">
-                <img src="images/s01.png" alt="Савелий">
-                <div class="counter">Савелий: <span id="savely-count">0</span></div>
+
+            <div onclick="handleCatClick('savely')" style="cursor: pointer; width: 140px;">
+                <img src="images/s01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                <p>Савелий: <span id="savely-count">0</span></p>
             </div>
         </div>
-        <button class="gallery-btn">ОТКРЫТЬ ГАЛЕРЕЮ</button>
+        
+        <button style="margin-top: 40px; padding: 12px 25px; border-radius: 20px; border: none; background: #333; color: #fff; font-weight: bold;">Галлерея (Скоро)</button>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
