@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>КОТЯМЬБУСЬ! v3.0 Live</title>
-    <link rel="stylesheet" href="style.css">
+    <title>КОТЯМЬБУСЬ! v2.9.5 Stable</title>
+    <link rel="stylesheet" href="style.css?v=final">
 </head>
 <body>
     <div id="game-container">
@@ -24,15 +24,20 @@
         </div>
 
         <nav class="controls">
-            <button onclick="switchCat('basya')">БАСЯ (Hard)</button>
-            <button onclick="switchCat('saveliy')">САВЕЛИЙ (Easy)</button>
+            <button onclick="switchCat('basya')">БАСЯ</button>
+            <button onclick="switchCat('saveliy')">САВЕЛИЙ</button>
+            <button onclick="nextPhoto()">🖼️ СМЕНИТЬ ФОТО</button>
+            <label class="custom-btn">
+                📸 СВОЙ КОТ
+                <input type="file" accept="image/*" onchange="uploadOwnCat(event)" style="display:none">
+            </label>
         </nav>
 
         <footer>
             <button onclick="resetGame()">СБРОСИТЬ ВСЁ</button>
-            <div class="version">v3.0.0 Stable Build 🐾</div>
+            <div class="version">v2.9.5 Stable Build 🐾</div>
         </footer>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js?v=final"></script>
 </body>
 </html>
