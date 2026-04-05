@@ -2,33 +2,38 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>КОТЯМБУСЫ!!! v2.8.3</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <div class="stats">
-            Монеты: <span id="coin-count">0</span> 💰
-        </div>
-        
-        <div class="balance-container">
-            <div class="balance-label">Шкала совести</div>
-            <div class="balance-bar"><div id="balance-fill"></div></div>
+        <div class="header">
+            <h1>КОТЯМБУСЫ!!!</h1>
+            <div class="stats">Монеты: <span id="coin-count">0</span> 💰</div>
         </div>
 
-        <div class="cats-container">
-            <div class="cat-card" onclick="clickCat('basya')">
-                <img src="images/basya.png" alt="Бася">
+        <div class="balance-section">
+            <p>Шкала совести (Балансируй!)</p>
+            <div class="progress-bar">
+                <div id="balance-fill"></div>
+            </div>
+        </div>
+
+        <div class="game-field">
+            <div class="cat-card" onclick="handleCatClick('basya')">
+                <img src="images/b01.png" alt="Бася" id="img-basya">
                 <div class="counter">Бася: <span id="basya-count">0</span></div>
             </div>
-            <div class="cat-card" onclick="clickCat('savely')">
-                <img src="images/savely.png" alt="Савелий">
+
+            <div class="cat-card" onclick="handleCatClick('savely')">
+                <img src="images/s01.png" alt="Савелий" id="img-savely">
                 <div class="counter">Савелий: <span id="savely-count">0</span></div>
             </div>
         </div>
-    </div>
 
+        <button class="gallery-btn">ОТКРЫТЬ ГАЛЕРЕЮ</button>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
