@@ -1,13 +1,10 @@
-// Ждем загрузки окна, чтобы всё нашлось
 window.onload = function() {
-    console.log("Kotyambusy Script: START");
+    console.log("Kotyambusy Script: Система Баланса Активна");
 
-    // Загрузка данных
     let coins = parseInt(localStorage.getItem('coins')) || 0;
     let basyaCount = parseInt(localStorage.getItem('basyaCount')) || 0;
     let savelyCount = parseInt(localStorage.getItem('savelyCount')) || 0;
 
-    // Элементы интерфейса
     const coinElem = document.getElementById('coin-count');
     const basyaElem = document.getElementById('basya-count');
     const savelyElem = document.getElementById('savely-count');
@@ -18,7 +15,6 @@ window.onload = function() {
         if (basyaElem) basyaElem.innerText = basyaCount;
         if (savelyElem) savelyElem.innerText = savelyCount;
 
-        // Логика шкалы (разница до 30)
         let diff = Math.abs(basyaCount - savelyCount);
         let progress = Math.max(0, 100 - (diff * 3.33));
         
@@ -28,7 +24,6 @@ window.onload = function() {
         }
     }
 
-    // Глобальная функция клика
     window.handleCatClick = function(type) {
         let currentDiff = basyaCount - savelyCount;
 
@@ -52,7 +47,7 @@ window.onload = function() {
         localStorage.setItem('savelyCount', savelyCount);
         
         updateUI();
-        if (navigator.vibrate) navigator.vibrate(10);
+        if (navigator.vibrate) navigator.vibrate(15);
     };
 
     updateUI();
