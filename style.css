@@ -1,55 +1,9 @@
-// Инициализация переменных с проверкой типа данных
-let coins = parseInt(localStorage.getItem('coins')) || 0;
-let basyaCount = parseInt(localStorage.getItem('basyaCount')) || 0;
-let savelyCount = parseInt(localStorage.getItem('savelyCount')) || 0;
-
-const coinElem = document.getElementById('coin-count');
-const basyaElem = document.getElementById('basya-count');
-const savelyElem = document.getElementById('savely-count');
-const balanceFill = document.getElementById('balance-fill');
-
-function updateUI() {
-    coinElem.innerText = coins;
-    basyaElem.innerText = basyaCount;
-    savelyElem.innerText = savelyCount;
-
-    // Расчет баланса (разница до 30 кликов)
-    let diff = Math.abs(basyaCount - savelyCount);
-    let progress = Math.max(0, 100 - (diff * 3.33));
-    balanceFill.style.width = progress + "%";
-    
-    // Визуальное предупреждение
-    balanceFill.style.backgroundColor = diff > 25 ? "#ff4c4c" : "#4caf50";
-}
-
-window.clickCat = function(type) {
-    if (type === 'basya') {
-        if (basyaCount - savelyCount >= 30) {
-            alert("Бася слишком доволен! Погладь Савелия для баланса!");
-            return;
-        }
-        basyaCount++;
-    } else {
-        if (savelyCount - basyaCount >= 30) {
-            alert("Савелий переглажен! Бася ревнует!");
-            return;
-        }
-        savelyCount++;
-    }
-
-    coins++;
-    saveData();
-    updateUI();
-    
-    // Легкая вибрация для мобильных (Haptic Feedback)
-    if (navigator.vibrate) navigator.vibrate(10);
-};
-
-function saveData() {
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('basyaCount', basyaCount);
-    localStorage.setItem('savelyCount', savelyCount);
-}
-
-// Запуск интерфейса
-updateUI();
+body { margin: 0; font-family: sans-serif; background: #f0f0f0; display: flex; justify-content: center; touch-action: manipulation; }
+.container { width: 100%; max-width: 400px; text-align: center; padding: 20px; }
+.progress-bar { width: 100%; height: 15px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+#balance-fill { height: 100%; width: 100%; background: #4caf50; transition: 0.2s; }
+.game-field { display: flex; justify-content: space-around; margin-top: 20px; }
+.cat-card { background: white; padding: 10px; border-radius: 15px; width: 45%; cursor: pointer; transition: 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+.cat-card:active { transform: scale(0.95); }
+.cat-card img { width: 100%; border-radius: 10px; }
+.gallery-btn { margin-top: 20px; padding: 10px 20px; border-radius: 20px; border: none; background: #333; color: white; }

@@ -8,30 +8,24 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>КОТЯМБУСЫ!!!</h1>
-            <div class="stats">Монеты: <span id="coin-count">0</span> 💰</div>
-        </div>
+        <h1>КОТЯМБУСЫ!!!</h1>
+        <div class="stats">Монеты: <span id="coin-count">0</span> 💰</div>
 
-        <div class="balance-section">
-            <p>Шкала совести (Балансируй!)</p>
-            <div class="progress-bar">
-                <div id="balance-fill"></div>
-            </div>
+        <div class="balance-container">
+            <p>Шкала совести</p>
+            <div class="progress-bar"><div id="balance-fill"></div></div>
         </div>
 
         <div class="game-field">
             <div class="cat-card" onclick="handleCatClick('basya')">
-                <img src="images/b01.png" alt="Бася" id="img-basya">
+                <img src="images/b01.png" alt="Бася">
                 <div class="counter">Бася: <span id="basya-count">0</span></div>
             </div>
-
             <div class="cat-card" onclick="handleCatClick('savely')">
-                <img src="images/s01.png" alt="Савелий" id="img-savely">
+                <img src="images/s01.png" alt="Савелий">
                 <div class="counter">Савелий: <span id="savely-count">0</span></div>
             </div>
         </div>
-
         <button class="gallery-btn">ОТКРЫТЬ ГАЛЕРЕЮ</button>
     </div>
     <script src="script.js"></script>
