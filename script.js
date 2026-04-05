@@ -6,22 +6,41 @@ const KOTYAMBUS_CORE = {
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let currentCat = localStorage.getItem('current_cat_id') || 'basya';
 let imgIndex = 0;
+// Счётчик открытых фото
+let openedPhotos = JSON.parse(localStorage.getItem('opened_photos')) || { basya: ["b01.jpg"], saveliy: ["s01.jpg"] };
 
 function updateUI() {
     document.getElementById('coins').innerText = coins;
     localStorage.setItem('coins', coins);
     localStorage.setItem('current_cat_id', currentCat);
+    localStorage.setItem('opened_photos', JSON.stringify(openedPhotos));
+
+    // Обновление счётчика на экране
+    if (currentCat !== 'custom') {
+        const cat = KOTYAMBUS_CORE[currentCat];
+        document.getElementById('opened-count').innerText = openedPhotos[currentCat].length;
+        document.getElementById('total-count').innerText = cat.gallery.length;
+        document.querySelector('.gallery-counter').style.opacity = "1";
+    } else {
+        document.querySelector('.gallery-counter').style.opacity = "0";
+    }
 }
 
-// ГАЛЕРЕЯ: Только по кнопке
 function nextPhoto() {
     if (currentCat === 'custom') return;
     const cat = KOTYAMBUS_CORE[currentCat];
     imgIndex = (imgIndex + 1) % cat.gallery.length;
-    document.getElementById('cat-photo').src = cat.dir + cat.gallery[imgIndex];
+    const currentFileName = cat.gallery[imgIndex];
+
+    // Логика "Открытых фото"
+    if (!openedPhotos[currentCat].includes(currentFileName)) {
+        openedPhotos[currentCat].push(currentFileName);
+    }
+
+    document.getElementById('cat-photo').src = cat.dir + currentFileName + "?v=final";
+    updateUI();
 }
 
-// СВОЙ КОТ: Загрузка
 function uploadOwnCat(e) {
     const reader = new FileReader();
     reader.onload = function() {
@@ -35,16 +54,15 @@ function uploadOwnCat(e) {
     reader.readAsDataURL(e.target.files);
 }
 
-// ЭФФЕКТ ЛАПОК
 function createPaw(e) {
     const paw = document.createElement('div');
     paw.innerHTML = '🐾';
     paw.className = 'paw-particle';
-    const x = e.clientX || (e.touches && e.touches[0].clientX);
-    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    const x = e.clientX || (e.touches && e.touches.clientX);
+    const y = e.clientY || (e.touches && e.touches.clientY);
     paw.style.left = x + 'px'; paw.style.top = y + 'px';
-    paw.style.setProperty('--tw-x', (Math.random() - 0.5) * 300 + 'px');
-    paw.style.setProperty('--tw-y', (Math.random() - 0.5) * 300 + 'px');
+    paw.style.setProperty('--tw-x', (Math.random() - 0.5) * 260 + 'px');
+    paw.style.setProperty('--tw-y', (Math.random() - 0.5) * 260 + 'px');
     document.body.appendChild(paw);
     setTimeout(() => paw.remove(), 600);
 }
@@ -65,7 +83,10 @@ function switchCat(id) {
 }
 
 function resetGame() {
-    if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); }
+    if(confirm("Сбросить Кото-койны и открытые фото?")) {
+        localStorage.clear();
+        location.reload();
+    }
 }
 
 window.onload = () => {
@@ -78,20 +99,3 @@ window.onload = () => {
     }
     updateUI();
 };
-// ... (начало кода без изменений)
-
-function updateUI() {
-    document.getElementById('coins').innerText = coins;
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('current_cat_id', currentCat);
-}
-
-// ...
-
-function resetGame() {
-    if(confirm("Сбросить все Кото-койны?")) { // Обновили текст здесь
-        localStorage.clear(); 
-        location.reload(); 
-    }
-}
-// ...

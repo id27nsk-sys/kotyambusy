@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>КОТЯМЬБУСЬ! v2.9.5 Stable</title>
+    <title>КОТЯМЬБУСЬ! v2.9.6 LTS</title>
     <link rel="stylesheet" href="style.css?v=final">
 </head>
 <body>
     <div id="game-container">
         <header>
             <h1 id="cat-name">БАСЯ</h1>
-            <div class="stat-box">Котокойны: <span id="coins">0</span> 🐾</div>
-
-
+            <div class="stat-box">Кото-койны: <span id="coins">0</span> 🐾</div>
+            <!-- Счётчик открытых фото из ранних версий -->
+            <div class="gallery-counter">
+                Открыто: <span id="opened-count">1</span> / <span id="total-count">5</span> 🖼️
+            </div>
         </header>
 
         <div id="cat-area">
             <img src="images/cats/basya/b01.jpg" id="cat-photo" alt="Котямбусь">
+            <div id="bite-overlay">🩹 КУСЬ!</div>
         </div>
 
         <nav class="controls">
@@ -31,7 +34,7 @@
 
         <footer>
             <button onclick="resetGame()" class="reset-btn">СБРОСИТЬ ВСЁ</button>
-            <div class="version">v2.9.5 Mobile LTS 🐾</div>
+            <div class="version">v2.9.6 Mobile LTS 🐾</div>
         </footer>
     </div>
     <script src="script.js?v=final"></script>
