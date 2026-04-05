@@ -1,28 +1,80 @@
+/* Убираем лишние отступы и настраиваем базу */
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent; /* Убирает синюю рамку при клике на смартфонах */
+    user-select: none; /* Чтобы текст не выделялся, когда ты быстро кликаешь по котам */
+    outline: none;
+}
+
 body {
     margin: 0;
-    background-color: #f4f4f9;
-    user-select: none;
-    overflow-x: hidden;
+    padding: 0;
+    background-color: #f4f4f9; /* Начальный фон */
+    transition: background 0.5s ease; /* Плавная смена фона из JS */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* Контейнер с эффектом стекла */
+.main-container {
+    text-align: center;
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Заголовок КОТЯМЬБУСЬ! */
 h1 {
-    color: #333;
+    margin: 0;
     font-size: 2rem;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
 }
 
-.cat-card img {
-    transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Шкала баланса */
+#balance-fill {
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
 }
 
-.cat-card:active img {
+/* Карточки котов */
+.cat-card {
+    transition: transform 0.1s ease;
+}
+
+/* Эффект "пружины" при клике */
+.cat-card:active {
     transform: scale(0.92);
 }
 
-#balance-fill {
-    transition: width 0.3s ease, background-color 0.3s ease;
+img {
+    pointer-events: none; /* Чтобы картинка не перехватывала клик и не вылезало меню "сохранить" */
+    display: block;
+    width: 100%;
 }
 
-button:hover {
-    background: #555 !important;
-    cursor: pointer;
+/* Кнопки */
+button {
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.96);
+    filter: brightness(0.9);
+}
+
+/* Адаптив для мелких экранов */
+@media (max-width: 360px) {
+    h1 { font-size: 1.5rem; }
+    .main-container { padding: 15px; }
 }

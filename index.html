@@ -2,35 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>КОТЯМБУСЫ!!! v2.8.3</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>КОТЯМЬБУСЬ! v2.8.4</title>
+    <link rel="stylesheet" href="style.css?v=final">
 </head>
-<body style="background: #f4f4f9; margin: 0; font-family: sans-serif; display: flex; justify-content: center; touch-action: manipulation;">
-    <div style="text-align:center; padding: 20px; max-width: 400px; width: 100%;">
-        <h1>КОТЯМБУСЫ!!!</h1>
+<body style="transition: background 0.5s ease; margin: 0; display: flex; justify-content: center; font-family: sans-serif;">
+    <div style="text-align:center; padding: 20px; max-width: 400px; width: 100%; background: rgba(255,255,255,0.7); backdrop-filter: blur(5px); border-radius: 30px; margin: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <h1 style="margin: 0; letter-spacing: 2px;">КОТЯМЬБУСЬ!</h1>
         <div style="font-size: 26px; margin: 15px 0;">Монеты: <span id="coin-count">0</span> 💰</div>
 
-        <div style="width: 250px; height: 12px; background: #ddd; margin: 15px auto; border-radius: 6px; overflow: hidden; border: 2px solid #333;">
+        <div style="width: 250px; height: 12px; background: #ddd; margin: 15px auto; border-radius: 6px; overflow: hidden; border: 1.5px solid #333;">
             <div id="balance-fill" style="width: 100%; height: 100%; background: #4caf50; transition: 0.3s;"></div>
         </div>
 
-        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 30px;">
-            <!-- ПУТЬ ДЛЯ БАСИ ИЗ ПАПКИ -->
-            <div onclick="handleCatClick('basya')" style="cursor: pointer; width: 145px;">
+        <div style="display: flex; justify-content: center; gap: 15px; margin-top: 25px;">
+            <div onclick="handleCatClick('basya')" style="cursor: pointer; width: 45%;">
                 <img src="images/cats/basya/b01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                <p style="font-weight: bold;">Бася: <span id="basya-count">0</span></p>
+                <p><b>Бася</b>: <span id="basya-count">0</span></p>
             </div>
-
-            <!-- ПУТЬ ДЛЯ САВЕЛИЯ ИЗ ПАПКИ -->
-            <div onclick="handleCatClick('savely')" style="cursor: pointer; width: 145px;">
+            <div onclick="handleCatClick('savely')" style="cursor: pointer; width: 45%;">
                 <img src="images/cats/savely/s01.jpg" style="width: 100%; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                <p style="font-weight: bold;">Савелий: <span id="savely-count">0</span></p>
+                <p><b>Савелий</b>: <span id="savely-count">0</span></p>
             </div>
         </div>
         
-        <button style="margin-top: 40px; padding: 12px 25px; border-radius: 20px; border: none; background: #333; color: #fff; font-weight: bold;">Галерея (Скоро)</button>
+        <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 10px;">
+            <button onclick="changeBackground()" style="padding: 12px; border-radius: 20px; border: 2px solid #333; background: #fff; font-weight: bold; cursor: pointer;">СМЕНИТЬ ФОН</button>
+            <button style="padding: 12px; border-radius: 20px; border: none; background: #333; color: #fff; font-weight: bold;">ГАЛЕРЕЯ</button>
+        </div>
     </div>
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=final"></script>
 </body>
 </html>
