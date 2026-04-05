@@ -1,198 +1,56 @@
-// === 1. ИНИЦИАЛИЗАЦИЯ ДАННЫХ ===
-let coins = parseInt(localStorage.getItem('coins')) || 0;
-let catStats = JSON.parse(localStorage.getItem('catStats')) || { basya: 0, savely: 0, custom: 0 };
-// Хранилище для коллекции открытых фото
-let seenPhotos = JSON.parse(localStorage.getItem('seenPhotos')) || { basya: [], savely: [] };
-let currentCat = 'basya';
-let photoIndexes = { basya: 0, savely: 0 };
+// Загрузка сохраненных данных из LocalStorage
+let b = parseInt(localStorage.getItem('basya')) || 0;
+let s = parseInt(localStorage.getItem('saveliy')) || 0;
+let c = parseInt(localStorage.getItem('coins')) || 0;
 
-// Авто-сканер заполнит эти массивы путями b01, b02...
-const catImages = { basya: [], savely: [] };
-
-const catImage = document.getElementById('catImage');
-const fileInput = document.getElementById('file-input');
-const notification = document.getElementById('notification');
-
-// === 2. СИСТЕМНЫЕ ФУНКЦИИ ===
-
-// Кошачья совесть (Ревность): срабатывает случайно при разнице > 30 кликов
-function checkCatConscience() {
-    const diff = catStats.basya - catStats.savely;
-    if (Math.random() > 0.3) return; // Шанс 30%, чтобы не спамить
-
-    if (currentCat === 'basya' && diff > 30) {
-        showNotification("А как же Савелий? Ему одиноко... 😿");
-        triggerVibration(40);
-    } else if (currentCat === 'savely' && diff < -30) {
-        showNotification("А как же Бася? Бася тоже хочет внимания! 😿");
-        triggerVibration(40);
-    }
-}
-
-// Автоматический поиск файлов в папках (до 30 штук)
-async function discoverImages(cat, path, prefix) {
-    let found = [];
-    for (let i = 1; i <= 30; i++) {
-        let num = i.toString().padStart(2, '0');
-        let testPath = `${path}${prefix}${num}.jpg`;
-        try {
-            const response = await fetch(testPath, { method: 'HEAD' });
-            if (response.ok) found.push(testPath);
-            else break;
-        } catch (e) { break; }
-    }
-    catImages[cat] = found;
-}
-
-function saveProgress() {
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('catStats', JSON.stringify(catStats));
-    localStorage.setItem('seenPhotos', JSON.stringify(seenPhotos));
-}
-
-function setRandomGradient() {
-    const randomColor = () => `hsl(${Math.floor(Math.random() * 360)}, 65%, 85%)`;
-    document.documentElement.style.setProperty('--grad-1', randomColor());
-    document.documentElement.style.setProperty('--grad-2', randomColor());
-}
-
-function triggerVibration(ms = 20) {
-    if (navigator.vibrate) navigator.vibrate([ms]);
-}
-
+/**
+ * Функция синхронизации данных с интерфейсом
+ */
 function updateUI() {
-    document.getElementById('coins').innerText = coins;
-    const clicks = catStats[currentCat] || 0;
-    const catName = currentCat === 'basya' ? 'Бася' : currentCat === 'savely' ? 'Савелий' : 'Свой котик';
-    document.getElementById('counter').innerText = `${catName}: ${clicks}`;
-    document.getElementById('progress-fill').style.width = (clicks % 100) + '%';
-    updateRank(clicks);
-    saveProgress();
-}
+    const bCount = document.getElementById('basya-count');
+    const sCount = document.getElementById('saveliy-count');
+    const cCount = document.getElementById('coins');
+    const ind = document.getElementById('indicator');
+    const status = document.getElementById('status-text');
 
-function updateRank(clicks) {
-    let rank = "Новичок", icon = "☁️";
-    if (clicks >= 100) { rank = "Любитель"; icon = "🌟"; }
-    if (clicks >= 200) { rank = "Мастер"; icon = "🔥"; }
-    if (clicks >= 300) { rank = "Легенда"; icon = "👑"; }
-    if (clicks >= 500) { 
-        rank = "БОГ КОТОВ"; icon = "✨"; 
-        catImage.classList.add('golden-mode');
-    } else { catImage.classList.remove('golden-mode'); }
-    document.getElementById('rank-text').innerText = rank;
-    document.getElementById('rank-icon').innerText = icon;
-}
+    if (bCount) bCount.innerText = b;
+    if (sCount) sCount.innerText = s;
+    if (cCount) cCount.innerText = c;
 
-function showNotification(text) {
-    notification.innerText = text;
-    notification.classList.remove('hidden');
-    clearTimeout(window.notifTimeout);
-    window.notifTimeout = setTimeout(() => notification.classList.add('hidden'), 3000);
-}
+    // Расчет положения индикатора шкалы (баланс в пределах 30 кликов)
+    const diff = s - b;
+    let p = 50 + (diff / 60) * 100;
+    p = Math.max(5, Math.min(95, p)); // Ограничиваем края полоски
+    if (ind) ind.style.width = p + '%';
 
-function createPaw(e) {
-    if (document.querySelectorAll('.paw-particle').length > 15) return;
-    const paw = document.createElement('div');
-    paw.className = 'paw-particle';
-    paw.innerHTML = `<img src="images/favicon.png" style="width:35px; height:35px; pointer-events:none;">`;
-    const x = e.clientX || (e.touches && e.touches[0].clientX);
-    const y = e.clientY || (e.touches && e.touches[0].clientY);
-    paw.style.left = x + 'px';
-    paw.style.top = y + 'px';
-    paw.style.setProperty('--tx', (Math.random() - 0.5) * 200 + 'px');
-    paw.style.setProperty('--ty', (Math.random() * -150 - 50) + 'px');
-    paw.style.setProperty('--tr', (Math.random() * 360) + 'deg');
-    document.body.appendChild(paw);
-    setTimeout(() => paw.remove(), 850);
-}
-
-// === 3. ОБРАБОТЧИКИ СОБЫТИЙ ===
-
-catImage.parentElement.addEventListener('pointerdown', (e) => {
-    triggerVibration(25);
-    if (e.pointerType === 'touch') e.preventDefault();
-    coins++;
-    catStats[currentCat]++;
-    checkCatConscience(); // Проверка ревности
-    createPaw(e);
-    updateUI();
-});
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const targetCat = btn.dataset.cat;
-        document.querySelector('.tab-btn.active').classList.remove('active');
-        btn.classList.add('active');
-        currentCat = targetCat;
-        if (targetCat !== 'custom') {
-            catImage.src = catImages[currentCat][photoIndexes[currentCat]] || `images/cats/${currentCat}/${currentCat === 'basya' ? 'b' : 's'}01.jpg`;
-            setRandomGradient();
-        } else { fileInput.click(); }
-        updateUI();
-    });
-});
-
-document.getElementById('changeCatButton').addEventListener('click', () => {
-    triggerVibration(20);
-    if (currentCat === 'custom') { fileInput.click(); }
-    else {
-        const photos = catImages[currentCat];
-        if (photos.length > 0) {
-            photoIndexes[currentCat] = (photoIndexes[currentCat] + 1) % photos.length;
-            const newPhoto = photos[photoIndexes[currentCat]];
-            catImage.src = newPhoto;
-            
-            // Логика коллекции и бонуса (+500)
-            if (!seenPhotos[currentCat].includes(newPhoto)) {
-                seenPhotos[currentCat].push(newPhoto);
-                if (seenPhotos[currentCat].length === photos.length) {
-                    coins += 500;
-                    showNotification(`БОНУС! Галерея открыта! +500 💰`);
-                }
-            }
-            updateUI();
-        }
+    // Проверка кошачьей совести (критическая разница — 30)
+    if (Math.abs(diff) >= 30) {
+        if (ind) ind.style.background = '#e74c3c'; // Красный цвет при обиде
+        if (status) status.innerText = "⚠️ КТО-ТО ОБИЖЕН!";
+    } else {
+        if (ind) ind.style.background = '#2ecc71'; // Зеленый в балансе
+        if (status) status.innerText = "🐾 Балансируй котов!";
     }
-});
 
-// Счетчик галереи
-document.getElementById('view-album').addEventListener('click', () => {
-    const bSeen = seenPhotos.basya.length, bTotal = catImages.basya.length;
-    const sSeen = seenPhotos.savely.length, sTotal = catImages.savely.length;
-    showNotification(`Альбом: Бася ${bSeen}/${bTotal}, Савелий ${sSeen}/${sTotal} 📸`);
-});
+    // Сохранение текущего прогресса
+    localStorage.setItem('basya', b);
+    localStorage.setItem('saveliy', s);
+    localStorage.setItem('coins', c);
+}
 
-document.getElementById('view-stats').addEventListener('click', () => {
-    alert(`Рекорды:\nБася: ${catStats.basya}\nСавелий: ${catStats.savely}\nСвой: ${catStats.custom}`);
-});
+// Обработка клика на Басю
+document.getElementById('basya-card').onclick = () => { 
+    b++; c++; 
+    if(navigator.vibrate) navigator.vibrate(12); // Вибрация для мобилок
+    updateUI(); 
+};
 
-fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            catImage.src = ev.target.result;
-            document.querySelector('.tab-btn.active').classList.remove('active');
-            document.getElementById('custom-tab-btn').classList.add('active');
-            currentCat = 'custom';
-            setRandomGradient();
-            updateUI();
-        };
-        reader.readAsDataURL(file);
-    }
-});
+// Обработка клика на Савелия
+document.getElementById('saveliy-card').onclick = () => { 
+    s++; c++; 
+    if(navigator.vibrate) navigator.vibrate(12); 
+    updateUI(); 
+};
 
-document.getElementById('theme-toggle').addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
-    document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
-    triggerVibration(20);
-});
-
-document.getElementById('resetButton').addEventListener('click', () => { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } });
-
-window.addEventListener('load', async () => {
-    setRandomGradient();
-    await discoverImages('basya', 'images/cats/basya/', 'b');
-    await discoverImages('savely', 'images/cats/savely/', 's');
-    updateUI();
-});
+// Первичная отрисовка данных при загрузке страницы
+updateUI();
