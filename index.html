@@ -2,46 +2,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🐾 КОТЯМЬБУСЬ! v2.9.5 🐾</title>
-    <link rel="stylesheet" href="style.css?v=sticky_paws">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>КОТЯМЬБУСЬ! v3.0 Live</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body id="body-bg">
-    <div class="main-container">
-        
-        <!-- ПЛАШКА, КОТОРАЯ ПРИЛИПЛА -->
-        <div class="achievements-box">
-            🏆 Статус: <span id="rank-text">Новичок 🐾</span><br>
-            <span class="ach-icons">🎁 💎 👑</span>
+<body>
+    <div id="game-container">
+        <header>
+            <h1 id="cat-name">БАСЯ</h1>
+            <p id="cat-status">🏆 Статус: Новичок 🐾</p>
+        </header>
+
+        <div id="main-ui">
+            <div class="stat-box">Монеты: <span id="coins">0</span> 💰</div>
+            <div class="stat-box">Совесть: <div id="patience-bar"><div id="patience-fill"></div></div></div>
         </div>
 
-        <div class="circle-section">
-            <div id="cat-circle" onclick="handleMainClick()">
-                <img id="current-cat-img" src="images/cats/basya/b01.jpg" alt="Кот">
-            </div>
-            <h2 id="current-cat-name">БАСЯ</h2>
-            <div class="coin-display">Монеты: <span id="coin-count">0</span> 💰</div>
+        <div id="cat-area">
+            <img src="img/live/basya/1.jpg" id="cat-photo" alt="Котик" class="active-cat">
+            <div id="bite-overlay">🩹 КУСЬ!</div>
         </div>
 
-        <div class="selector-group">
-            <button onclick="switchCat('basya')" class="sel-btn active">БАСЯ</button>
-            <button onclick="switchCat('savely')" class="sel-btn">САВЕЛИЙ</button>
-            <label class="sel-btn">
-                СВОЙ КОТ 📸
-                <input type="file" accept="image/*" onchange="handleUserCat(this)" style="display:none">
-            </label>
-        </div>
+        <nav class="controls">
+            <button onclick="switchCat('basya')">БАСЯ (Hard)</button>
+            <button onclick="switchCat('saveliy')">САВЕЛИЙ (Easy)</button>
+        </nav>
 
-        <div class="action-group">
-            <button class="menu-btn">ГАЛЕРЕЯ</button>
-            <button onclick="changeBackground()" class="menu-btn">ФОН</button>
-        </div>
-
-        <div class="danger-zone">
-            <button onclick="resetData()" class="reset-link">СБРОСИТЬ ВСЁ (ОЧИСТИТЬ КЭШ)</button>
-            <p class="version-tag">v2.9.5 Stable Build 🐾</p>
-        </div>
+        <footer>
+            <button onclick="resetGame()">СБРОСИТЬ ВСЁ</button>
+            <div class="version">v3.0.0 Stable Build 🐾</div>
+        </footer>
     </div>
-    <script src="script.js?v=sticky_paws"></script>
+    <script src="script.js"></script>
 </body>
 </html>
