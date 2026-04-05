@@ -78,3 +78,20 @@ window.onload = () => {
     }
     updateUI();
 };
+// ... (начало кода без изменений)
+
+function updateUI() {
+    document.getElementById('coins').innerText = coins;
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('current_cat_id', currentCat);
+}
+
+// ...
+
+function resetGame() {
+    if(confirm("Сбросить все Кото-койны?")) { // Обновили текст здесь
+        localStorage.clear(); 
+        location.reload(); 
+    }
+}
+// ...
