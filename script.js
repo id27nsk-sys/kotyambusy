@@ -1,4 +1,8 @@
 let coins = parseInt(localStorage.getItem('coins')) || 0;
+// INTEGRATED_STATS_STRICT: Раздельное хранение для отображения в кнопках
+let coinsB = parseInt(localStorage.getItem('coins_b')) || 0;
+let coinsS = parseInt(localStorage.getItem('coins_s')) || 0;
+
 let maxUnlocked = { 'b': 1, 's': 1 };
 try {
     const saved = JSON.parse(localStorage.getItem('maxUnlocked'));
@@ -26,7 +30,11 @@ function preloadArchive(type) {
 }
 
 function handleAction(event) {
-    coins++; updateUI(); saveData();
+    coins++;
+    // Обновляем текущего кота
+    if (currentHero === 'b') coinsB++; else coinsS++;
+    
+    updateUI(); saveData();
     if (event) createPaw(event);
     if (currentHero === 'b' && !isUpdating) {
         kusCounter++;
@@ -37,6 +45,46 @@ function handleAction(event) {
     if (coins % 100 === 0 && coins !== 0) showMilestone();
 }
 
+function updateUI() {
+    const bStats = document.getElementById('stats-b');
+    const sStats = document.getElementById('stats-s');
+    
+    if (bStats) bStats.innerText = `${coinsB} | ${maxUnlocked['b']}/${totalPhotosDetected['b']}`;
+    if (sStats) sStats.innerText = `${coinsS} | ${maxUnlocked['s']}/${totalPhotosDetected['s']}`;
+    
+    document.title = `🐾 ${coins} | КОТЯМБУСЫ`;
+}
+
+function selectHero(type) {
+    if (isUpdating) return;
+    const catImg = document.getElementById('target-cat');
+    catImg.classList.add('fade-out');
+    setTimeout(() => {
+        currentHero = type; photoIndex = 1; kusCounter = 0;
+        // Устанавливаем системные coins в значение выбранного героя для Milestone
+        // Но глобальный счетчик сессии coins остается общим для %30 и %100
+        const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
+        catImg.src = `images/cats/${folder}/${prefix}01.webp`;
+        catImg.onload = () => { catImg.classList.remove('fade-out'); updateUI(); };
+    }, 300);
+}
+
+function saveData() {
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('coins_b', coinsB);
+    localStorage.setItem('coins_s', coinsS);
+    localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked));
+}
+
+function resetAll() {
+    if(confirm("🐾 Сбросить всё?")) {
+        coins = 0; coinsB = 0; coinsS = 0; photoIndex = 1; 
+        maxUnlocked = {'b':1,'s':1}; kusCounter = 0;
+        localStorage.clear(); updateUI(); selectHero(currentHero);
+    }
+}
+
+// ... ОСТАЛЬНЫЕ ФУНКЦИИ (triggerKus, tryNextPhoto, Workshop Logic, Particles) — БЕЗ ИЗМЕНЕНИЙ ...
 function triggerKus() {
     isUpdating = true;
     const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
@@ -59,23 +107,6 @@ function tryNextPhoto() {
         nextImg.onload = () => { catImg.src = nextImg.src; catImg.classList.remove('fade-out'); updateUI(); isUpdating = false; };
         nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
     }, 300);
-}
-
-function selectHero(type) {
-    if (isUpdating) return;
-    const catImg = document.getElementById('target-cat');
-    catImg.classList.add('fade-out');
-    setTimeout(() => {
-        currentHero = type; photoIndex = 1; kusCounter = 0;
-        const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
-        catImg.src = `images/cats/${folder}/${prefix}01.webp`;
-        catImg.onload = () => { catImg.classList.remove('fade-out'); updateUI(); };
-    }, 300);
-}
-
-function updateUI() {
-    document.getElementById('coin-count').innerText = coins;
-    document.getElementById('photo-stat').innerText = `${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
 }
 
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
@@ -113,8 +144,8 @@ function handleZoom(val) { imgScale = parseFloat(val); drawCanvas(); }
 
 function initWorkshopControls() {
     const canvas = document.getElementById('crop-canvas');
-    const start = (e) => { isDragging = true; const p = e.touches ? e.touches[0] : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
-    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches[0] : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
+    const start = (e) => { isDragging = true; const p = e.touches ? e.touches : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
+    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
     const stop = () => isDragging = false;
     canvas.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
     canvas.addEventListener('touchstart', start); window.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
@@ -125,15 +156,15 @@ function exportPhoto(type) {
     document.getElementById('crop-canvas').toBlob((blob) => {
         const link = document.createElement('a'); link.download = getFileName(type);
         link.href = URL.createObjectURL(blob); link.click();
-        if(confirm("🐾 " + link.download + " готов. Закрыть?")) document.getElementById('workshop-modal').style.display = 'none';
+        if(confirm("🐾 Фото " + link.download + " готово. Закрыть мастерскую?")) document.getElementById('workshop-modal').style.display = 'none';
     }, 'image/webp', 0.8);
 }
 
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div'); paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches.clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches.clientY) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
@@ -142,8 +173,6 @@ function createPaw(e) {
 }
 
 function triggerGlow() { const h = document.querySelector('.hero-display'); if(h){ h.classList.add('glow-active'); setTimeout(()=>h.classList.remove('glow-active'), 3000); } }
-function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
-function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; photoIndex = 1; maxUnlocked = {'b':1,'s':1}; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
 function showMilestone() { const t = document.createElement('div'); t.className = 'milestone-toast'; t.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`; document.body.appendChild(t); setTimeout(()=>t.remove(), 2000); }
 
 window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); initWorkshopControls(); };

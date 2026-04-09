@@ -11,17 +11,24 @@
 <body>
     <div class="glass-container">
         <h1 id="main-title">🐾КОТЯМБУСЫ🐾</h1>
-        <div class="stats-panel">
-            <p>Поглаживаний: <span id="coin-count">0</span> 🐾</p>
-            <p>Фото: <span id="photo-stat">1/1</span> 🐾</p>
-        </div>
+        
+        <!-- REASON: INTEGRATED_STATS_STRICT - Панель удалена -->
+
         <div class="hero-display" onclick="handleAction(event)">
             <img src="images/cats/basya/b01.webp" id="target-cat" alt="🐾">
         </div>
+
         <nav class="hero-selector">
-            <button class="selector-btn" onclick="selectHero('b')">🐾 БАСЯ</button>
-            <button class="selector-btn" onclick="selectHero('s')">🐾 САВЕЛИЙ</button>
+            <button class="selector-btn" onclick="selectHero('b')">
+                🐾 БАСЯ <br>
+                <small id="stats-b">0 | 1/1</small>
+            </button>
+            <button class="selector-btn" onclick="selectHero('s')">
+                🐾 САВЕЛИЙ <br>
+                <small id="stats-s">0 | 1/1</small>
+            </button>
         </nav>
+        
         <div class="control-grid">
             <button class="glass-btn small" onclick="showPhotos()">🐾 ФОТО</button>
             <button class="glass-btn reset" onclick="resetAll()">СБРОС 🐾</button>
