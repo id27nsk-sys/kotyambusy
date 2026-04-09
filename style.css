@@ -1,4 +1,8 @@
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+/* REASON: Глобальный фикс для ADAPTIVE_STRICT */
+* { 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+}
 
 body {
     background: linear-gradient(135deg, #121212, #2c3e50);
@@ -7,12 +11,17 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* REASON: Использование динамической высоты вьюпорта для мобильных */
     min-height: 100vh;
+    min-height: 100dvh; 
     margin: 0;
-    overflow: hidden;
+    /* REASON: Разрешаем вертикальный скролл, если контент не влезает */
+    overflow-x: hidden;
+    overflow-y: auto;
     cursor: default;
     -webkit-user-select: none;
     user-select: none;
+    padding: 20px 0; /* Отступы, чтобы контейнер не прилипал к краям при скролле */
 }
 
 .glass-container {
@@ -28,62 +37,50 @@ body {
     max-width: 380px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px; /* Уменьшен зазор для экономии места */
 }
 
 .hero-display {
     width: 100%;
-    max-width: 240px;
-    aspect-ratio: 1 / 1; /* FLUID_STRESS_TEST */
-    margin: 0 auto;
+    max-width: 230px; /* Слегка уменьшен для Mobile */
+    aspect-ratio: 1 / 1; 
+    margin: 10px auto;
     border-radius: 50%;
     overflow: hidden;
     border: 5px solid rgba(255, 152, 0, 0.4);
     box-shadow: 0 0 30px rgba(255, 152, 0, 0.2);
     position: relative;
     cursor: url('images/cursors/paw02.png'), pointer;
-    transition: transform 0.1s ease;
+    flex-shrink: 0;
 }
 
-.hero-display img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+/* REASON: Специальная адаптация под низкие экраны и Micro-Mobile */
+@media (max-height: 600px), (max-width: 340px) {
+    .glass-container { 
+        padding: 15px; 
+        gap: 5px;
+    }
+    h1 { font-size: 1.1rem; margin: 5px 0; }
+    .hero-display { max-width: 170px; }
+    .stats-panel p { font-size: 0.8rem; margin: 2px 0; }
+    .hero-selector { margin: 5px 0; }
+    .selector-btn { padding: 5px 10px; font-size: 0.7rem; }
 }
 
-@media (max-width: 340px) {
-    .glass-container { padding: 15px; }
-    h1 { font-size: 1.2rem; }
-    .hero-display { max-width: 180px; }
+/* Оптимизация кнопок для маленьких экранов */
+.control-grid {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
-.paw-particle {
-    position: fixed;
-    pointer-events: none;
-    font-size: 2rem;
-    z-index: 9999;
-    animation: paw-fly 0.7s ease-out forwards;
+.glass-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 0.8rem;
 }
-
-@keyframes paw-fly {
-    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
-    100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0) rotate(var(--r)); opacity: 0; }
-}
-
-.milestone-toast {
-    position: fixed; top: 20px; background: rgba(255, 152, 0, 0.2);
-    backdrop-filter: blur(15px); border: 1px solid rgba(255, 152, 0, 0.5);
-    padding: 15px 25px; border-radius: 20px; color: white;
-    z-index: 10000; animation: slideDown 2s forwards;
-}
-
-@keyframes slideDown { 
-    0% { transform: translateY(-100px); opacity: 0; }
-    20% { transform: translateY(0); opacity: 1; }
-    80% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-100px); opacity: 0; }
-}
-
-.hero-selector { display: flex; justify-content: center; gap: 10px; margin: 10px 0; }
-.selector-btn { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-.glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 15px; cursor: pointer; }
