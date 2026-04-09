@@ -2,41 +2,36 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>КОТЯМЬБУСЬ! v2.9.6 LTS</title>
-    <link rel="stylesheet" href="style.css?v=final">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐾КОТЯМБУСЫ🐾</title>
+    <link rel="icon" href="images/favicon.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <header>
-            <h1 id="cat-name">БАСЯ</h1>
-            <div class="stat-box">Кото-койны: <span id="coins">0</span> 🐾</div>
-            <!-- Счётчик открытых фото из ранних версий -->
-            <div class="gallery-counter">
-                Открыто: <span id="opened-count">1</span> / <span id="total-count">5</span> 🖼️
-            </div>
-        </header>
-
-        <div id="cat-area">
-            <img src="images/cats/basya/b01.jpg" id="cat-photo" alt="Котямбусь">
-            <div id="bite-overlay">🩹 КУСЬ!</div>
+    <div class="glass-container">
+        <h1 id="main-title">🐾КОТЯМБУСЫ🐾</h1>
+        
+        <div class="stats-panel">
+            <p>Кото-койны: <span id="coin-count">0</span> 🐾</p>
+            <p>Открыто фото: <span id="photo-stat">1/5</span></p>
         </div>
 
-        <nav class="controls">
-            <button onclick="switchCat('basya')">БАСЯ</button>
-            <button onclick="switchCat('saveliy')">САВЕЛИЙ</button>
-            <button onclick="nextPhoto()">🖼️ ФОТО</button>
-            <label class="custom-btn">
-                📸 СВОЙ
-                <input type="file" accept="image/*" onchange="uploadOwnCat(event)" style="display:none">
-            </label>
-        </nav>
+        <div class="hero-display">
+            <img src="images/cats/basya/b01.jpg" id="target-cat" alt="🐾">
+        </div>
 
-        <footer>
-            <button onclick="resetGame()" class="reset-btn">СБРОСИТЬ ВСЁ</button>
-            <div class="version">v2.9.6 Mobile LTS 🐾</div>
-        </footer>
+        <button class="glass-btn pulse" onclick="handleAction()">🐾 КУСЬ! 🐾</button>
+
+        <nav class="hero-selector">
+            <button class="selector-btn" onclick="selectHero('b')">🐾 БАСЯ</button>
+            <button class="selector-btn" onclick="selectHero('s')">🐾 САВЕЛИЙ</button>
+        </nav>
+        
+        <div class="control-grid">
+            <button class="glass-btn small" onclick="showTab('photos')">ФОТО</button>
+            <button class="glass-btn reset" onclick="resetAll()">СБРОС 🐾</button>
+        </div>
     </div>
-    <script src="script.js?v=final"></script>
+    <script src="script.js"></script>
 </body>
 </html>
