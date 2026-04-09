@@ -4,13 +4,17 @@ let maxUnlocked = { 'b': 1, 's': 1 };
 try {
     const saved = JSON.parse(localStorage.getItem('maxUnlocked'));
     if (saved) maxUnlocked = saved;
-} catch(e) { console.error("🐾 Data corrupted, using defaults"); }
+} catch(e) { 
+    // REASON: Сохранение стабильности при повреждении данных
+    console.error("🐾 Data corrupted, using defaults"); 
+}
 
 let currentHero = 'b';
 let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
 
+// PRELOAD_DETECTION_STRICT: Рекурсивное фоновое сканирование архива
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
     const prefix = type === 'b' ? 'b' : 's';
@@ -21,7 +25,12 @@ function preloadArchive(type) {
         let fmtIdx = testIdx < 10 ? `0${testIdx}` : testIdx;
         let src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
         const img = new Image();
-        img.onload = () => { count++; totalPhotosDetected[type] = count; updateUI(); checkNext(); };
+        img.onload = () => { 
+            count++; 
+            totalPhotosDetected[type] = count; 
+            updateUI(); 
+            checkNext(); 
+        };
         img.src = src;
     }
     checkNext();
@@ -32,9 +41,16 @@ function handleAction(event) {
     updateUI();
     saveData();
     if (event) createPaw(event);
-    // ASYNC_GUARD_STRICT: Блокировка частых смен
-    if (coins % 5 === 0 && !isUpdating) { tryNextPhoto(); }
-    if (coins % 100 === 0 && coins !== 0) { showMilestone(); }
+
+    // PHOTO_CYCLE_STRICT & ASYNC_GUARD_STRICT
+    if (coins % 5 === 0 && !isUpdating) { 
+        tryNextPhoto(); 
+    }
+    
+    // MILESTONE_CELEBRATION
+    if (coins % 100 === 0 && coins !== 0) { 
+        showMilestone(); 
+    }
 }
 
 function tryNextPhoto() {
@@ -42,7 +58,8 @@ function tryNextPhoto() {
     const folder = currentHero === 'b' ? 'basya' : 'savely';
     const prefix = currentHero === 'b' ? 'b' : 's';
     
-    photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
+    let maxDetected = totalPhotosDetected[currentHero];
+    photoIndex = (photoIndex % maxDetected) + 1;
     
     // PROGRESS_ACCUMULATION_STRICT: Фиксация рекорда
     if (photoIndex > maxUnlocked[currentHero]) {
@@ -60,6 +77,7 @@ function tryNextPhoto() {
 }
 
 function selectHero(type) {
+    if (isUpdating) return;
     currentHero = type;
     photoIndex = 1;
     const folder = type === 'b' ? 'basya' : 'savely';
@@ -69,22 +87,47 @@ function selectHero(type) {
 }
 
 function updateUI() {
-    document.getElementById('coin-count').innerText = coins;
-    // Показываем максимум достигнутого (unlocked), а не текущий индекс
-    const total = totalPhotosDetected[currentHero];
-    const unlocked = maxUnlocked[currentHero];
-    document.getElementById('photo-stat').innerText = `${unlocked}/${total}`;
+    const coinDisplay = document.getElementById('coin-count');
+    const photoDisplay = document.getElementById('photo-stat');
+    
+    if (coinDisplay) coinDisplay.innerText = coins;
+    if (photoDisplay) {
+        const total = totalPhotosDetected[currentHero];
+        const unlocked = maxUnlocked[currentHero];
+        photoDisplay.innerText = `${unlocked}/${total}`;
+    }
 }
 
+// DOM_LEAK_TEST: Оптимизированное создание частиц
 function createPaw(e) {
+    // REASON: Защита от переполнения DOM при спам-кликах
+    if (document.querySelectorAll('.paw-particle').length > 20) return;
+
     const paw = document.createElement('div');
-    paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    paw.style.left = `${e.clientX}px`; paw.style.top = `${e.clientY}px`;
-    const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
-    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
-    paw.style.setProperty('--r', `${Math.random() * 360}deg`);
+    paw.className = 'paw-particle';
+    paw.innerHTML = '🐾';
+
+    // Поддержка координат для Mouse и Touch (ADAPTIVE_STRICT)
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+
+    paw.style.left = `${x}px`;
+    paw.style.top = `${y}px`;
+
+    const dX = (Math.random() - 0.5) * 300;
+    const dY = (Math.random() - 0.5) * 300;
+    const rot = Math.random() * 360;
+
+    paw.style.setProperty('--x', `${dX}px`);
+    paw.style.setProperty('--y', `${dY}px`);
+    paw.style.setProperty('--r', `${rot}deg`);
+
     document.body.appendChild(paw);
-    paw.addEventListener('animationend', () => paw.remove());
+
+    // REASON: Гарантированная очистка памяти через 700мс
+    setTimeout(() => {
+        if (paw.parentNode) paw.remove();
+    }, 700);
 }
 
 function saveData() {
@@ -94,10 +137,12 @@ function saveData() {
 
 function resetAll() {
     if(confirm("🐾 Сбросить всё?")) {
-        coins = 0; photoIndex = 1;
+        coins = 0; 
+        photoIndex = 1;
         maxUnlocked = { 'b': 1, 's': 1 };
         localStorage.clear();
-        updateUI(); selectHero(currentHero);
+        updateUI(); 
+        selectHero(currentHero);
     }
 }
 
@@ -109,4 +154,8 @@ function showMilestone() {
     setTimeout(() => toast.remove(), 2000);
 }
 
-window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); };
+window.onload = () => { 
+    preloadArchive('b'); 
+    preloadArchive('s'); 
+    updateUI(); 
+};
