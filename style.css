@@ -1,4 +1,3 @@
-/* REASON: FLUID_STRESS_TEST */
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
@@ -34,7 +33,6 @@ body {
     gap: 12px;
 }
 
-/* SHAPE_STRICT & GLOW_CELEBRATION */
 .hero-display {
     width: 100%;
     max-width: 230px;
@@ -49,10 +47,17 @@ body {
     transition: transform 0.1s ease, border-color 1s ease, box-shadow 1s ease;
 }
 
-/* Эффект сияния */
+/* Эффекты сияния */
 .hero-display.glow-active {
     border-color: rgba(255, 215, 0, 0.8);
     box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* KUS_ATTACK_STRICT: Кровавый эффект */
+.hero-display.kus-active {
+    border-color: rgba(255, 0, 0, 0.9);
+    box-shadow: 0 0 60px rgba(220, 20, 60, 0.8), inset 0 0 30px rgba(139, 0, 0, 0.6);
+    filter: saturate(1.5) contrast(1.2);
 }
 
 .hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }

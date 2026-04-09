@@ -1,4 +1,3 @@
-// DATA_INTEGRITY_STRICT
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let maxUnlocked = { 'b': 1, 's': 1 };
 try {
@@ -10,6 +9,10 @@ let currentHero = 'b';
 let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
+
+// KUS_ATTACK_STRICT Variables
+let kusCounter = 0;
+let nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
 
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
@@ -32,18 +35,42 @@ function handleAction(event) {
     saveData();
     if (event) createPaw(event);
 
-    // GLOW_CELEBRATION: Порог 30
-    if (coins % 30 === 0 && coins !== 0) { triggerGlow(); }
+    // KUS_ATTACK_STRICT: Только для Баси
+    if (currentHero === 'b' && !isUpdating) {
+        kusCounter++;
+        if (kusCounter >= nextKusThreshold) {
+            triggerKus();
+        }
+    }
 
+    if (coins % 30 === 0 && coins !== 0) { triggerGlow(); }
     if (coins % 5 === 0 && !isUpdating) { tryNextPhoto(); }
     if (coins % 100 === 0 && coins !== 0) { showMilestone(); }
+}
+
+function triggerKus() {
+    isUpdating = true;
+    const heroBox = document.querySelector('.hero-display');
+    const catImg = document.getElementById('target-cat');
+    const oldSrc = catImg.src;
+
+    catImg.src = 'images/cats/actions/KUS.jpg';
+    heroBox.classList.add('kus-active');
+
+    kusCounter = 0;
+    nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
+
+    setTimeout(() => {
+        catImg.src = oldSrc;
+        heroBox.classList.remove('kus-active');
+        isUpdating = false;
+    }, 1500);
 }
 
 function triggerGlow() {
     const hero = document.querySelector('.hero-display');
     if (hero) {
         hero.classList.add('glow-active');
-        // REASON: Эффект временный для акцента на прогрессе
         setTimeout(() => hero.classList.remove('glow-active'), 3000);
     }
 }
@@ -65,7 +92,7 @@ function tryNextPhoto() {
 }
 
 function selectHero(type) {
-    currentHero = type; photoIndex = 1;
+    currentHero = type; photoIndex = 1; kusCounter = 0; // Сброс счетчика Куся при смене
     const folder = type === 'b' ? 'basya' : 'savely';
     const prefix = type === 'b' ? 'b' : 's';
     document.getElementById('target-cat').src = `images/cats/${folder}/${prefix}01.jpg`;
@@ -83,8 +110,8 @@ function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div');
     paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches.clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches.clientY) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
@@ -97,7 +124,7 @@ function saveData() { localStorage.setItem('coins', coins); localStorage.setItem
 
 function resetAll() {
     if(confirm("🐾 Сбросить всё?")) {
-        coins = 0; photoIndex = 1; maxUnlocked = { 'b': 1, 's': 1 };
+        coins = 0; photoIndex = 1; maxUnlocked = { 'b': 1, 's': 1 }; kusCounter = 0;
         localStorage.clear(); updateUI(); selectHero(currentHero);
     }
 }
