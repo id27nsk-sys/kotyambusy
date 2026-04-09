@@ -1,10 +1,16 @@
+// DATA_INTEGRITY_STRICT: Валидация при старте
 let coins = parseInt(localStorage.getItem('coins')) || 0;
+let maxUnlocked = { 'b': 1, 's': 1 };
+try {
+    const saved = JSON.parse(localStorage.getItem('maxUnlocked'));
+    if (saved) maxUnlocked = saved;
+} catch(e) { console.error("🐾 Data corrupted, using defaults"); }
+
 let currentHero = 'b';
 let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
 
-// REASON: PRELOAD_DETECTION_STRICT - Фиксируем счетчик сразу
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
     const prefix = type === 'b' ? 'b' : 's';
@@ -14,18 +20,8 @@ function preloadArchive(type) {
         let testIdx = count + 1;
         let fmtIdx = testIdx < 10 ? `0${testIdx}` : testIdx;
         let src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
-
         const img = new Image();
-        img.onload = () => {
-            count++;
-            totalPhotosDetected[type] = count;
-            updateUI(); // Обновляем UI по мере нахождения новых фото
-            checkNext();
-        };
-        img.onerror = () => { 
-            console.log(`🐾 ${type} scan complete: ${count} photos found.`);
-            updateUI(); 
-        };
+        img.onload = () => { count++; totalPhotosDetected[type] = count; updateUI(); checkNext(); };
         img.src = src;
     }
     checkNext();
@@ -36,12 +32,8 @@ function handleAction(event) {
     updateUI();
     saveData();
     if (event) createPaw(event);
-
-    // Смена фото каждые 5 поглаживаний
-    if (coins % 5 === 0 && !isUpdating) {
-        tryNextPhoto();
-    }
-
+    // ASYNC_GUARD_STRICT: Блокировка частых смен
+    if (coins % 5 === 0 && !isUpdating) { tryNextPhoto(); }
     if (coins % 100 === 0 && coins !== 0) { showMilestone(); }
 }
 
@@ -50,17 +42,17 @@ function tryNextPhoto() {
     const folder = currentHero === 'b' ? 'basya' : 'savely';
     const prefix = currentHero === 'b' ? 'b' : 's';
     
-    // REASON: Цикл строго по реально обнаруженным фото
-    let max = totalPhotosDetected[currentHero];
-    photoIndex = (photoIndex % max) + 1;
+    photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
+    
+    // PROGRESS_ACCUMULATION_STRICT: Фиксация рекорда
+    if (photoIndex > maxUnlocked[currentHero]) {
+        maxUnlocked[currentHero] = photoIndex;
+    }
     
     let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
-    const catImg = document.getElementById('target-cat');
-    
-    // Предзагрузка перед сменой, чтобы не было "мигания"
     const nextImg = new Image();
     nextImg.onload = () => {
-        catImg.src = nextImg.src;
+        document.getElementById('target-cat').src = nextImg.src;
         updateUI();
         isUpdating = false;
     };
@@ -77,42 +69,38 @@ function selectHero(type) {
 }
 
 function updateUI() {
-    const coinDisplay = document.getElementById('coin-count');
-    const photoDisplay = document.getElementById('photo-stat');
-    
-    if (coinDisplay) coinDisplay.innerText = coins;
-    if (photoDisplay) {
-        // Гарантируем, что photoIndex не больше найденного total
-        let currentTotal = totalPhotosDetected[currentHero];
-        photoDisplay.innerText = `${photoIndex}/${currentTotal}`;
-    }
+    document.getElementById('coin-count').innerText = coins;
+    // Показываем максимум достигнутого (unlocked), а не текущий индекс
+    const total = totalPhotosDetected[currentHero];
+    const unlocked = maxUnlocked[currentHero];
+    document.getElementById('photo-stat').innerText = `${unlocked}/${total}`;
 }
 
 function createPaw(e) {
     const paw = document.createElement('div');
-    paw.className = 'paw-particle';
-    paw.innerHTML = '🐾';
-    paw.style.left = `${e.clientX}px`;
-    paw.style.top = `${e.clientY}px`;
-    const dX = (Math.random() - 0.5) * 300;
-    const dY = (Math.random() - 0.5) * 300;
-    paw.style.setProperty('--x', `${dX}px`);
-    paw.style.setProperty('--y', `${dY}px`);
+    paw.className = 'paw-particle'; paw.innerHTML = '🐾';
+    paw.style.left = `${e.clientX}px`; paw.style.top = `${e.clientY}px`;
+    const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
+    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
     paw.style.setProperty('--r', `${Math.random() * 360}deg`);
     document.body.appendChild(paw);
     paw.addEventListener('animationend', () => paw.remove());
 }
 
+function saveData() {
+    localStorage.setItem('coins', coins);
+    localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked));
+}
+
 function resetAll() {
     if(confirm("🐾 Сбросить всё?")) {
         coins = 0; photoIndex = 1;
+        maxUnlocked = { 'b': 1, 's': 1 };
         localStorage.clear();
-        updateUI();
-        selectHero(currentHero);
+        updateUI(); selectHero(currentHero);
     }
 }
 
-function saveData() { localStorage.setItem('coins', coins); }
 function showMilestone() {
     const toast = document.createElement('div');
     toast.className = 'milestone-toast';
@@ -121,8 +109,4 @@ function showMilestone() {
     setTimeout(() => toast.remove(), 2000);
 }
 
-window.onload = () => {
-    preloadArchive('b');
-    preloadArchive('s');
-    updateUI();
-};
+window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); };
