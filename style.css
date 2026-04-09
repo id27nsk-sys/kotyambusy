@@ -33,9 +33,10 @@ body {
     gap: 12px;
 }
 
+/* HERO_SCALE_STRICT & SHAPE_STRICT */
 .hero-display {
     width: 100%;
-    max-width: 230px;
+    max-width: 280px; /* Увеличено согласно HERO_SCALE_STRICT */
     aspect-ratio: 1 / 1;
     margin: 10px auto;
     border-radius: 50%;
@@ -45,15 +46,14 @@ body {
     position: relative;
     cursor: url('images/cursors/paw02.png'), pointer;
     transition: transform 0.1s ease, border-color 1s ease, box-shadow 1s ease;
+    flex-shrink: 0;
 }
 
-/* Эффекты сияния */
 .hero-display.glow-active {
     border-color: rgba(255, 215, 0, 0.8);
     box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
-/* KUS_ATTACK_STRICT: Кровавый эффект */
 .hero-display.kus-active {
     border-color: rgba(255, 0, 0, 0.9);
     box-shadow: 0 0 60px rgba(220, 20, 60, 0.8), inset 0 0 30px rgba(139, 0, 0, 0.6);
@@ -63,35 +63,16 @@ body {
 .hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
 
 @media (max-width: 340px), (max-height: 600px) {
-    .glass-container { padding: 15px; gap: 8px; }
+    .glass-container { padding: 15px; gap: 5px; }
     h1 { font-size: 1.1rem; }
-    .hero-display { max-width: 160px; }
+    .hero-display { max-width: 200px; } /* HERO_SCALE_STRICT для Micro */
 }
 
-.paw-particle {
-    position: fixed; pointer-events: none; font-size: 2rem; z-index: 9999;
-    animation: paw-fly 0.7s ease-out forwards;
-}
-
-@keyframes paw-fly {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0); opacity: 0; }
-}
-
-.milestone-toast {
-    position: fixed; top: 20px; background: rgba(255, 152, 0, 0.2);
-    backdrop-filter: blur(15px); border: 1px solid rgba(255, 152, 0, 0.5);
-    padding: 12px 20px; border-radius: 20px; color: white; z-index: 10000;
-    animation: slideDown 2s forwards;
-}
-
-@keyframes slideDown { 
-    0% { transform: translateY(-100px); opacity: 0; }
-    20% { transform: translateY(0); opacity: 1; }
-    80% { transform: translateY(0); opacity: 1; }
-    100% { transform: translateY(-100px); opacity: 0; }
-}
-
+/* Остальные стили (лапки, тосты, кнопки) без изменений */
+.paw-particle { position: fixed; pointer-events: none; font-size: 2rem; z-index: 9999; animation: paw-fly 0.7s forwards; }
+@keyframes paw-fly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0); opacity: 0; } }
+.milestone-toast { position: fixed; top: 20px; background: rgba(255, 152, 0, 0.2); backdrop-filter: blur(15px); border: 1px solid rgba(255, 152, 0, 0.5); padding: 12px 20px; border-radius: 20px; color: white; z-index: 10000; animation: slideDown 2s forwards; }
+@keyframes slideDown { 0% { transform: translateY(-100px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
 .hero-selector { display: flex; justify-content: center; gap: 10px; }
 .selector-btn { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
 .control-grid { display: flex; justify-content: center; gap: 10px; }

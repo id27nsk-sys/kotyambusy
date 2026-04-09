@@ -9,8 +9,6 @@ let currentHero = 'b';
 let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
-
-// KUS_ATTACK_STRICT Variables
 let kusCounter = 0;
 let nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
 
@@ -35,12 +33,10 @@ function handleAction(event) {
     saveData();
     if (event) createPaw(event);
 
-    // KUS_ATTACK_STRICT: Только для Баси
+    // KUS_ATTACK_STRICT
     if (currentHero === 'b' && !isUpdating) {
         kusCounter++;
-        if (kusCounter >= nextKusThreshold) {
-            triggerKus();
-        }
+        if (kusCounter >= nextKusThreshold) { triggerKus(); }
     }
 
     if (coins % 30 === 0 && coins !== 0) { triggerGlow(); }
@@ -54,9 +50,13 @@ function triggerKus() {
     const catImg = document.getElementById('target-cat');
     const oldSrc = catImg.src;
 
+    // HAPTIC_ATTACK_STRICT
+    if ("vibrate" in navigator) {
+        navigator.vibrate([100, 50, 200]);
+    }
+
     catImg.src = 'images/cats/actions/KUS.jpg';
     heroBox.classList.add('kus-active');
-
     kusCounter = 0;
     nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
 
@@ -92,7 +92,7 @@ function tryNextPhoto() {
 }
 
 function selectHero(type) {
-    currentHero = type; photoIndex = 1; kusCounter = 0; // Сброс счетчика Куся при смене
+    currentHero = type; photoIndex = 1; kusCounter = 0;
     const folder = type === 'b' ? 'basya' : 'savely';
     const prefix = type === 'b' ? 'b' : 's';
     document.getElementById('target-cat').src = `images/cats/${folder}/${prefix}01.jpg`;
@@ -110,8 +110,8 @@ function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div');
     paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches.clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches.clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
@@ -121,18 +121,6 @@ function createPaw(e) {
 }
 
 function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
-
-function resetAll() {
-    if(confirm("🐾 Сбросить всё?")) {
-        coins = 0; photoIndex = 1; maxUnlocked = { 'b': 1, 's': 1 }; kusCounter = 0;
-        localStorage.clear(); updateUI(); selectHero(currentHero);
-    }
-}
-
-function showMilestone() {
-    const toast = document.createElement('div'); toast.className = 'milestone-toast';
-    toast.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`;
-    document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000);
-}
-
+function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; photoIndex = 1; maxUnlocked = { 'b': 1, 's': 1 }; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
+function showMilestone() { const toast = document.createElement('div'); toast.className = 'milestone-toast'; toast.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000); }
 window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); };
