@@ -12,21 +12,18 @@
     <div class="glass-container">
         <h1 id="main-title">🐾КОТЯМБУСЫ🐾</h1>
         
-        <!-- REASON: INTEGRATED_STATS_STRICT - Панель удалена -->
+        <!-- ZEN_DASHBOARD_STRICT: Тонкая полоса прогресса -->
+        <div class="zen-stats">
+            <span id="stat-line">🐾 0 | Фото: 1/1</span>
+        </div>
 
         <div class="hero-display" onclick="handleAction(event)">
             <img src="images/cats/basya/b01.webp" id="target-cat" alt="🐾">
         </div>
 
         <nav class="hero-selector">
-            <button class="selector-btn" onclick="selectHero('b')">
-                🐾 БАСЯ <br>
-                <small id="stats-b">0 | 1/1</small>
-            </button>
-            <button class="selector-btn" onclick="selectHero('s')">
-                🐾 САВЕЛИЙ <br>
-                <small id="stats-s">0 | 1/1</small>
-            </button>
+            <button class="selector-btn" onclick="selectHero('b')">🐾 БАСЯ</button>
+            <button class="selector-btn" onclick="selectHero('s')">🐾 САВЕЛИЙ</button>
         </nav>
         
         <div class="control-grid">

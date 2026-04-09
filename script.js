@@ -1,5 +1,5 @@
 let coins = parseInt(localStorage.getItem('coins')) || 0;
-// INTEGRATED_STATS_STRICT: Раздельное хранение для отображения в кнопках
+// REASON: Сохраняем раздельное хранение в фоне, но UI делаем Zen
 let coinsB = parseInt(localStorage.getItem('coins_b')) || 0;
 let coinsS = parseInt(localStorage.getItem('coins_s')) || 0;
 
@@ -31,9 +31,7 @@ function preloadArchive(type) {
 
 function handleAction(event) {
     coins++;
-    // Обновляем текущего кота
     if (currentHero === 'b') coinsB++; else coinsS++;
-    
     updateUI(); saveData();
     if (event) createPaw(event);
     if (currentHero === 'b' && !isUpdating) {
@@ -45,13 +43,12 @@ function handleAction(event) {
     if (coins % 100 === 0 && coins !== 0) showMilestone();
 }
 
+// REASON: ZEN_DASHBOARD_STRICT - Статистика в одну строку
 function updateUI() {
-    const bStats = document.getElementById('stats-b');
-    const sStats = document.getElementById('stats-s');
-    
-    if (bStats) bStats.innerText = `${coinsB} | ${maxUnlocked['b']}/${totalPhotosDetected['b']}`;
-    if (sStats) sStats.innerText = `${coinsS} | ${maxUnlocked['s']}/${totalPhotosDetected['s']}`;
-    
+    const statLine = document.getElementById('stat-line');
+    if (statLine) {
+        statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
+    }
     document.title = `🐾 ${coins} | КОТЯМБУСЫ`;
 }
 
@@ -61,8 +58,6 @@ function selectHero(type) {
     catImg.classList.add('fade-out');
     setTimeout(() => {
         currentHero = type; photoIndex = 1; kusCounter = 0;
-        // Устанавливаем системные coins в значение выбранного героя для Milestone
-        // Но глобальный счетчик сессии coins остается общим для %30 и %100
         const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
         catImg.src = `images/cats/${folder}/${prefix}01.webp`;
         catImg.onload = () => { catImg.classList.remove('fade-out'); updateUI(); };
@@ -84,31 +79,7 @@ function resetAll() {
     }
 }
 
-// ... ОСТАЛЬНЫЕ ФУНКЦИИ (triggerKus, tryNextPhoto, Workshop Logic, Particles) — БЕЗ ИЗМЕНЕНИЙ ...
-function triggerKus() {
-    isUpdating = true;
-    const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
-    body.classList.add('shake-effect');
-    catImg.src = 'images/cats/actions/KUS.webp';
-    heroBox.classList.add('kus-active');
-    kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
-    setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
-}
-
-function tryNextPhoto() {
-    isUpdating = true; const catImg = document.getElementById('target-cat');
-    catImg.classList.add('fade-out');
-    setTimeout(() => {
-        const folder = currentHero === 'b' ? 'basya' : 'savely', prefix = currentHero === 'b' ? 'b' : 's';
-        photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
-        if (photoIndex > maxUnlocked[currentHero]) maxUnlocked[currentHero] = photoIndex;
-        let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
-        const nextImg = new Image();
-        nextImg.onload = () => { catImg.src = nextImg.src; catImg.classList.remove('fade-out'); updateUI(); isUpdating = false; };
-        nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
-    }, 300);
-}
-
+// ... WORKSHOP & PARTICLES (Без изменений v4.4) ...
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
@@ -144,8 +115,8 @@ function handleZoom(val) { imgScale = parseFloat(val); drawCanvas(); }
 
 function initWorkshopControls() {
     const canvas = document.getElementById('crop-canvas');
-    const start = (e) => { isDragging = true; const p = e.touches ? e.touches : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
-    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
+    const start = (e) => { isDragging = true; const p = e.touches ? e.touches[0] : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
+    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches[0] : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
     const stop = () => isDragging = false;
     canvas.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
     canvas.addEventListener('touchstart', start); window.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
@@ -163,13 +134,23 @@ function exportPhoto(type) {
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div'); paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches.clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches.clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
     paw.style.setProperty('--r', `${r}deg`);
     document.body.appendChild(paw); setTimeout(() => paw.remove(), 700);
+}
+
+function triggerKus() {
+    isUpdating = true;
+    const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
+    body.classList.add('shake-effect');
+    catImg.src = 'images/cats/actions/KUS.webp';
+    heroBox.classList.add('kus-active');
+    kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
+    setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
 }
 
 function triggerGlow() { const h = document.querySelector('.hero-display'); if(h){ h.classList.add('glow-active'); setTimeout(()=>h.classList.remove('glow-active'), 3000); } }
