@@ -40,7 +40,10 @@ function handleAction(event) {
     }
 
     if (coins % 30 === 0 && coins !== 0) { triggerGlow(); }
+    
+    // PHOTO_CYCLE_STRICT
     if (coins % 5 === 0 && !isUpdating) { tryNextPhoto(); }
+    
     if (coins % 100 === 0 && coins !== 0) { showMilestone(); }
 }
 
@@ -51,26 +54,50 @@ function triggerKus() {
     const body = document.body;
     const oldSrc = catImg.src;
 
-    // SCREEN_SHAKE_STRICT: Унифицированный эффект для всех ОС
     body.classList.add('shake-effect');
-    
-    /* 
-    // REASON: HAPTIC_ATTACK_STRICT деактивирован для унификации опыта Android/iOS.
-    if ("vibrate" in navigator) { navigator.vibrate(); } 
-    */
+    /* REASON: HAPTIC_ATTACK_STRICT деактивирован */
+    // if ("vibrate" in navigator) { navigator.vibrate(); }
 
     catImg.src = 'images/cats/actions/KUS.jpg';
     heroBox.classList.add('kus-active');
     kusCounter = 0;
     nextKusThreshold = Math.floor(Math.random() * (11) + 9);
 
-    // IMPACT_DYNAMICS_STRICT: 500ms
     setTimeout(() => {
         catImg.src = oldSrc;
         heroBox.classList.remove('kus-active');
         body.classList.remove('shake-effect');
         isUpdating = false;
     }, 500);
+}
+
+function tryNextPhoto() {
+    isUpdating = true;
+    const catImg = document.getElementById('target-cat');
+    
+    // REASON: SOFT_TRANSITION_STRICT - Начало эффекта
+    catImg.classList.add('fade-out');
+
+    setTimeout(() => {
+        const folder = currentHero === 'b' ? 'basya' : 'savely';
+        const prefix = currentHero === 'b' ? 'b' : 's';
+        
+        photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
+        if (photoIndex > maxUnlocked[currentHero]) maxUnlocked[currentHero] = photoIndex;
+        
+        let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
+        const nextSrc = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
+
+        const nextImg = new Image();
+        nextImg.onload = () => {
+            catImg.src = nextImg.src;
+            // REASON: SOFT_TRANSITION_STRICT - Завершение эффекта
+            catImg.classList.remove('fade-out');
+            updateUI();
+            isUpdating = false;
+        };
+        nextImg.src = nextSrc;
+    }, 300);
 }
 
 function triggerGlow() {
@@ -81,25 +108,26 @@ function triggerGlow() {
     }
 }
 
-function tryNextPhoto() {
-    isUpdating = true;
-    const folder = currentHero === 'b' ? 'basya' : 'savely';
-    const prefix = currentHero === 'b' ? 'b' : 's';
-    photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
-    if (photoIndex > maxUnlocked[currentHero]) maxUnlocked[currentHero] = photoIndex;
-    
-    let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
-    const nextImg = new Image();
-    nextImg.onload = () => { document.getElementById('target-cat').src = nextImg.src; updateUI(); isUpdating = false; };
-    nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
-}
-
 function selectHero(type) {
-    currentHero = type; photoIndex = 1; kusCounter = 0;
-    const folder = type === 'b' ? 'basya' : 'savely';
-    const prefix = type === 'b' ? 'b' : 's';
-    document.getElementById('target-cat').src = `images/cats/${folder}/${prefix}01.jpg`;
-    updateUI();
+    if (isUpdating) return;
+    const catImg = document.getElementById('target-cat');
+    catImg.classList.add('fade-out');
+
+    setTimeout(() => {
+        currentHero = type;
+        photoIndex = 1;
+        const folder = type === 'b' ? 'basya' : 'savely';
+        const prefix = type === 'b' ? 'b' : 's';
+        const newSrc = `images/cats/${folder}/${prefix}01.jpg`;
+        
+        const tempImg = new Image();
+        tempImg.onload = () => {
+            catImg.src = newSrc;
+            catImg.classList.remove('fade-out');
+            updateUI();
+        };
+        tempImg.src = newSrc;
+    }, 300);
 }
 
 function updateUI() {
