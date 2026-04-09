@@ -11,36 +11,29 @@
 <body>
     <div class="glass-container">
         <h1 id="main-title">🐾КОТЯМБУСЫ🐾</h1>
-        
         <div class="zen-stats">
             <span id="stat-line">🐾 0 | Фото: 1/1</span>
         </div>
-
         <div class="hero-display" onclick="handleAction(event)">
             <img src="images/cats/basya/b01.webp" id="target-cat" alt="🐾">
         </div>
-
         <nav class="hero-selector">
             <button class="selector-btn" onclick="selectHero('b')">🐾 БАСЯ</button>
             <button class="selector-btn" onclick="selectHero('s')">🐾 САВЕЛИЙ</button>
         </nav>
-        
         <div class="control-grid">
             <button class="glass-btn small" onclick="showPhotos()">🐾 ФОТО</button>
             <button class="glass-btn reset" onclick="resetAll()">СБРОС 🐾</button>
         </div>
     </div>
-
     <footer class="admin-footer">
         <div class="admin-trigger" onclick="openAuth()">🧶</div>
     </footer>
-
     <div id="auth-modal" class="modal-overlay" onclick="closeModals(event)">
         <div class="glass-container auth-box">
             <input type="password" id="admin-pass" oninput="checkPass(this.value)">
         </div>
     </div>
-
     <div id="workshop-modal" class="modal-overlay" onclick="closeModals(event)">
         <div class="glass-container workshop-box">
             <h2 style="font-size: 1.1rem;">🐾 МАСТЕРСКАЯ</h2>
