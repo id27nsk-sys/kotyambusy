@@ -44,7 +44,7 @@ function triggerKus() {
     isUpdating = true;
     const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
     body.classList.add('shake-effect');
-    catImg.src = 'images/cats/actions/KUS.jpg';
+    catImg.src = 'images/cats/actions/KUS.webp';
     heroBox.classList.add('kus-active');
     kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
     setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
@@ -86,8 +86,8 @@ function openAuth() { document.getElementById('auth-modal').style.display = 'fle
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
 function updateWorkshopButtons() {
-    document.getElementById('btn-b').innerText = `ДЛЯ БАСИ (${getFileName('b')})`;
-    document.getElementById('btn-s').innerText = `ДЛЯ САВЕЛИЯ (${getFileName('s')})`;
+    document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`;
+    document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`;
 }
 function getFileName(type) { const next = totalPhotosDetected[type] + 1; return `${type}${next < 10 ? '0'+next : next}.webp`; }
 
@@ -104,7 +104,7 @@ function handleFile(e) {
         };
         workshopImg.src = event.target.result;
     };
-    reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(e.target.files);
 }
 
 function drawCanvas() {
@@ -143,7 +143,8 @@ function createPaw(e) {
     const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
-    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`); paw.style.setProperty('--r', `${r}deg`);
+    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
+    paw.style.setProperty('--r', `${r}deg`);
     document.body.appendChild(paw); setTimeout(() => paw.remove(), 700);
 }
 
