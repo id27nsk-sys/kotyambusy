@@ -8,8 +8,10 @@ body {
     min-height: 100vh;
     margin: 0;
     overflow: hidden;
-    /* REASON: CURSOR_LOCALIZATION - Глобальный курсор удален */
     cursor: default;
+    /* REASON: ADAPTIVE_STRICT - Запрет выделения при частом поглаживании */
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .glass-container {
@@ -25,7 +27,6 @@ body {
     width: 85%;
 }
 
-/* SHAPE_STRICT & CURSOR_LOCALIZATION */
 .hero-display {
     width: 240px;
     height: 240px;
@@ -36,8 +37,9 @@ body {
     box-shadow: 0 0 30px rgba(255, 152, 0, 0.2);
     position: relative;
     transition: transform 0.1s ease;
-    /* CURSOR_LOCALIZATION: Лапка только внутри круга */
     cursor: url('images/cursors/paw02.png'), pointer;
+    /* REASON: ADAPTIVE_STRICT - Удаление синего фона при тапе на мобильных */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .hero-display img {
@@ -45,7 +47,7 @@ body {
     height: 100%;
     object-fit: cover;
     pointer-events: none;
-    transition: filter 0.3s ease, transform 0.2s ease;
+    -webkit-touch-callout: none;
 }
 
 .hero-display:active { transform: scale(0.92); }
@@ -72,6 +74,7 @@ body {
     padding: 15px 25px;
     border-radius: 20px;
     color: white;
+    font-weight: bold;
     z-index: 10000;
     animation: slideDown 2s ease-in-out forwards;
 }
