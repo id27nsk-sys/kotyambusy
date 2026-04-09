@@ -10,7 +10,7 @@ let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
 let kusCounter = 0;
-let nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
+let nextKusThreshold = Math.floor(Math.random() * (11) + 9); // 9 to 19
 
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
@@ -48,23 +48,25 @@ function triggerKus() {
     isUpdating = true;
     const heroBox = document.querySelector('.hero-display');
     const catImg = document.getElementById('target-cat');
+    const body = document.body;
     const oldSrc = catImg.src;
 
-    // HAPTIC_ATTACK_STRICT
-    if ("vibrate" in navigator) {
-        navigator.vibrate([100, 50, 200]);
-    }
+    // HAPTIC & SHAKE
+    body.classList.add('shake-effect');
+    if ("vibrate" in navigator) { navigator.vibrate([100, 50, 200]); }
 
     catImg.src = 'images/cats/actions/KUS.jpg';
     heroBox.classList.add('kus-active');
     kusCounter = 0;
-    nextKusThreshold = Math.floor(Math.random() * (19 - 9 + 1)) + 9;
+    nextKusThreshold = Math.floor(Math.random() * (11) + 9);
 
+    // IMPACT_DYNAMICS_STRICT: 500ms
     setTimeout(() => {
         catImg.src = oldSrc;
         heroBox.classList.remove('kus-active');
+        body.classList.remove('shake-effect');
         isUpdating = false;
-    }, 1500);
+    }, 500);
 }
 
 function triggerGlow() {
@@ -84,10 +86,7 @@ function tryNextPhoto() {
     
     let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
     const nextImg = new Image();
-    nextImg.onload = () => {
-        document.getElementById('target-cat').src = nextImg.src;
-        updateUI(); isUpdating = false;
-    };
+    nextImg.onload = () => { document.getElementById('target-cat').src = nextImg.src; updateUI(); isUpdating = false; };
     nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
 }
 
@@ -101,17 +100,15 @@ function selectHero(type) {
 
 function updateUI() {
     document.getElementById('coin-count').innerText = coins;
-    const total = totalPhotosDetected[currentHero];
-    const unlocked = maxUnlocked[currentHero];
-    document.getElementById('photo-stat').innerText = `${unlocked}/${total}`;
+    document.getElementById('photo-stat').innerText = `${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
 }
 
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div');
     paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches[clientX]) || 0;
+    const y = e.clientY || (e.touches && e.touches[clientY]) || 0;
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);

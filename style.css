@@ -17,6 +17,18 @@ body {
     user-select: none;
 }
 
+/* SCREEN_SHAKE_STRICT */
+body.shake-effect {
+    animation: screen-shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes screen-shake {
+    10%, 90% { transform: translate3d(-2px, 0, 0); }
+    20%, 80% { transform: translate3d(4px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+    40%, 60% { transform: translate3d(6px, 0, 0); }
+}
+
 .glass-container {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(20px);
@@ -33,10 +45,9 @@ body {
     gap: 12px;
 }
 
-/* HERO_SCALE_STRICT & SHAPE_STRICT */
 .hero-display {
     width: 100%;
-    max-width: 280px; /* Увеличено согласно HERO_SCALE_STRICT */
+    max-width: 280px;
     aspect-ratio: 1 / 1;
     margin: 10px auto;
     border-radius: 50%;
@@ -45,7 +56,7 @@ body {
     box-shadow: 0 0 30px rgba(255, 152, 0, 0.2);
     position: relative;
     cursor: url('images/cursors/paw02.png'), pointer;
-    transition: transform 0.1s ease, border-color 1s ease, box-shadow 1s ease;
+    transition: transform 0.1s ease, border-color 0.5s ease, box-shadow 0.5s ease, filter 0.2s ease;
     flex-shrink: 0;
 }
 
@@ -54,10 +65,13 @@ body {
     box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
+/* KUS_ATTACK_STRICT & IMPACT_DYNAMICS_STRICT */
 .hero-display.kus-active {
-    border-color: rgba(255, 0, 0, 0.9);
-    box-shadow: 0 0 60px rgba(220, 20, 60, 0.8), inset 0 0 30px rgba(139, 0, 0, 0.6);
-    filter: saturate(1.5) contrast(1.2);
+    border-color: #ff0000;
+    box-shadow: 0 0 80px #ff0000, inset 0 0 40px #ff0000;
+    filter: invert(1) contrast(2);
+    transform: scale(1.15) rotate(3deg);
+    z-index: 100;
 }
 
 .hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
@@ -65,10 +79,9 @@ body {
 @media (max-width: 340px), (max-height: 600px) {
     .glass-container { padding: 15px; gap: 5px; }
     h1 { font-size: 1.1rem; }
-    .hero-display { max-width: 200px; } /* HERO_SCALE_STRICT для Micro */
+    .hero-display { max-width: 200px; }
 }
 
-/* Остальные стили (лапки, тосты, кнопки) без изменений */
 .paw-particle { position: fixed; pointer-events: none; font-size: 2rem; z-index: 9999; animation: paw-fly 0.7s forwards; }
 @keyframes paw-fly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0); opacity: 0; } }
 .milestone-toast { position: fixed; top: 20px; background: rgba(255, 152, 0, 0.2); backdrop-filter: blur(15px); border: 1px solid rgba(255, 152, 0, 0.5); padding: 12px 20px; border-radius: 20px; color: white; z-index: 10000; animation: slideDown 2s forwards; }
