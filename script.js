@@ -5,12 +5,13 @@ try {
     if (saved) maxUnlocked = saved;
 } catch(e) { console.error("🐾 Data corrupted"); }
 
-let currentHero = 'b';
-let photoIndex = 1;
+let currentHero = 'b', photoIndex = 1, isUpdating = false, kusCounter = 0;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
-let isUpdating = false;
-let kusCounter = 0;
-let nextKusThreshold = Math.floor(Math.random() * (11) + 9);
+let nextKusThreshold = Math.floor(Math.random() * 11) + 9;
+
+// WORKSHOP STATE
+const SECRET_CODE = "BS_0704!";
+let workshopImg = null, imgX = 0, imgY = 0, imgScale = 1, isDragging = false, startX, startY;
 
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
@@ -19,7 +20,7 @@ function preloadArchive(type) {
     function checkNext() {
         let testIdx = count + 1;
         let fmtIdx = testIdx < 10 ? `0${testIdx}` : testIdx;
-        let src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
+        let src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
         const img = new Image();
         img.onload = () => { count++; totalPhotosDetected[type] = count; updateUI(); checkNext(); };
         img.src = src;
@@ -28,105 +29,50 @@ function preloadArchive(type) {
 }
 
 function handleAction(event) {
-    coins++;
-    updateUI();
-    saveData();
+    coins++; updateUI(); saveData();
     if (event) createPaw(event);
-
-    // KUS_ATTACK_STRICT
     if (currentHero === 'b' && !isUpdating) {
         kusCounter++;
-        if (kusCounter >= nextKusThreshold) { triggerKus(); }
+        if (kusCounter >= nextKusThreshold) triggerKus();
     }
-
-    if (coins % 30 === 0 && coins !== 0) { triggerGlow(); }
-    
-    // PHOTO_CYCLE_STRICT
-    if (coins % 5 === 0 && !isUpdating) { tryNextPhoto(); }
-    
-    if (coins % 100 === 0 && coins !== 0) { showMilestone(); }
+    if (coins % 30 === 0 && coins !== 0) triggerGlow();
+    if (coins % 5 === 0 && !isUpdating) tryNextPhoto();
+    if (coins % 100 === 0 && coins !== 0) showMilestone();
 }
 
 function triggerKus() {
     isUpdating = true;
-    const heroBox = document.querySelector('.hero-display');
-    const catImg = document.getElementById('target-cat');
-    const body = document.body;
-    const oldSrc = catImg.src;
-
+    const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
     body.classList.add('shake-effect');
-    /* REASON: HAPTIC_ATTACK_STRICT деактивирован */
-    // if ("vibrate" in navigator) { navigator.vibrate(); }
-
     catImg.src = 'images/cats/actions/KUS.jpg';
     heroBox.classList.add('kus-active');
-    kusCounter = 0;
-    nextKusThreshold = Math.floor(Math.random() * (11) + 9);
-
-    setTimeout(() => {
-        catImg.src = oldSrc;
-        heroBox.classList.remove('kus-active');
-        body.classList.remove('shake-effect');
-        isUpdating = false;
-    }, 500);
+    kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
+    setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
 }
 
 function tryNextPhoto() {
-    isUpdating = true;
-    const catImg = document.getElementById('target-cat');
-    
-    // REASON: SOFT_TRANSITION_STRICT - Начало эффекта
+    isUpdating = true; const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
-
     setTimeout(() => {
-        const folder = currentHero === 'b' ? 'basya' : 'savely';
-        const prefix = currentHero === 'b' ? 'b' : 's';
-        
+        const folder = currentHero === 'b' ? 'basya' : 'savely', prefix = currentHero === 'b' ? 'b' : 's';
         photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
         if (photoIndex > maxUnlocked[currentHero]) maxUnlocked[currentHero] = photoIndex;
-        
         let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
-        const nextSrc = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
-
         const nextImg = new Image();
-        nextImg.onload = () => {
-            catImg.src = nextImg.src;
-            // REASON: SOFT_TRANSITION_STRICT - Завершение эффекта
-            catImg.classList.remove('fade-out');
-            updateUI();
-            isUpdating = false;
-        };
-        nextImg.src = nextSrc;
+        nextImg.onload = () => { catImg.src = nextImg.src; catImg.classList.remove('fade-out'); updateUI(); isUpdating = false; };
+        nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
     }, 300);
-}
-
-function triggerGlow() {
-    const hero = document.querySelector('.hero-display');
-    if (hero) {
-        hero.classList.add('glow-active');
-        setTimeout(() => hero.classList.remove('glow-active'), 3000);
-    }
 }
 
 function selectHero(type) {
     if (isUpdating) return;
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
-
     setTimeout(() => {
-        currentHero = type;
-        photoIndex = 1;
-        const folder = type === 'b' ? 'basya' : 'savely';
-        const prefix = type === 'b' ? 'b' : 's';
-        const newSrc = `images/cats/${folder}/${prefix}01.jpg`;
-        
-        const tempImg = new Image();
-        tempImg.onload = () => {
-            catImg.src = newSrc;
-            catImg.classList.remove('fade-out');
-            updateUI();
-        };
-        tempImg.src = newSrc;
+        currentHero = type; photoIndex = 1; kusCounter = 0;
+        const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
+        catImg.src = `images/cats/${folder}/${prefix}01.webp`;
+        catImg.onload = () => { catImg.classList.remove('fade-out'); updateUI(); };
     }, 300);
 }
 
@@ -135,21 +81,75 @@ function updateUI() {
     document.getElementById('photo-stat').innerText = `${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
 }
 
-function createPaw(e) {
-    if (document.querySelectorAll('.paw-particle').length > 20) return;
-    const paw = document.createElement('div');
-    paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-    const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-    paw.style.left = `${x}px`; paw.style.top = `${y}px`;
-    const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
-    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
-    paw.style.setProperty('--r', `${Math.random() * 360}deg`);
-    document.body.appendChild(paw);
-    setTimeout(() => { if (paw.parentNode) paw.remove(); }, 700);
+// WORKSHOP LOGIC
+function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
+function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
+function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
+function updateWorkshopButtons() {
+    document.getElementById('btn-b').innerText = `ДЛЯ БАСИ (${getFileName('b')})`;
+    document.getElementById('btn-s').innerText = `ДЛЯ САВЕЛИЯ (${getFileName('s')})`;
+}
+function getFileName(type) { const next = totalPhotosDetected[type] + 1; return `${type}${next < 10 ? '0'+next : next}.webp`; }
+
+function handleFile(e) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        workshopImg = new Image();
+        workshopImg.onload = () => {
+            const side = Math.min(workshopImg.width, workshopImg.height);
+            imgScale = 800 / side; imgX = 0; imgY = 0;
+            document.getElementById('zoom-slider').value = imgScale;
+            drawCanvas();
+            document.getElementById('filename-preview').innerText = "Двигай и масштабируй фото!";
+        };
+        workshopImg.src = event.target.result;
+    };
+    reader.readAsDataURL(e.target.files[0]);
 }
 
+function drawCanvas() {
+    if (!workshopImg) return;
+    const canvas = document.getElementById('crop-canvas'), ctx = canvas.getContext('2d');
+    canvas.width = 800; canvas.height = 800;
+    ctx.clearRect(0, 0, 800, 800); ctx.save();
+    ctx.translate(400 + imgX, 400 + imgY); ctx.scale(imgScale, imgScale);
+    ctx.drawImage(workshopImg, -workshopImg.width / 2, -workshopImg.height / 2); ctx.restore();
+}
+
+function handleZoom(val) { imgScale = parseFloat(val); drawCanvas(); }
+
+function initWorkshopControls() {
+    const canvas = document.getElementById('crop-canvas');
+    const start = (e) => { isDragging = true; const p = e.touches ? e.touches[0] : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
+    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches[0] : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
+    const stop = () => isDragging = false;
+    canvas.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
+    canvas.addEventListener('touchstart', start); window.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
+}
+
+function exportPhoto(type) {
+    if (!workshopImg) return alert("🐾 Выбери фото!");
+    document.getElementById('crop-canvas').toBlob((blob) => {
+        const link = document.createElement('a'); link.download = getFileName(type);
+        link.href = URL.createObjectURL(blob); link.click();
+        if(confirm("🐾 Фото " + link.download + " готово. Закрыть мастерскую?")) document.getElementById('workshop-modal').style.display = 'none';
+    }, 'image/webp', 0.8);
+}
+
+function createPaw(e) {
+    if (document.querySelectorAll('.paw-particle').length > 20) return;
+    const paw = document.createElement('div'); paw.className = 'paw-particle'; paw.innerHTML = '🐾';
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    paw.style.left = `${x}px`; paw.style.top = `${y}px`;
+    const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
+    paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`); paw.style.setProperty('--r', `${r}deg`);
+    document.body.appendChild(paw); setTimeout(() => paw.remove(), 700);
+}
+
+function triggerGlow() { const h = document.querySelector('.hero-display'); if(h){ h.classList.add('glow-active'); setTimeout(()=>h.classList.remove('glow-active'), 3000); } }
 function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
-function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; photoIndex = 1; maxUnlocked = { 'b': 1, 's': 1 }; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
-function showMilestone() { const toast = document.createElement('div'); toast.className = 'milestone-toast'; toast.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`; document.body.appendChild(toast); setTimeout(() => toast.remove(), 2000); }
-window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); };
+function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; photoIndex = 1; maxUnlocked = {'b':1,'s':1}; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
+function showMilestone() { const t = document.createElement('div'); t.className = 'milestone-toast'; t.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`; document.body.appendChild(t); setTimeout(()=>t.remove(), 2000); }
+
+window.onload = () => { preloadArchive('b'); preloadArchive('s'); updateUI(); initWorkshopControls(); };
