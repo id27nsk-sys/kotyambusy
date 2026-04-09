@@ -1,6 +1,5 @@
 let coins = parseInt(localStorage.getItem('coins')) || 0;
 let currentHero = 'b';
-// REASON: Новая переменная для PHOTO_CYCLE_STRICT
 let photoIndex = 1;
 
 function handleAction(event) {
@@ -9,12 +8,10 @@ function handleAction(event) {
     saveData();
     if (event) createPaw(event);
 
-    // PHOTO_CYCLE_STRICT: Смена фото каждые 5 кликов
     if (coins % 5 === 0) {
         updateHeroPhoto();
     }
 
-    // MILESTONE_CELEBRATION
     if (coins % 100 === 0 && coins !== 0) {
         showMilestone();
     }
@@ -23,11 +20,8 @@ function handleAction(event) {
 function updateHeroPhoto() {
     const catImg = document.getElementById('target-cat');
     photoIndex = (photoIndex % 5) + 1; 
-    
     const folder = currentHero === 'b' ? 'basya' : 'savely';
     const prefix = currentHero === 'b' ? 'b' : 's';
-    
-    // REASON: STRICT_PATHS - использование b01-b05 / s01-s05
     catImg.src = `images/cats/${folder}/${prefix}0${photoIndex}.jpg`;
 }
 
@@ -52,7 +46,7 @@ function createPaw(e) {
 
 function selectHero(type) {
     currentHero = type;
-    photoIndex = 1; // Сброс цикла при смене героя
+    photoIndex = 1;
     updateHeroPhoto();
 }
 
@@ -66,7 +60,6 @@ function showMilestone() {
 
 function updateUI() {
     document.getElementById('coin-count').innerText = coins;
-    // REASON: Обновление статистики открытых фото
     document.getElementById('photo-stat').innerText = `${photoIndex}/5`;
 }
 
