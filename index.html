@@ -6,6 +6,7 @@
     <title>🐾КОТЯМБУСЫ🐾</title>
     <link rel="icon" href="images/favicon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
+    <link href="https://googleapis.com" rel="stylesheet">
 </head>
 <body>
     <div class="glass-container">
@@ -13,9 +14,10 @@
         
         <div class="stats-panel">
             <p>Кото-койны: <span id="coin-count">0</span> 🐾</p>
-            <p>Открыто фото: <span id="photo-stat">1/5</span></p>
+            <p>Открыто фото: <span id="photo-stat">1/5</span> 🐾</p>
         </div>
 
+        <!-- SHAPE_STRICT: Круглое окно героя -->
         <div class="hero-display">
             <img src="images/cats/basya/b01.jpg" id="target-cat" alt="🐾">
         </div>
@@ -28,7 +30,7 @@
         </nav>
         
         <div class="control-grid">
-            <button class="glass-btn small" onclick="showTab('photos')">ФОТО</button>
+            <button class="glass-btn small" onclick="showPhotos()">🐾 ФОТО</button>
             <button class="glass-btn reset" onclick="resetAll()">СБРОС 🐾</button>
         </div>
     </div>

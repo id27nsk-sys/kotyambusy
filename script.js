@@ -1,38 +1,42 @@
-let coins = localStorage.getItem('coins') || 0;
-let currentHero = 'b'; // Default: Basya
+let coins = parseInt(localStorage.getItem('coins')) || 0;
+let currentHero = 'b';
 
-// REASON: Fundamental click logic preserved as per RULES.md
+// REASON: DESTRUCTIVE_EDIT_FORBIDDEN - Core logic preserved
 function handleAction() {
     coins++;
-    updateDisplay();
-    saveProgress();
+    updateUI();
+    saveData();
 }
 
-// Hero Selector: Switch between b and s
+// Hero Selector: Instant switch (b/s)
 function selectHero(type) {
     currentHero = type;
-    const img = document.getElementById('target-cat');
-    // STRICT_PATHS logic
-    img.src = type === 'b' ? 'images/cats/basya/b01.jpg' : 'images/cats/savely/s01.jpg';
-    console.log(`Hero switched to: ${type}`);
+    const catImg = document.getElementById('target-cat');
+    
+    // REASON: STRICT_PATHS adherence
+    catImg.src = type === 'b' ? 'images/cats/basya/b01.jpg' : 'images/cats/savely/s01.jpg';
 }
 
-function updateDisplay() {
+function updateUI() {
     document.getElementById('coin-count').innerText = coins;
 }
 
-function saveProgress() {
+function saveData() {
     localStorage.setItem('coins', coins);
 }
 
-// REASON: Initialization logic kept to prevent state loss
-window.onload = () => {
-    updateDisplay();
-};
+function resetAll() {
+    // REASON: Clean state required for testing
+    if(confirm("🐾 Сбросить всё?")) {
+        coins = 0;
+        localStorage.clear();
+        updateUI();
+    }
+}
+
+window.onload = updateUI;
 
 /* 
-// REASON: Old simple increment replaced by handleAction for future expansion 
-function increment() {
-    clicks++;
-}
+// REASON: Deprecated simple clicks, moved to handleAction 
+function increment() { clicks++; } 
 */
