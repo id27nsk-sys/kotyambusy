@@ -1,7 +1,7 @@
 # 🐾 Глобальный регламент (STRICT_MODE) 🐾
 
 Проект защищен данным файлом. Любое изменение обязано соответствовать:
-- **IMMUTABILITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ СТРОК ИЗ ПРАВИЛ КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО. Правила могут только дополняться.
+- **IMMUTABILITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ СТРОК ИЗ ПРАВИЛ КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО.
 - **RULES_ACCUMULATION_ONLY**: Правила только накапливаются.
 - **DESTRUCTIVE_EDIT_FORBIDDEN**: Запрещено удалять фундаментальную логику.
 - **NAME_STRICT**: Название всегда строго **🐾КОТЯМБУСЫ🐾**.
@@ -22,22 +22,27 @@
 - **DATA_INTEGRITY_STRICT**: Валидация всех данных из localStorage перед использованием.
 - **ASYNC_GUARD_STRICT**: Асинхронные операции защищены флагом isUpdating.
 - **PROGRESS_ACCUMULATION_STRICT**: Счетчик открытых фото не сбрасывается при завершении цикла.
-- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов. Элементы удаляются через remove().
+- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов. Удаление через remove().
 - **OFFLINE_RESILIENCE_TEST**: При ошибке загрузки фото система обязана сохранять стабильность.
 - **CONTRAST_ACCESSIBILITY_TEST**: Текст на панелях должен сохранять высокую контрастность.
 - **GLOW_CELEBRATION**: Золотое сияние при поглаживаниях, кратных 30.
-- **KUS_ATTACK_STRICT**: Только для Баси (b). При достижении рандомного порога (9-19 поглаживаний) фото заменяется на KUS.webp с кровавым свечением.
-- **HAPTIC_ATTACK_STRICT**: (ДЕАКТИВИРОВАНО) Вибрация заменена на SCREEN_SHAKE_STRICT.
+- **KUS_ATTACK_STRICT**: Только для Баси (b). Появление KUS.webp с красным свечением.
+- **HAPTIC_ATTACK_STRICT**: (ДЕАКТИВИРОВАНО) Унификация через SCREEN_SHAKE.
 - **HERO_SCALE_STRICT**: Размер круга героя увеличен (280px Standard / 200px Micro).
 - **SCREEN_SHAKE_STRICT**: Резкая тряска экрана (body) при Кусе.
 - **IMPACT_DYNAMICS_STRICT**: Эффект «Куся» должен быть молниеносным (500ms).
 - **SOFT_TRANSITION_STRICT**: Мягкий визуальный переход (fade) 0.3с для циклов.
-- **WEBP_MIGRATION_STRICT**: Проект полностью переходит на формат .webp для всех фото героев.
-- **WORKSHOP_AUTO_NAMING_STRICT**: Мастерская обязана автоматически определять имя следующего файла.
+- **WEBP_MIGRATION_STRICT**: Проект полностью переходит на формат .webp.
+- **WORKSHOP_AUTO_NAMING_STRICT**: Мастерская автоматически определяет имя файла.
 - **ACCESS_GATE_STRICT**: Вход в Мастерскую через «🧶» и секретный код BS_0704!.
-- **WORKSHOP_MANIPULATION_STRICT**: Поддержка Zoom и Drag для центрирования фото в круге.
+- **WORKSHOP_MANIPULATION_STRICT**: Поддержка Zoom и Drag для центрирования фото.
+- **DESKTOP_VIEW_CENTERED_STRICT**: На десктопах игровой узел расположен строго по центру вьюпорта.
+- **VERTICAL_ECONOMY_STRICT**: На низких экранах (<600px) отступы сокращаются.
+- **ASSET_IMMORTALITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ ПУТЕЙ ИЗ БЛОКА STRICT_PATHS КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО.
 
 ### Структура активов (STRICT_PATHS)
-- `/images/cats/basya/bXX.webp` — Архив Баси.
-- `/images/cats/savely/sXX.webp` — Архив Савелия.
-- `/images/cats/actions/KUS.webp` — Фото КУСЬ!.
+- `/images/favicon.png` — Иконка вкладки сайта.
+- `/images/cursors/paw02.png` — Кастомный курсор "Лапка".
+- `/images/cats/basya/bXX.webp` — Архив фотографий Баси.
+- `/images/cats/savely/sXX.webp` — Архив фотографий Савелия.
+- `/images/cats/actions/KUS.webp` — Фото спецэффекта "КУСЬ!".

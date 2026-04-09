@@ -8,14 +8,11 @@ try {
 let currentHero = 'b', photoIndex = 1, isUpdating = false, kusCounter = 0;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let nextKusThreshold = Math.floor(Math.random() * 11) + 9;
-
-// WORKSHOP STATE
 const SECRET_CODE = "BS_0704!";
 let workshopImg = null, imgX = 0, imgY = 0, imgScale = 1, isDragging = false, startX, startY;
 
 function preloadArchive(type) {
-    const folder = type === 'b' ? 'basya' : 'savely';
-    const prefix = type === 'b' ? 'b' : 's';
+    const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
     let count = 1;
     function checkNext() {
         let testIdx = count + 1;
@@ -81,14 +78,10 @@ function updateUI() {
     document.getElementById('photo-stat').innerText = `${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
 }
 
-// WORKSHOP LOGIC
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
-function updateWorkshopButtons() {
-    document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`;
-    document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`;
-}
+function updateWorkshopButtons() { document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`; document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`; }
 function getFileName(type) { const next = totalPhotosDetected[type] + 1; return `${type}${next < 10 ? '0'+next : next}.webp`; }
 
 function handleFile(e) {
@@ -132,7 +125,7 @@ function exportPhoto(type) {
     document.getElementById('crop-canvas').toBlob((blob) => {
         const link = document.createElement('a'); link.download = getFileName(type);
         link.href = URL.createObjectURL(blob); link.click();
-        if(confirm("🐾 Фото " + link.download + " готово. Закрыть мастерскую?")) document.getElementById('workshop-modal').style.display = 'none';
+        if(confirm("🐾 " + link.download + " готов. Закрыть?")) document.getElementById('workshop-modal').style.display = 'none';
     }, 'image/webp', 0.8);
 }
 

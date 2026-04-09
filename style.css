@@ -4,8 +4,7 @@ body {
     background: linear-gradient(135deg, #121212, #2c3e50);
     color: #ffffff; font-family: 'Montserrat', sans-serif;
     display: flex; justify-content: center; align-items: center;
-    min-height: 100dvh; margin: 0; overflow-x: hidden; overflow-y: auto;
-    padding: 20px 0 80px 0; cursor: default; user-select: none;
+    min-height: 100dvh; margin: 0; overflow: hidden; padding: 10px 0; cursor: default; user-select: none;
 }
 
 body.shake-effect { animation: screen-shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
@@ -14,62 +13,50 @@ body.shake-effect { animation: screen-shake 0.3s cubic-bezier(.36,.07,.19,.97) b
 .glass-container {
     background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 35px;
-    padding: 25px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-    width: 90vw; max-width: 380px; display: flex; flex-direction: column; gap: 12px;
+    padding: 20px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+    width: 90vw; max-width: 380px; display: flex; flex-direction: column; gap: 8px; margin: auto;
 }
 
+#main-title { margin: 0 0 5px 0; font-size: 1.5rem; }
+
 .hero-display {
-    width: 100%; max-width: 280px; aspect-ratio: 1 / 1; margin: 10px auto;
+    width: 100%; max-width: 280px; aspect-ratio: 1 / 1; margin: 5px auto;
     border-radius: 50%; overflow: hidden; border: 5px solid rgba(255, 152, 0, 0.4);
     box-shadow: 0 0 30px rgba(255, 152, 0, 0.2); position: relative;
     cursor: url('images/cursors/paw02.png'), pointer;
     transition: transform 0.1s ease, border-color 0.5s ease, box-shadow 0.5s ease, filter 0.2s ease;
 }
 
-.hero-display img {
-    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
-    transition: opacity 0.3s ease-in-out; opacity: 1;
-}
+.hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transition: opacity 0.3s ease-in-out; opacity: 1; }
 .hero-display img.fade-out { opacity: 0; }
-
 .hero-display.glow-active { border-color: rgba(255, 215, 0, 0.8); box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
 .hero-display.kus-active { border-color: #ff0000; box-shadow: 0 0 80px #ff0000; filter: invert(1) contrast(2); transform: scale(1.15) rotate(3deg); z-index: 100; }
 
 @media (max-width: 340px), (max-height: 600px) {
+    .glass-container { padding: 10px 15px; gap: 5px; }
+    #main-title { font-size: 1.2rem; }
     .hero-display { max-width: 200px; }
-    h1 { font-size: 1.1rem; }
 }
 
-/* WORKSHOP STYLES */
 .admin-footer { position: fixed; bottom: 10px; right: 15px; z-index: 500; }
 .admin-trigger { font-size: 1.5rem; cursor: pointer; opacity: 0.3; transition: 0.3s; filter: grayscale(1); }
 .admin-trigger:hover { opacity: 1; filter: grayscale(0) rotate(15deg); }
-
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.85); backdrop-filter: blur(15px);
-    display: none; justify-content: center; align-items: center; z-index: 1000;
-}
-
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); display: none; justify-content: center; align-items: center; z-index: 1000; }
 .auth-box { width: 180px; padding: 20px; }
 #admin-pass { width: 100%; background: none; border: none; border-bottom: 2px solid rgba(255,152,0,0.5); color: white; text-align: center; outline: none; }
-
 .workshop-box { width: 95vw; max-width: 450px; gap: 10px; }
 #crop-area { width: 100%; aspect-ratio: 1/1; background: #111; position: relative; overflow: hidden; border-radius: 15px; touch-action: none; cursor: move; }
 #crop-canvas { width: 100%; height: 100%; }
 .circle-mask { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 0 999px rgba(0,0,0,0.5); border: 2px dashed rgba(255,255,255,0.3); pointer-events: none; }
-
 .zoom-control { display: flex; align-items: center; gap: 10px; width: 100%; }
 #zoom-slider { flex: 1; accent-color: #ff9800; cursor: pointer; }
-
 .workshop-controls { display: flex; gap: 10px; width: 100%; }
 .workshop-controls .glass-btn { flex: 1; font-size: 0.7rem; }
-
 .paw-particle { position: fixed; pointer-events: none; font-size: 2rem; z-index: 9999; animation: paw-fly 0.7s forwards; }
 @keyframes paw-fly { 0% { transform: translate(-50%, -50%) scale(1); opacity: 1; } 100% { transform: translate(calc(-50% + var(--x)), calc(-50% + var(--y))) scale(0); opacity: 0; } }
 .milestone-toast { position: fixed; top: 20px; background: rgba(255, 152, 0, 0.2); backdrop-filter: blur(15px); border: 1px solid rgba(255, 152, 0, 0.5); padding: 12px 20px; border-radius: 20px; color: white; z-index: 10000; animation: slideDown 2s forwards; }
 @keyframes slideDown { 0% { transform: translateY(-100px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
-.hero-selector { display: flex; justify-content: center; gap: 10px; }
-.selector-btn { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-.control-grid { display: flex; justify-content: center; gap: 10px; }
-.glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 15px; cursor: pointer; }
+.hero-selector { display: flex; justify-content: center; gap: 8px; }
+.selector-btn { background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); color: white; padding: 6px 10px; border-radius: 10px; cursor: pointer; }
+.control-grid { display: flex; justify-content: center; gap: 8px; }
+.glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px; border-radius: 15px; cursor: pointer; }
