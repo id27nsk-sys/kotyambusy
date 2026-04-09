@@ -4,7 +4,7 @@ let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
 
-// REASON: PRELOAD_DETECTION_STRICT - Рекурсивное фоновое сканирование архива
+// REASON: PRELOAD_DETECTION_STRICT - Фиксируем счетчик сразу
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
     const prefix = type === 'b' ? 'b' : 's';
@@ -19,10 +19,13 @@ function preloadArchive(type) {
         img.onload = () => {
             count++;
             totalPhotosDetected[type] = count;
-            updateUI();
+            updateUI(); // Обновляем UI по мере нахождения новых фото
             checkNext();
         };
-        img.onerror = () => { console.log(`🐾 ${type} scan complete: ${count}`); };
+        img.onerror = () => { 
+            console.log(`🐾 ${type} scan complete: ${count} photos found.`);
+            updateUI(); 
+        };
         img.src = src;
     }
     checkNext();
@@ -34,6 +37,7 @@ function handleAction(event) {
     saveData();
     if (event) createPaw(event);
 
+    // Смена фото каждые 5 поглаживаний
     if (coins % 5 === 0 && !isUpdating) {
         tryNextPhoto();
     }
@@ -46,14 +50,21 @@ function tryNextPhoto() {
     const folder = currentHero === 'b' ? 'basya' : 'savely';
     const prefix = currentHero === 'b' ? 'b' : 's';
     
-    photoIndex = (photoIndex % totalPhotosDetected[currentHero]) + 1;
+    // REASON: Цикл строго по реально обнаруженным фото
+    let max = totalPhotosDetected[currentHero];
+    photoIndex = (photoIndex % max) + 1;
+    
     let fmtIdx = photoIndex < 10 ? `0${photoIndex}` : photoIndex;
-    
     const catImg = document.getElementById('target-cat');
-    catImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
     
-    updateUI();
-    isUpdating = false;
+    // Предзагрузка перед сменой, чтобы не было "мигания"
+    const nextImg = new Image();
+    nextImg.onload = () => {
+        catImg.src = nextImg.src;
+        updateUI();
+        isUpdating = false;
+    };
+    nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.jpg`;
 }
 
 function selectHero(type) {
@@ -66,8 +77,15 @@ function selectHero(type) {
 }
 
 function updateUI() {
-    document.getElementById('coin-count').innerText = coins;
-    document.getElementById('photo-stat').innerText = `${photoIndex}/${totalPhotosDetected[currentHero]}`;
+    const coinDisplay = document.getElementById('coin-count');
+    const photoDisplay = document.getElementById('photo-stat');
+    
+    if (coinDisplay) coinDisplay.innerText = coins;
+    if (photoDisplay) {
+        // Гарантируем, что photoIndex не больше найденного total
+        let currentTotal = totalPhotosDetected[currentHero];
+        photoDisplay.innerText = `${photoIndex}/${currentTotal}`;
+    }
 }
 
 function createPaw(e) {
@@ -85,16 +103,6 @@ function createPaw(e) {
     paw.addEventListener('animationend', () => paw.remove());
 }
 
-function showMilestone() {
-    const toast = document.createElement('div');
-    toast.className = 'milestone-toast';
-    toast.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
-
-function saveData() { localStorage.setItem('coins', coins); }
-
 function resetAll() {
     if(confirm("🐾 Сбросить всё?")) {
         coins = 0; photoIndex = 1;
@@ -104,8 +112,17 @@ function resetAll() {
     }
 }
 
+function saveData() { localStorage.setItem('coins', coins); }
+function showMilestone() {
+    const toast = document.createElement('div');
+    toast.className = 'milestone-toast';
+    toast.innerHTML = `🐾 УРОВЕНЬ ПОВЫШЕН: ${coins} ПОГЛАЖИВАНИЙ 🐾`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
 window.onload = () => {
-    updateUI();
     preloadArchive('b');
     preloadArchive('s');
+    updateUI();
 };
