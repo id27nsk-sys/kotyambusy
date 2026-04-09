@@ -10,7 +10,7 @@ let photoIndex = 1;
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
 let kusCounter = 0;
-let nextKusThreshold = Math.floor(Math.random() * (11) + 9); // 9 to 19
+let nextKusThreshold = Math.floor(Math.random() * (11) + 9);
 
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely';
@@ -51,9 +51,13 @@ function triggerKus() {
     const body = document.body;
     const oldSrc = catImg.src;
 
-    // HAPTIC & SHAKE
+    // SCREEN_SHAKE_STRICT: Унифицированный эффект для всех ОС
     body.classList.add('shake-effect');
-    if ("vibrate" in navigator) { navigator.vibrate([100, 50, 200]); }
+    
+    /* 
+    // REASON: HAPTIC_ATTACK_STRICT деактивирован для унификации опыта Android/iOS.
+    if ("vibrate" in navigator) { navigator.vibrate(); } 
+    */
 
     catImg.src = 'images/cats/actions/KUS.jpg';
     heroBox.classList.add('kus-active');
@@ -107,8 +111,8 @@ function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div');
     paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[clientX]) || 0;
-    const y = e.clientY || (e.touches && e.touches[clientY]) || 0;
+    const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+    const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300; const dY = (Math.random() - 0.5) * 300;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);

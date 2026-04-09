@@ -65,7 +65,6 @@ body.shake-effect {
     box-shadow: 0 0 50px rgba(255, 215, 0, 0.6), inset 0 0 20px rgba(255, 215, 0, 0.4);
 }
 
-/* KUS_ATTACK_STRICT & IMPACT_DYNAMICS_STRICT */
 .hero-display.kus-active {
     border-color: #ff0000;
     box-shadow: 0 0 80px #ff0000, inset 0 0 40px #ff0000;
