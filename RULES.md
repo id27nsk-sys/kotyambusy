@@ -15,20 +15,20 @@
 - **MILESTONE_CELEBRATION**: Каждые 100 поглаживаний сопровождаются уведомлением.
 - **PHOTO_CYCLE_STRICT**: Каждые 5 поглаживаний фото героя меняется.
 - **CURSOR_LOCALIZATION**: Лапка 🐾 активна только внутри круга фото.
-- **ADAPTIVE_STRICT**: Интерфейс стабилен от 240px до 1024px. Без tap-highlight.
+- **ADAPTIVE_STRICT**: Интерфейс стабилен от 240px до 1024px.
 - **PRELOAD_DETECTION_STRICT**: Фоновое сканирование архива сразу при загрузке.
 - **FLUID_STRESS_TEST**: Проверка Micro-Mobile (240px). Использование aspect-ratio: 1/1.
 - **BOTTOM_VISIBILITY_STRICT**: Доступность всех кнопок на экранах от 480px высотой.
 - **DATA_INTEGRITY_STRICT**: Валидация всех данных из localStorage перед использованием.
 - **ASYNC_GUARD_STRICT**: Асинхронные операции защищены флагом isUpdating.
 - **PROGRESS_ACCUMULATION_STRICT**: Счетчик открытых фото не сбрасывается при завершении цикла.
-- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов. Удаление через remove().
+- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов.
 - **OFFLINE_RESILIENCE_TEST**: При ошибке загрузки фото система обязана сохранять стабильность.
 - **CONTRAST_ACCESSIBILITY_TEST**: Текст на панелях должен сохранять высокую контрастность.
 - **GLOW_CELEBRATION**: Золотое сияние при поглаживаниях, кратных 30.
-- **KUS_ATTACK_STRICT**: Только для Баси (b). При достижении рандомного порога (9-19 поглаживаний) фото заменяется на KUS.webp с кровавым свечением.
+- **KUS_ATTACK_STRICT**: Только для Баси (b). Появление KUS.webp с красным свечением.
 - **HAPTIC_ATTACK_STRICT**: (ДЕАКТИВИРОВАНО) Унификация через SCREEN_SHAKE.
-- **HERO_SCALE_STRICT**: Размер круга героя увеличен (280px Standard / 200px Micro).
+- **HERO_SCALE_STRICT**: Размер круга героя оптимизирован под вьюпорт.
 - **SCREEN_SHAKE_STRICT**: Резкая тряска экрана (body) при Кусе.
 - **IMPACT_DYNAMICS_STRICT**: Эффект «Куся» должен быть молниеносным (500ms).
 - **SOFT_TRANSITION_STRICT**: Мягкий визуальный переход (fade) 0.3с для циклов.
@@ -38,12 +38,13 @@
 - **WORKSHOP_MANIPULATION_STRICT**: Поддержка Zoom и Drag для центрирования фото.
 - **DESKTOP_VIEW_CENTERED_STRICT**: На десктопах игровой узел расположен строго по центру вьюпорта.
 - **VERTICAL_ECONOMY_STRICT**: На низких экранах (<600px) отступы сокращаются.
-- **ASSET_IMMORTALITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ ПУТЕЙ ИЗ БЛОКА STRICT_PATHS КАТЕГОРИЧЕСКИ ЗАПРЕЩЕНО.
-- **ZEN_DASHBOARD_STRICT**: Статистика отображается единой лаконичной строкой под заголовком. Кнопки выбора героев освобождены от цифрового шума.
+- **ASSET_IMMORTALITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ ПУТЕЙ ИЗ БЛОКА STRICT_PATHS ЗАПРЕЩЕНО.
+- **ZEN_DASHBOARD_STRICT**: Статистика отображается лаконичной строкой под заголовком.
+- **DYNAMIC_PROPORTION_STRICT**: На Desktop (>1024px) верстка масштабируется пропорционально высоте экрана (vh), на Mobile — ширине (vw). Фото героя обязано быть доминантой взора (до 55vh на ПК).
 
 ### Структура активов (STRICT_PATHS)
-- `/images/favicon.png` — Иконка вкладки сайта.
-- `/images/cursors/paw02.png` — Кастомный курсор "Лапка".
-- `/images/cats/basya/bXX.webp` — Архив фотографий Баси.
-- `/images/cats/savely/sXX.webp` — Архив фотографий Савелия.
-- `/images/cats/actions/KUS.webp` — Фото спецэффекта "КУСЬ!".
+- `/images/favicon.png` — Иконка вкладки.
+- `/images/cursors/paw02.png` — Курсор.
+- `/images/cats/basya/bXX.webp` — Архив Баси.
+- `/images/cats/savely/sXX.webp` — Архив Савелия.
+- `/images/cats/actions/KUS.webp` — Фото КУСЬ!.
