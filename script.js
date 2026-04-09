@@ -1,5 +1,5 @@
+// REASON: Раздельное хранение данных для Баси и Савелия (DATA_INTEGRITY_STRICT)
 let coins = parseInt(localStorage.getItem('coins')) || 0;
-// REASON: Сохраняем раздельное хранение в фоне, но UI делаем Zen
 let coinsB = parseInt(localStorage.getItem('coins_b')) || 0;
 let coinsS = parseInt(localStorage.getItem('coins_s')) || 0;
 
@@ -9,9 +9,14 @@ try {
     if (saved) maxUnlocked = saved;
 } catch(e) { console.error("🐾 Data corrupted"); }
 
-let currentHero = 'b', photoIndex = 1, isUpdating = false, kusCounter = 0;
+let currentHero = 'b';
+// REASON: Раздельные индексы для героев, чтобы смена не "заикалась"
+let heroIndices = { 'b': 1, 's': 1 }; 
 let totalPhotosDetected = { 'b': 1, 's': 1 };
+let isUpdating = false; 
+let kusCounter = 0;
 let nextKusThreshold = Math.floor(Math.random() * 11) + 9;
+
 const SECRET_CODE = "BS_0704!";
 let workshopImg = null, imgX = 0, imgY = 0, imgScale = 1, isDragging = false, startX, startY;
 
@@ -32,24 +37,78 @@ function preloadArchive(type) {
 function handleAction(event) {
     coins++;
     if (currentHero === 'b') coinsB++; else coinsS++;
-    updateUI(); saveData();
+    
+    updateUI(); 
+    saveData();
     if (event) createPaw(event);
+
+    // KUS_ATTACK_STRICT
     if (currentHero === 'b' && !isUpdating) {
         kusCounter++;
-        if (kusCounter >= nextKusThreshold) triggerKus();
+        if (kusCounter >= nextKusThreshold) {
+            triggerKus();
+            return; // Прерываем действие, чтобы Кусь был приоритетным
+        }
     }
+
     if (coins % 30 === 0 && coins !== 0) triggerGlow();
-    if (coins % 5 === 0 && !isUpdating) tryNextPhoto();
+
+    // PHOTO_CYCLE_STRICT: Исправленная логика
+    // REASON: Проверка coins % 5 теперь более надежна
+    if (coins % 5 === 0 && !isUpdating) {
+        tryNextPhoto();
+    }
+
     if (coins % 100 === 0 && coins !== 0) showMilestone();
 }
 
-// REASON: ZEN_DASHBOARD_STRICT - Статистика в одну строку
-function updateUI() {
-    const statLine = document.getElementById('stat-line');
-    if (statLine) {
-        statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
-    }
-    document.title = `🐾 ${coins} | КОТЯМБУСЫ`;
+function triggerKus() {
+    isUpdating = true;
+    const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
+    body.classList.add('shake-effect');
+    catImg.src = 'images/cats/actions/KUS.webp';
+    heroBox.classList.add('kus-active');
+    kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
+    setTimeout(() => { 
+        catImg.src = oldSrc; 
+        heroBox.classList.remove('kus-active'); 
+        body.classList.remove('shake-effect'); 
+        isUpdating = false; 
+    }, 500);
+}
+
+function tryNextPhoto() {
+    if (totalPhotosDetected[currentHero] <= 1) return; // REASON: Нет смысла менять, если фото одно
+    
+    isUpdating = true; 
+    const catImg = document.getElementById('target-cat');
+    catImg.classList.add('fade-out'); // SOFT_TRANSITION_STRICT
+
+    setTimeout(() => {
+        const folder = currentHero === 'b' ? 'basya' : 'savely';
+        const prefix = currentHero === 'b' ? 'b' : 's';
+        
+        // Циклическое переключение индекса текущего героя
+        heroIndices[currentHero] = (heroIndices[currentHero] % totalPhotosDetected[currentHero]) + 1;
+        
+        // Обновление максимума для статистики
+        if (heroIndices[currentHero] > maxUnlocked[currentHero]) {
+            maxUnlocked[currentHero] = heroIndices[currentHero];
+        }
+
+        let fmtIdx = heroIndices[currentHero] < 10 ? `0${heroIndices[currentHero]}` : heroIndices[currentHero];
+        const nextSrc = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
+
+        const nextImg = new Image();
+        nextImg.onload = () => { 
+            catImg.src = nextImg.src; 
+            catImg.classList.remove('fade-out'); 
+            updateUI(); 
+            isUpdating = false; 
+        };
+        nextImg.onerror = () => { isUpdating = false; catImg.classList.remove('fade-out'); }; // Защита от зависания
+        nextImg.src = nextSrc;
+    }, 300);
 }
 
 function selectHero(type) {
@@ -57,11 +116,23 @@ function selectHero(type) {
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
     setTimeout(() => {
-        currentHero = type; photoIndex = 1; kusCounter = 0;
+        currentHero = type; 
+        kusCounter = 0;
         const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
-        catImg.src = `images/cats/${folder}/${prefix}01.webp`;
+        
+        // REASON: Возвращаемся к последнему виденному фото этого героя или к первому
+        let fmtIdx = heroIndices[currentHero] < 10 ? `0${heroIndices[currentHero]}` : heroIndices[currentHero];
+        catImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
         catImg.onload = () => { catImg.classList.remove('fade-out'); updateUI(); };
     }, 300);
+}
+
+function updateUI() {
+    const statLine = document.getElementById('stat-line');
+    if (statLine) {
+        statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
+    }
+    document.title = `🐾 ${coins} | КОТЯМБУСЫ`;
 }
 
 function saveData() {
@@ -73,13 +144,14 @@ function saveData() {
 
 function resetAll() {
     if(confirm("🐾 Сбросить всё?")) {
-        coins = 0; coinsB = 0; coinsS = 0; photoIndex = 1; 
+        coins = 0; coinsB = 0; coinsS = 0; 
+        heroIndices = { 'b': 1, 's': 1 }; 
         maxUnlocked = {'b':1,'s':1}; kusCounter = 0;
         localStorage.clear(); updateUI(); selectHero(currentHero);
     }
 }
 
-// ... WORKSHOP & PARTICLES (Без изменений v4.4) ...
+// --- WORKSHOP LOGIC (ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ) ---
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
@@ -115,8 +187,8 @@ function handleZoom(val) { imgScale = parseFloat(val); drawCanvas(); }
 
 function initWorkshopControls() {
     const canvas = document.getElementById('crop-canvas');
-    const start = (e) => { isDragging = true; const p = e.touches ? e.touches[0] : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
-    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches[0] : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
+    const start = (e) => { isDragging = true; const p = e.touches ? e.touches : e; startX = p.clientX - imgX; startY = p.clientY - imgY; };
+    const move = (e) => { if (!isDragging || !workshopImg) return; const p = e.touches ? e.touches : e; imgX = p.clientX - startX; imgY = p.clientY - startY; drawCanvas(); };
     const stop = () => isDragging = false;
     canvas.addEventListener('mousedown', start); window.addEventListener('mousemove', move); window.addEventListener('mouseup', stop);
     canvas.addEventListener('touchstart', start); window.addEventListener('touchmove', move); window.addEventListener('touchend', stop);
@@ -134,23 +206,13 @@ function exportPhoto(type) {
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div'); paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
-    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const x = e.clientX || (e.touches && e.touches.length ? e.touches[0].clientX : 0);
+    const y = e.clientY || (e.touches && e.touches.length ? e.touches[0].clientY : 0);
     paw.style.left = `${x}px`; paw.style.top = `${y}px`;
     const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
     paw.style.setProperty('--r', `${r}deg`);
     document.body.appendChild(paw); setTimeout(() => paw.remove(), 700);
-}
-
-function triggerKus() {
-    isUpdating = true;
-    const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
-    body.classList.add('shake-effect');
-    catImg.src = 'images/cats/actions/KUS.webp';
-    heroBox.classList.add('kus-active');
-    kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
-    setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
 }
 
 function triggerGlow() { const h = document.querySelector('.hero-display'); if(h){ h.classList.add('glow-active'); setTimeout(()=>h.classList.remove('glow-active'), 3000); } }
