@@ -82,10 +82,15 @@ function selectHero(type) {
 
 function updateUI() {
     const statLine = document.getElementById('stat-line');
-    if (statLine) statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
-    // REASON: Исправление нарушения NAME_STRICT и VISUAL_PAWS_CONSTANT
-    document.title = `🐾 ${coins} | 🐾КОТЯМБУСЫ🐾`;
+    if (statLine) {
+        statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
+    }
+
+    // REASON: Оптимизация заголовка для исключения дублирования лапки рядом с фавиконом.
+    // Старая версия: document.title = `🐾 ${coins} | 🐾КОТЯМБУСЫ🐾`;
+    document.title = `${coins} | 🐾КОТЯМБУСЫ🐾`; 
 }
+
 
 function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('coins_b', coinsB); localStorage.setItem('coins_s', coinsS); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
 function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; coinsB = 0; coinsS = 0; heroIndices = {'b':1,'s':1}; maxUnlocked = {'b':1,'s':1}; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
