@@ -15,14 +15,14 @@
 - **MILESTONE_CELEBRATION**: Каждые 100 поглаживаний сопровождаются уведомлением.
 - **PHOTO_CYCLE_STRICT**: Каждые 5 поглаживаний фото героя меняется.
 - **CURSOR_LOCALIZATION**: Лапка 🐾 активна только внутри круга фото.
-- **ADAPTIVE_STRICT**: Интерфейс стабилен от 240px до 1024px.
+- **ADAPTIVE_STRICT**: Интерфейс стабилен от 240px до 1024px. Без tap-highlight.
 - **PRELOAD_DETECTION_STRICT**: Фоновое сканирование архива сразу при загрузке.
 - **FLUID_STRESS_TEST**: Проверка Micro-Mobile (240px). Использование aspect-ratio: 1/1.
 - **BOTTOM_VISIBILITY_STRICT**: Доступность всех кнопок на экранах от 480px высотой.
 - **DATA_INTEGRITY_STRICT**: Валидация всех данных из localStorage перед использованием.
 - **ASYNC_GUARD_STRICT**: Асинхронные операции защищены флагом isUpdating.
 - **PROGRESS_ACCUMULATION_STRICT**: Счетчик открытых фото не сбрасывается при завершении цикла.
-- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов.
+- **DOM_LEAK_TEST**: Запрещено накопление мусорных узлов. Удаление через remove().
 - **OFFLINE_RESILIENCE_TEST**: Система обязана сохранять стабильность при ошибках загрузки.
 - **CONTRAST_ACCESSIBILITY_TEST**: Текст на панелях должен сохранять высокую контрастность.
 - **GLOW_CELEBRATION**: Золотое сияние при поглаживаниях, кратных 30.
@@ -40,11 +40,12 @@
 - **VERTICAL_ECONOMY_STRICT**: На низких экранах (<600px) отступы максимально сокращаются.
 - **ASSET_IMMORTALITY_STRICT**: УДАЛЕНИЕ ЛЮБЫХ ПУТЕЙ ИЗ БЛОКА STRICT_PATHS ЗАПРЕЩЕНО.
 - **ZEN_DASHBOARD_STRICT**: Статистика отображается лаконичной строкой под заголовком.
-- **DYNAMIC_PROPORTION_STRICT**: На Desktop верстка масштабируется от высоты экрана (vh), на Mobile — от ширины (vw). Кот — доминанта взора.
+- **DYNAMIC_PROPORTION_STRICT**: На Desktop верстка масштабируется от vh, на Mobile — от vw.
+- **MOBILE_FLUID_SYMMETRY_STRICT**: Учет safe-area-inset. Высота элементов в сумме < 95vh.
 
 ### Структура активов (STRICT_PATHS)
-- `/images/favicon.png` — Иконка вкладки.
-- `/images/cursors/paw02.png` — Курсор.
-- `/images/cats/basya/bXX.webp` — Архив Баси.
-- `/images/cats/savely/sXX.webp` — Архив Савелия.
-- `/images/cats/actions/KUS.webp` — Фото КУСЬ!.
+- `/images/favicon.png` — Иконка вкладки сайта.
+- `/images/cursors/paw02.png` — Кастомный курсор "Лапка".
+- `/images/cats/basya/bXX.webp` — Архив фотографий Баси.
+- `/images/cats/savely/sXX.webp` — Архив фотографий Савелия.
+- `/images/cats/actions/KUS.webp` — Фото спецэффекта "КУСЬ!".

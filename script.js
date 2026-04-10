@@ -83,17 +83,17 @@ function selectHero(type) {
 function updateUI() {
     const statLine = document.getElementById('stat-line');
     if (statLine) statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
-    document.title = `🐾 ${coins} | КОТЯМБУСЫ`;
+    // REASON: Исправление нарушения NAME_STRICT и VISUAL_PAWS_CONSTANT
+    document.title = `🐾 ${coins} | 🐾КОТЯМБУСЫ🐾`;
 }
 
 function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('coins_b', coinsB); localStorage.setItem('coins_s', coinsS); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
 function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; coinsB = 0; coinsS = 0; heroIndices = {'b':1,'s':1}; maxUnlocked = {'b':1,'s':1}; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
 
-// WORKSHOP FIX: Исправлено отображение локальных фото
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
-function updateWorkshopButtons() { document.getElementById('btn-b').innerText = `ДЛЯ БАСИ (${getFileName('b')})`; document.getElementById('btn-s').innerText = `ДЛЯ САВЕЛИЯ (${getFileName('s')})`; }
+function updateWorkshopButtons() { document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`; document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`; }
 function getFileName(type) { const next = totalPhotosDetected[type] + 1; return `${type}${next < 10 ? '0'+next : next}.webp`; }
 
 function handleFile(e) {
@@ -101,17 +101,15 @@ function handleFile(e) {
     reader.onload = (event) => {
         workshopImg = new Image();
         workshopImg.onload = () => {
-            // REASON: Сброс координат и масштаба при новом фото
             const side = Math.min(workshopImg.width, workshopImg.height);
-            imgScale = 800 / side; 
-            imgX = 0; imgY = 0;
+            imgScale = 800 / side; imgX = 0; imgY = 0;
             document.getElementById('zoom-slider').value = imgScale;
             drawCanvas();
             document.getElementById('filename-preview').innerText = "Фото загружено. Двигай и зумируй!";
         };
         workshopImg.src = event.target.result;
     };
-    if (e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+    if (e.target.files) reader.readAsDataURL(e.target.files[0]);
 }
 
 function drawCanvas() {
@@ -140,16 +138,15 @@ function exportPhoto(type) {
     document.getElementById('crop-canvas').toBlob((blob) => {
         const link = document.createElement('a'); link.download = getFileName(type);
         link.href = URL.createObjectURL(blob); link.click();
-        if(confirm("🐾 " + link.download + " готов. Закрыть?")) document.getElementById('workshop-modal').style.display = 'none';
+        if(confirm("🐾 Фото " + link.download + " готово. Закрыть мастерскую?")) document.getElementById('workshop-modal').style.display = 'none';
     }, 'image/webp', 0.8);
 }
 
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div'); paw.className = 'paw-particle'; paw.innerHTML = '🐾';
-    const x = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
-    const y = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
-    paw.style.left = `${x}px`; paw.style.top = `${y}px`;
+    const p = e.touches ? e.touches[0] : e;
+    paw.style.left = `${p.clientX}px`; paw.style.top = `${p.clientY}px`;
     const dX = (Math.random() - 0.5) * 300, dY = (Math.random() - 0.5) * 300, r = Math.random() * 360;
     paw.style.setProperty('--x', `${dX}px`); paw.style.setProperty('--y', `${dY}px`);
     paw.style.setProperty('--r', `${r}deg`);

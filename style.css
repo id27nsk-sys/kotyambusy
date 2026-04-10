@@ -1,9 +1,12 @@
+:root { --safe-gap: clamp(8px, 2vh, 20px); }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
     background: linear-gradient(135deg, #121212, #2c3e50);
     color: #ffffff; font-family: 'Montserrat', sans-serif;
     display: flex; justify-content: center; align-items: center;
-    min-height: 100dvh; margin: 0; overflow: hidden; padding: 15px; cursor: default; user-select: none;
+    min-height: 100dvh; margin: 0; overflow: hidden;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    user-select: none;
 }
 body.shake-effect { animation: screen-shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 @keyframes screen-shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
@@ -11,39 +14,38 @@ body.shake-effect { animation: screen-shake 0.3s cubic-bezier(.36,.07,.19,.97) b
     background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 40px;
     padding: clamp(15px, 3vh, 40px); text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
-    width: 95%; max-width: clamp(320px, 80vh, 600px); 
-    display: flex; flex-direction: column; gap: clamp(8px, 2vh, 20px); margin: auto;
+    width: min(92vw, 600px); max-height: 95vh;
+    display: flex; flex-direction: column; gap: var(--safe-gap); margin: auto;
 }
-#main-title { margin: 0; font-size: clamp(1.2rem, 3vh, 2.2rem); }
+#main-title { margin: 0; font-size: clamp(1.2rem, 3.5vw, 2.2rem); line-height: 1.1; }
 .zen-stats { font-size: clamp(0.75rem, 1.8vh, 1.1rem); opacity: 0.8; letter-spacing: 1px; }
 .hero-display {
-    width: clamp(180px, 70vw, 280px); height: clamp(180px, 70vw, 280px);
-    aspect-ratio: 1 / 1; margin: 5px auto;
-    border-radius: 50%; overflow: hidden; border: clamp(4px, 0.8vh, 10px) solid rgba(255, 152, 0, 0.4);
-    box-shadow: 0 0 40px rgba(255, 152, 0, 0.2); position: relative;
+    width: min(65vw, 45vh); height: min(65vw, 45vh);
+    aspect-ratio: 1 / 1; margin: 0 auto;
+    border-radius: 50%; overflow: hidden; border: clamp(4px, 1vw, 10px) solid rgba(255, 152, 0, 0.4);
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.2); position: relative; flex-shrink: 0;
     cursor: url('images/cursors/paw02.png'), pointer;
-    transition: transform 0.1s ease, border-color 0.5s ease, box-shadow 0.5s ease, filter 0.2s ease, width 0.3s ease, height 0.3s ease;
-    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease, filter 0.2s ease;
 }
 .hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transition: opacity 0.3s ease-in-out; opacity: 1; }
 .hero-display img.fade-out { opacity: 0; }
 .hero-display.glow-active { border-color: rgba(255, 215, 0, 0.8); box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
 .hero-display.kus-active { border-color: #ff0000; box-shadow: 0 0 80px #ff0000; filter: invert(1) contrast(2); transform: scale(1.1) rotate(3deg); z-index: 100; }
-.hero-selector { display: flex; justify-content: center; gap: 12px; }
+.hero-selector { display: flex; justify-content: center; gap: clamp(8px, 2vw, 15px); }
 .selector-btn { 
-    background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); 
-    color: white; padding: clamp(8px, 1.5vh, 18px) clamp(12px, 2vw, 25px); 
+    flex: 1; max-width: 180px; background: rgba(255,152,0,0.1); border: 1px solid rgba(255,152,0,0.3); 
+    color: white; padding: clamp(10px, 1.8vh, 18px) 10px; 
     border-radius: 15px; cursor: pointer; font-weight: 700; 
-    font-size: clamp(0.75rem, 1.6vh, 1rem); transition: 0.2s;
+    font-size: clamp(0.7rem, 3.5vw, 0.9rem); transition: 0.2s;
 }
 @media (min-width: 1024px) {
-    .hero-display { width: clamp(350px, 55vh, 550px); height: clamp(350px, 55vh, 550px); margin: 10px auto 20px auto; }
+    .hero-display { width: clamp(350px, 50vh, 500px); height: clamp(350px, 50vh, 500px); }
+    .glass-container { gap: 20px; padding: 40px; }
 }
 @media (max-height: 600px) {
-    .glass-container { padding: 10px 15px; gap: 5px; }
-    .hero-display { width: clamp(160px, 45vh, 220px); height: clamp(160px, 45vh, 220px); }
-    #main-title { font-size: 1.1rem; }
-    .zen-stats { font-size: 0.7rem; }
+    :root { --safe-gap: 5px; }
+    .hero-display { width: 35vh; height: 35vh; }
+    #main-title { font-size: 1rem; }
 }
 .admin-footer { position: fixed; bottom: 10px; right: 15px; z-index: 500; }
 .admin-trigger { font-size: 1.5rem; cursor: pointer; opacity: 0.3; transition: 0.3s; }
