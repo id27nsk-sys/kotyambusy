@@ -12,6 +12,9 @@ let nextKusThreshold = Math.floor(Math.random() * 11) + 9;
 const SECRET_CODE = "BS_0704!";
 let workshopImg = null, imgX = 0, imgY = 0, imgScale = 1, isDragging = false, startX, startY;
 
+// 🆕 Флаг для блокировки кликов во время Куся
+let isKusActive = false;
+
 function preloadArchive(type) {
     const folder = type === 'b' ? 'basya' : 'savely', prefix = type === 'b' ? 'b' : 's';
     let count = 1;
@@ -21,12 +24,16 @@ function preloadArchive(type) {
         let src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
         const img = new Image();
         img.onload = () => { count++; totalPhotosDetected[type] = count; updateUI(); checkNext(); };
+        img.onerror = () => { totalPhotosDetected[type] = count; updateUI(); };
         img.src = src;
     }
     checkNext();
 }
 
+// 🆕 Исправлено: блокировка кликов во время Куся
 function handleAction(event) {
+    if (isKusActive) return;
+    
     coins++;
     if (currentHero === 'b') coinsB++; else coinsS++;
     updateUI(); saveData();
@@ -40,30 +47,59 @@ function handleAction(event) {
     if (coins % 100 === 0 && coins !== 0) showMilestone();
 }
 
+// 🆕 Исправлено: добавлена блокировка isKusActive
 function triggerKus() {
+    if (isKusActive) return;
+    isKusActive = true;
     isUpdating = true;
+    
     const heroBox = document.querySelector('.hero-display'), catImg = document.getElementById('target-cat'), body = document.body, oldSrc = catImg.src;
     body.classList.add('shake-effect');
     catImg.src = 'images/cats/actions/KUS.webp';
     heroBox.classList.add('kus-active');
     kusCounter = 0; nextKusThreshold = Math.floor(Math.random() * 11) + 9;
-    setTimeout(() => { catImg.src = oldSrc; heroBox.classList.remove('kus-active'); body.classList.remove('shake-effect'); isUpdating = false; }, 500);
+    setTimeout(() => { 
+        catImg.src = oldSrc; 
+        heroBox.classList.remove('kus-active'); 
+        body.classList.remove('shake-effect'); 
+        isUpdating = false;
+        isKusActive = false;
+    }, 500);
 }
 
+// 🆕 Исправлено: защита от потери индекса при ошибке загрузки фото
 function tryNextPhoto() {
     if (totalPhotosDetected[currentHero] <= 1) return;
-    isUpdating = true; 
+    isUpdating = true;
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
+    
+    const oldIndex = heroIndices[currentHero];
+    const newIndex = (oldIndex % totalPhotosDetected[currentHero]) + 1;
+    
     setTimeout(() => {
-        const folder = currentHero === 'b' ? 'basya' : 'savely', prefix = currentHero === 'b' ? 'b' : 's';
-        heroIndices[currentHero] = (heroIndices[currentHero] % totalPhotosDetected[currentHero]) + 1;
-        if (heroIndices[currentHero] > maxUnlocked[currentHero]) maxUnlocked[currentHero] = heroIndices[currentHero];
-        let fmtIdx = heroIndices[currentHero] < 10 ? `0${heroIndices[currentHero]}` : heroIndices[currentHero];
+        const folder = currentHero === 'b' ? 'basya' : 'savely';
+        const prefix = currentHero === 'b' ? 'b' : 's';
+        const fmtIdx = newIndex < 10 ? `0${newIndex}` : newIndex;
+        const imgSrc = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
+        
         const nextImg = new Image();
-        nextImg.onload = () => { catImg.src = nextImg.src; catImg.classList.remove('fade-out'); updateUI(); isUpdating = false; };
-        nextImg.onerror = () => { isUpdating = false; catImg.classList.remove('fade-out'); };
-        nextImg.src = `images/cats/${folder}/${prefix}${fmtIdx}.webp`;
+        nextImg.onload = () => {
+            heroIndices[currentHero] = newIndex;
+            if (heroIndices[currentHero] > maxUnlocked[currentHero]) {
+                maxUnlocked[currentHero] = heroIndices[currentHero];
+            }
+            catImg.src = imgSrc;
+            catImg.classList.remove('fade-out');
+            updateUI();
+            isUpdating = false;
+        };
+        nextImg.onerror = () => {
+            console.warn(`🐾 Фото не загружено: ${imgSrc}`);
+            catImg.classList.remove('fade-out');
+            isUpdating = false;
+        };
+        nextImg.src = imgSrc;
     }, 300);
 }
 
@@ -85,21 +121,42 @@ function updateUI() {
     if (statLine) {
         statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
     }
-
-    // REASON: Оптимизация заголовка для исключения дублирования лапки рядом с фавиконом.
-    // Старая версия: document.title = `🐾 ${coins} | 🐾КОТЯМБУСЫ🐾`;
-    document.title = `${coins} | 🐾КОТЯМБУСЫ🐾`; 
+    document.title = `${coins} | 🐾КОТЯМБУСЫ🐾`;
 }
 
-
 function saveData() { localStorage.setItem('coins', coins); localStorage.setItem('coins_b', coinsB); localStorage.setItem('coins_s', coinsS); localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked)); }
-function resetAll() { if(confirm("🐾 Сбросить всё?")) { coins = 0; coinsB = 0; coinsS = 0; heroIndices = {'b':1,'s':1}; maxUnlocked = {'b':1,'s':1}; kusCounter = 0; localStorage.clear(); updateUI(); selectHero(currentHero); } }
+
+// 🆕 Исправлено: переопределение totalPhotosDetected при сбросе
+function resetAll() {
+    if(confirm("🐾 Сбросить всё?")) {
+        coins = 0;
+        coinsB = 0;
+        coinsS = 0;
+        heroIndices = {'b':1,'s':1};
+        maxUnlocked = {'b':1,'s':1};
+        kusCounter = 0;
+        localStorage.clear();
+        
+        totalPhotosDetected = { 'b': 1, 's': 1 };
+        preloadArchive('b');
+        preloadArchive('s');
+        
+        updateUI();
+        selectHero(currentHero);
+    }
+}
 
 function openAuth() { document.getElementById('auth-modal').style.display = 'flex'; document.getElementById('admin-pass').focus(); }
 function closeModals(e) { if(e.target.className === 'modal-overlay') e.target.style.display = 'none'; }
 function checkPass(val) { if (val === SECRET_CODE) { document.getElementById('auth-modal').style.display = 'none'; document.getElementById('admin-pass').value = ''; document.getElementById('workshop-modal').style.display = 'flex'; updateWorkshopButtons(); } }
 function updateWorkshopButtons() { document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`; document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`; }
-function getFileName(type) { const next = totalPhotosDetected[type] + 1; return `${type}${next < 10 ? '0'+next : next}.webp`; }
+
+// 🆕 Исправлено: защита от undefined totalPhotosDetected
+function getFileName(type) {
+    const next = (totalPhotosDetected[type] || 0) + 1;
+    const padded = next < 10 ? `0${next}` : next;
+    return `${type}${padded}.webp`;
+}
 
 function handleFile(e) {
     const reader = new FileReader();

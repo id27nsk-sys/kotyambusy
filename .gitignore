@@ -1,0 +1,9 @@
+# Системные файлы
+desktop.ini
+.DS_Store
+Thumbs.db
+*.tmp
+
+# Логи и зависимости (если появятся)
+node_modules/
+*.log
