@@ -13,7 +13,7 @@ let currentHero = 'b';
 let heroIndices = { 'b': 1, 's': 1 };
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
-let photoTimeout = null;               // 🆕 для отмены смены фото
+let photoTimeout = null;
 
 // Логика Куся для Баси
 let lastTapTime = Date.now();
@@ -95,6 +95,9 @@ function handleAction(event) {
     const now = Date.now();
     const interval = now - lastTapTime;
     
+    // Защита от спама (клики чаще 50 мс игнорируем)
+    if (interval < 50) return;
+    
     if (lastTapTime !== now && currentHero === 'b') {
         if (interval < fastThreshold) {
             triggerKus('fast');
@@ -122,13 +125,12 @@ function handleAction(event) {
     updateBorderColor(0);
 }
 
-// ========== СМЕНА ФОТО В ЦИКЛЕ (исправлено) ==========
+// ========== СМЕНА ФОТО В ЦИКЛЕ (с Fade-in) ==========
 function tryNextPhoto() {
-    if (isKusActive) return;                      // 🆕 защита от Куся
+    if (isKusActive) return;
     if (totalPhotosDetected[currentHero] <= 1) return;
     
-    if (photoTimeout) clearTimeout(photoTimeout); // 🆕 отмена предыдущего
-    
+    if (photoTimeout) clearTimeout(photoTimeout);
     isUpdating = true;
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
@@ -148,11 +150,17 @@ function tryNextPhoto() {
             if (heroIndices[currentHero] > maxUnlocked[currentHero]) {
                 maxUnlocked[currentHero] = heroIndices[currentHero];
             }
+            
             catImg.src = imgSrc;
             catImg.classList.remove('fade-out');
-            updateUI();
-            isUpdating = false;
-            photoTimeout = null;
+            catImg.classList.add('fade-in');
+            
+            setTimeout(() => {
+                catImg.classList.remove('fade-in');
+                updateUI();
+                isUpdating = false;
+                photoTimeout = null;
+            }, 300);
         };
         nextImg.onerror = () => {
             console.warn(`🐾 Фото не загружено: ${imgSrc}`);
@@ -164,11 +172,10 @@ function tryNextPhoto() {
     }, 300);
 }
 
-// ========== КУСЬ! (исправлено) ==========
+// ========== КУСЬ! (исправлена блокировка) ==========
 function triggerKus(reason = 'random') {
     if (isKusActive) return;
     
-    // 🆕 отменяем запланированную смену фото
     if (photoTimeout) {
         clearTimeout(photoTimeout);
         photoTimeout = null;
@@ -197,16 +204,21 @@ function triggerKus(reason = 'random') {
         catImg.src = oldSrc;
         heroBox.classList.remove('kus-active');
         body.classList.remove('shake-effect');
+        
         isUpdating = false;
         isKusActive = false;
         
         heroBox.style.borderColor = '';
         heroBox.style.boxShadow = '';
+        
+        // Ключевое исправление: полный сброс таймера
         lastTapTime = Date.now();
+        
+        updateUI();
     }, 500);
 }
 
-// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ (исправлено) ==========
+// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ ==========
 function selectHero(type) {
     if (isUpdating || isKusActive) return;
     
@@ -230,12 +242,17 @@ function selectHero(type) {
         
         catImg.onload = () => {
             catImg.classList.remove('fade-out');
-            updateUI();
-            const heroBox = document.querySelector('.hero-display');
-            if (heroBox) {
-                heroBox.style.borderColor = '';
-                heroBox.style.boxShadow = '';
-            }
+            catImg.classList.add('fade-in');
+            
+            setTimeout(() => {
+                catImg.classList.remove('fade-in');
+                updateUI();
+                const heroBox = document.querySelector('.hero-display');
+                if (heroBox) {
+                    heroBox.style.borderColor = '';
+                    heroBox.style.boxShadow = '';
+                }
+            }, 300);
         };
     }, 300);
 }

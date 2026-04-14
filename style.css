@@ -8,7 +8,6 @@ body {
     padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     user-select: none;
 }
-/* ИСПРАВЛЕНО: унифицировано с 500ms из RULES.md и JS */
 body.shake-effect { animation: screen-shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
 @keyframes screen-shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
 .glass-container {
@@ -26,10 +25,18 @@ body.shake-effect { animation: screen-shake 0.5s cubic-bezier(.36,.07,.19,.97) b
     border-radius: 50%; overflow: hidden; border: clamp(4px, 1vw, 10px) solid rgba(255, 152, 0, 0.4);
     box-shadow: 0 0 30px rgba(255, 152, 0, 0.2); position: relative; flex-shrink: 0;
     cursor: url('images/cursors/paw02.png'), pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.1s ease, filter 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease, filter 0.2s ease;
 }
 .hero-display img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; transition: opacity 0.3s ease-in-out; opacity: 1; }
 .hero-display img.fade-out { opacity: 0; }
+.hero-display img.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 .hero-display.glow-active { border-color: rgba(255, 215, 0, 0.8); box-shadow: 0 0 50px rgba(255, 215, 0, 0.6); }
 .hero-display.kus-active { border-color: #ff0000; box-shadow: 0 0 80px #ff0000; filter: invert(1) contrast(2); transform: scale(1.1) rotate(3deg); z-index: 100; }
 .hero-selector { display: flex; justify-content: center; gap: clamp(8px, 2vw, 15px); }
@@ -67,7 +74,3 @@ body.shake-effect { animation: screen-shake 0.5s cubic-bezier(.36,.07,.19,.97) b
 @keyframes slideDown { 0% { transform: translateY(-100px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
 .control-grid { display: flex; justify-content: center; gap: 8px; }
 .glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: clamp(6px, 1.2vh, 12px); border-radius: 15px; cursor: pointer; font-size: clamp(0.7rem, 1.4vh, 0.9rem); }
-/* Плавный переход цвета рамки (индикатор скорости для Баси) */
-.hero-display {
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
