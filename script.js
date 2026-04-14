@@ -1,28 +1,26 @@
 /**
- * Kotyambusy Engine v2.6 (Complete Restoration)
- * Соблюдение RULES.md: Чистый JS, верные пути, полная поддержка HTML.
+ * Kotyambusy Engine v2.7 (Hard Fix)
+ * Соответствует RULES.md: images/cats/basya/b01.webp
  */
 
+// Глобальный конфиг
 const APP_CONFIG = {
     PATHS: {
-        SAVELY: 'images/cats/savely/',
-        BASYA: 'images/cats/basya/',
+        basya: 'images/cats/basya/',
+        savely: 'images/cats/savely/',
         KUS: 'images/KUS.webp'
     },
-    PREFIXES: {
-        savely: 's',
-        basya: 'b'
-    },
-    GAMEPLAY: {
-        WORKSHOP_CODE: '1111'
+    PREFIX: {
+        basya: 'b',
+        savely: 's'
     }
 };
 
-// --- СОСТОЯНИЕ ИГРЫ ---
+// Состояние (грузим из памяти)
 let clicks = parseInt(localStorage.getItem('clicks')) || 0;
 let currentCat = localStorage.getItem('currentCat') || 'basya';
 let isKusActive = false;
-let nextKusThreshold = clicks + 10;
+let nextKusThreshold = clicks + 5;
 
 let photoIndices = {
     basya: parseInt(localStorage.getItem('basya_idx')) || 1,
@@ -31,154 +29,140 @@ let photoIndices = {
 
 const milestones = [10, 50, 100, 500, 1000];
 
-// --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
-function getCatPhotoPath(cat, index) {
-    const prefix = APP_CONFIG.PREFIXES[cat];
-    const fileName = `${prefix}${index.toString().padStart(2, '0')}.webp`;
-    return `${APP_CONFIG.PATHS[cat.toUpperCase()]}${fileName}`;
+// 1. Вспомогательная функция путей
+function getPath(cat, index) {
+    const p = APP_CONFIG.PREFIX[cat];
+    const idx = index.toString().padStart(2, '0');
+    return `${APP_CONFIG.PATHS[cat]}${p}${idx}.webp`;
 }
 
+// 2. Обновление интерфейса
 function updateUI() {
-    const clickCountEl = document.getElementById('click-count');
-    const catNameEl = document.getElementById('cat-name');
-    const counterEl = document.getElementById('photo-counter');
+    const clickEl = document.getElementById('click-count');
+    const nameEl = document.getElementById('cat-name');
+    const countEl = document.getElementById('photo-counter');
     
-    if (clickCountEl) clickCountEl.textContent = clicks;
-    if (catNameEl) catNameEl.textContent = currentCat.toUpperCase();
-    if (counterEl) counterEl.textContent = `Фото: ${photoIndices[currentCat]}`;
+    if (clickEl) clickEl.textContent = clicks;
+    if (nameEl) nameEl.textContent = currentCat.toUpperCase();
+    if (countEl) countEl.textContent = `Фото: ${photoIndices[currentCat]}`;
+    
     document.title = `Котямбусы: ${clicks}`;
 }
 
-// --- ЛОГИКА КЛИКА И ФОТО ---
+// 3. Главная функция клика (вызывается из HTML через onclick)
 function handleInteraction(event) {
     if (isKusActive) return;
 
     clicks++;
     
-    // Координаты для лапок
+    // Координаты лапок
     const x = event.clientX || (event.touches && event.touches[0].clientX);
     const y = event.clientY || (event.touches && event.touches[0].clientY);
     if (x && y) createPaw(x, y);
 
+    // Достижения
     if (milestones.includes(clicks)) showMilestone(clicks);
 
+    // Кусь или фото
     if (clicks >= nextKusThreshold) {
         triggerKus();
     } else {
-        changePhoto();
+        const cat = currentCat;
+        photoIndices[cat]++;
+        
+        const nextSrc = getPath(cat, photoIndices[cat]);
+        const testImg = new Image();
+        testImg.onload = () => {
+            document.getElementById('cat-img').src = nextSrc;
+        };
+        testImg.onerror = () => {
+            photoIndices[cat] = 1;
+            document.getElementById('cat-img').src = getPath(cat, 1);
+        };
+        testImg.src = nextSrc;
     }
 
-    saveGame();
+    save();
     updateUI();
 }
 
-function changePhoto() {
-    const cat = currentCat;
-    photoIndices[cat]++;
-    
-    const nextSrc = getCatPhotoPath(cat, photoIndices[cat]);
-    const imgTest = new Image();
-    
-    imgTest.onload = () => {
-        document.getElementById('cat-img').src = nextSrc;
-    };
-    imgTest.onerror = () => {
-        photoIndices[cat] = 1;
-        document.getElementById('cat-img').src = getCatPhotoPath(cat, 1);
-    };
-    imgTest.src = nextSrc;
-}
-
+// 4. Механика КУСЬ
 function triggerKus() {
     isKusActive = true;
-    const catImg = document.getElementById('cat-img');
-    const oldSrc = catImg.src;
+    const img = document.getElementById('cat-img');
+    const oldSrc = img.src;
     
-    catImg.src = APP_CONFIG.PATHS.KUS;
+    img.src = APP_CONFIG.PATHS.KUS;
     document.body.classList.add('shake-effect');
     
     setTimeout(() => {
-        catImg.src = oldSrc;
+        img.src = oldSrc;
         isKusActive = false;
         document.body.classList.remove('shake-effect');
-        nextKusThreshold = clicks + Math.floor(Math.random() * 15) + 5;
-    }, 1500);
+        nextKusThreshold = clicks + Math.floor(Math.random() * 10) + 5;
+    }, 1000);
 }
 
-// --- ВИЗУАЛЬНЫЕ ЭФФЕКТЫ ---
-function createPaw(x, y) {
-    const paw = document.createElement('div');
-    paw.className = 'paw';
-    paw.style.left = `${x - 20}px`;
-    paw.style.top = `${y - 20}px`;
-    paw.style.transform = `rotate(${Math.random() * 360}deg)`;
-    document.body.appendChild(paw);
-    setTimeout(() => paw.remove(), 1000);
-}
-
-function showMilestone(count) {
-    const msg = document.createElement('div');
-    msg.className = 'milestone-notif';
-    msg.textContent = `Достижение: ${count} кусей!`;
-    document.body.appendChild(msg);
-    setTimeout(() => msg.remove(), 3000);
-}
-
-// --- УПРАВЛЕНИЕ И ИНТЕРФЕЙС (Для кнопок в HTML) ---
+// 5. Кнопки переключения
 function switchCat(cat) {
     currentCat = cat;
-    document.getElementById('cat-img').src = getCatPhotoPath(cat, photoIndices[cat]);
-    saveGame();
+    document.getElementById('cat-img').src = getPath(cat, photoIndices[cat]);
+    save();
     updateUI();
 }
 
 function resetProgress() {
-    if (confirm("Сбросить прогресс?")) {
-        clicks = 0;
-        photoIndices = { basya: 1, savely: 1 };
+    if (confirm("Сбросить всё?")) {
         localStorage.clear();
         location.reload();
     }
 }
 
 function toggleSettings() {
-    const panel = document.getElementById('settings-panel');
-    if (panel) panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    const p = document.getElementById('settings-panel');
+    if (p) p.style.display = (p.style.display === 'block') ? 'none' : 'block';
 }
 
-// --- МАСТЕРСКАЯ (WORKSHOP) ---
-function initWorkshop() {
-    const codeInput = document.getElementById('workshop-code');
-    if (codeInput) {
-        codeInput.addEventListener('input', (e) => {
-            if (e.target.value === APP_CONFIG.GAMEPLAY.WORKSHOP_CODE) {
-                const panel = document.getElementById('workshop-panel');
-                if (panel) panel.style.display = 'block';
-            }
-        });
-    }
+// 6. Визуал
+function createPaw(x, y) {
+    const paw = document.createElement('div');
+    paw.className = 'paw';
+    paw.style.left = (x - 20) + 'px';
+    paw.style.top = (y - 20) + 'px';
+    document.body.appendChild(paw);
+    setTimeout(() => paw.remove(), 800);
 }
 
-function exportPhoto() {
-    const canvas = document.getElementById('workshop-canvas');
-    if (!canvas) return;
-    const link = document.createElement('a');
-    link.download = `edit_${currentCat}_${photoIndices[currentCat]}.webp`;
-    link.href = canvas.toDataURL('image/webp');
-    link.click();
+function showMilestone(c) {
+    const n = document.createElement('div');
+    n.className = 'milestone-notif';
+    n.textContent = `Достижение: ${c}!`;
+    document.body.appendChild(n);
+    setTimeout(() => n.remove(), 2000);
 }
 
-// --- СОХРАНЕНИЕ ---
-function saveGame() {
+function save() {
     localStorage.setItem('clicks', clicks);
     localStorage.setItem('currentCat', currentCat);
     localStorage.setItem('basya_idx', photoIndices.basya);
     localStorage.setItem('savely_idx', photoIndices.savely);
 }
 
-// --- СТАРТ ---
+// Мастерская
+function checkCode(val) {
+    if (val === '1111') {
+        const p = document.getElementById('workshop-panel');
+        if (p) p.style.display = 'block';
+    }
+}
+
+// Инициализация
 window.onload = () => {
     updateUI();
-    document.getElementById('cat-img').src = getCatPhotoPath(currentCat, photoIndices[currentCat]);
-    initWorkshop();
+    const mainImg = document.getElementById('cat-img');
+    if (mainImg) mainImg.src = getPath(currentCat, photoIndices[currentCat]);
+    
+    // Привязка кода воркшопа
+    const codeInp = document.getElementById('workshop-code');
+    if (codeInp) codeInp.oninput = (e) => checkCode(e.target.value);
 };
