@@ -13,12 +13,13 @@ let currentHero = 'b';
 let heroIndices = { 'b': 1, 's': 1 };
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
+let photoTimeout = null;               // 🆕 для отмены смены фото
 
-// Новая логика для Баси (вместо kusCounter и nextKusThreshold)
-let lastTapTime = Date.now();           // Время последнего клика
-let isKusActive = false;                // Флаг блокировки во время Куся
-let fastThreshold = 150;                // Быстрый порог (мс)
-let slowThreshold = 3000;               // Медленный порог (мс)
+// Логика Куся для Баси
+let lastTapTime = Date.now();
+let isKusActive = false;
+let fastThreshold = 150;
+let slowThreshold = 3000;
 
 // Мастерская
 const SECRET_CODE = "BS_0704!";
@@ -27,12 +28,11 @@ let imgX = 0, imgY = 0, imgScale = 1;
 let isDragging = false;
 let startX, startY;
 
-// ========== ФУНКЦИЯ ОБНОВЛЕНИЯ ЦВЕТА РАМКИ (индикатор) ==========
+// ========== ФУНКЦИЯ ОБНОВЛЕНИЯ ЦВЕТА РАМКИ ==========
 function updateBorderColor(interval) {
     const heroBox = document.querySelector('.hero-display');
     if (!heroBox) return;
     
-    // Если активен Кусь или выбран Савелий — сбрасываем цвет к стандартному
     if (isKusActive || currentHero !== 'b') {
         heroBox.style.borderColor = '';
         heroBox.style.boxShadow = '';
@@ -42,23 +42,18 @@ function updateBorderColor(interval) {
     let borderColor, boxShadow;
     
     if (interval < fastThreshold) {
-        // Опасно быстро
         borderColor = '#ff4444';
         boxShadow = '0 0 20px rgba(255, 68, 68, 0.5)';
     } else if (interval < 500) {
-        // Быстро, но терпимо
         borderColor = '#ffaa44';
         boxShadow = '0 0 15px rgba(255, 170, 68, 0.3)';
     } else if (interval <= 2000) {
-        // Золотая середина
         borderColor = '#44ff44';
         boxShadow = '0 0 10px rgba(68, 255, 68, 0.2)';
     } else if (interval < slowThreshold) {
-        // Замедление
         borderColor = '#ffaa44';
         boxShadow = '0 0 15px rgba(255, 170, 68, 0.3)';
     } else {
-        // Опасно медленно
         borderColor = '#ff4444';
         boxShadow = '0 0 20px rgba(255, 68, 68, 0.5)';
     }
@@ -95,86 +90,45 @@ function preloadArchive(type) {
 
 // ========== ОСНОВНОЕ ДЕЙСТВИЕ (ПОГЛАЖИВАНИЕ) ==========
 function handleAction(event) {
-    if (isKusActive) return;             // Блокируем клики во время Куся
+    if (isKusActive) return;
     
     const now = Date.now();
     const interval = now - lastTapTime;
     
-    // Для первого клика в сессии lastTapTime = now, интервал не считаем
     if (lastTapTime !== now && currentHero === 'b') {
-        // СЛИШКОМ БЫСТРО
         if (interval < fastThreshold) {
             triggerKus('fast');
             return;
         }
-        // СЛИШКОМ МЕДЛЕННО
         if (interval > slowThreshold) {
             triggerKus('slow');
             return;
         }
     }
     
-    // Нормальное поглаживание (или Савелий, или Бася в золотой середине)
+    // Нормальное поглаживание
     coins++;
     if (currentHero === 'b') coinsB++; else coinsS++;
     updateUI();
     saveData();
     if (event) createPaw(event);
     
-    // Обновляем время последнего клика ПОСЛЕ обработки
     lastTapTime = now;
     
-    // Стандартные эффекты
     if (coins % 30 === 0 && coins !== 0) triggerGlow();
-    if (coins % 5 === 0 && !isUpdating) tryNextPhoto();
+    if (coins % 5 === 0 && !isUpdating && !isKusActive) tryNextPhoto();
     if (coins % 100 === 0 && coins !== 0) showMilestone();
     
-    // Обновляем цвет рамки
-    updateBorderColor(0);  // 0, потому что только что кликнули
+    updateBorderColor(0);
 }
 
-// ========== КУСЬ! ==========
-function triggerKus(reason = 'random') {
-    if (isKusActive) return;
-    isKusActive = true;
-    isUpdating = true;
-    
-    const heroBox = document.querySelector('.hero-display');
-    const catImg = document.getElementById('target-cat');
-    const body = document.body;
-    const oldSrc = catImg.src;
-    
-    body.classList.add('shake-effect');
-    catImg.src = 'images/cats/actions/KUS.webp';
-    heroBox.classList.add('kus-active');
-    
-    // Разные сообщения в зависимости от причины
-    let message = '';
-    if (reason === 'fast') message = '🐾 БАСЯ КУСАЕТСЯ! Не тыкай так быстро! 🐾';
-    else if (reason === 'slow') message = '🐾 БАСЯ КУСАЕТСЯ! Ты забыл про меня? 🐾';
-    else message = '🐾 БАСЯ КУСАЕТСЯ! 🐾';
-    
-    showToast(message);
-    
-    setTimeout(() => {
-        catImg.src = oldSrc;
-        heroBox.classList.remove('kus-active');
-        body.classList.remove('shake-effect');
-        isUpdating = false;
-        isKusActive = false;
-        
-        // Возвращаем стандартный цвет рамки
-        heroBox.style.borderColor = '';
-        heroBox.style.boxShadow = '';
-        
-        // Сбрасываем lastTapTime, чтобы после Куся не было мгновенного повторного срабатывания
-        lastTapTime = Date.now();
-    }, 500);
-}
-
-// ========== СМЕНА ФОТО В ЦИКЛЕ ==========
+// ========== СМЕНА ФОТО В ЦИКЛЕ (исправлено) ==========
 function tryNextPhoto() {
+    if (isKusActive) return;                      // 🆕 защита от Куся
     if (totalPhotosDetected[currentHero] <= 1) return;
+    
+    if (photoTimeout) clearTimeout(photoTimeout); // 🆕 отмена предыдущего
+    
     isUpdating = true;
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
@@ -182,7 +136,7 @@ function tryNextPhoto() {
     const oldIndex = heroIndices[currentHero];
     const newIndex = (oldIndex % totalPhotosDetected[currentHero]) + 1;
     
-    setTimeout(() => {
+    photoTimeout = setTimeout(() => {
         const folder = currentHero === 'b' ? 'basya' : 'savely';
         const prefix = currentHero === 'b' ? 'b' : 's';
         const fmtIdx = newIndex < 10 ? `0${newIndex}` : newIndex;
@@ -198,25 +152,75 @@ function tryNextPhoto() {
             catImg.classList.remove('fade-out');
             updateUI();
             isUpdating = false;
+            photoTimeout = null;
         };
         nextImg.onerror = () => {
             console.warn(`🐾 Фото не загружено: ${imgSrc}`);
             catImg.classList.remove('fade-out');
             isUpdating = false;
+            photoTimeout = null;
         };
         nextImg.src = imgSrc;
     }, 300);
 }
 
-// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ ==========
+// ========== КУСЬ! (исправлено) ==========
+function triggerKus(reason = 'random') {
+    if (isKusActive) return;
+    
+    // 🆕 отменяем запланированную смену фото
+    if (photoTimeout) {
+        clearTimeout(photoTimeout);
+        photoTimeout = null;
+        isUpdating = false;
+    }
+    
+    isKusActive = true;
+    isUpdating = true;
+    
+    const heroBox = document.querySelector('.hero-display');
+    const catImg = document.getElementById('target-cat');
+    const body = document.body;
+    const oldSrc = catImg.src;
+    
+    body.classList.add('shake-effect');
+    catImg.src = 'images/cats/actions/KUS.webp';
+    heroBox.classList.add('kus-active');
+    
+    let message = '';
+    if (reason === 'fast') message = '🐾 БАСЯ КУСАЕТСЯ! Не тыкай так быстро! 🐾';
+    else if (reason === 'slow') message = '🐾 БАСЯ КУСАЕТСЯ! Ты забыл про меня? 🐾';
+    else message = '🐾 БАСЯ КУСАЕТСЯ! 🐾';
+    showToast(message);
+    
+    setTimeout(() => {
+        catImg.src = oldSrc;
+        heroBox.classList.remove('kus-active');
+        body.classList.remove('shake-effect');
+        isUpdating = false;
+        isKusActive = false;
+        
+        heroBox.style.borderColor = '';
+        heroBox.style.boxShadow = '';
+        lastTapTime = Date.now();
+    }, 500);
+}
+
+// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ (исправлено) ==========
 function selectHero(type) {
-    if (isUpdating) return;
+    if (isUpdating || isKusActive) return;
+    
+    if (photoTimeout) {
+        clearTimeout(photoTimeout);
+        photoTimeout = null;
+        isUpdating = false;
+    }
+    
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
     
     setTimeout(() => {
         currentHero = type;
-        // Сбрасываем счётчик кликов для Баси (чтобы не было ложного срабатывания)
         lastTapTime = Date.now();
         
         const folder = type === 'b' ? 'basya' : 'savely';
@@ -227,8 +231,6 @@ function selectHero(type) {
         catImg.onload = () => {
             catImg.classList.remove('fade-out');
             updateUI();
-            
-            // Сбрасываем цвет рамки (для Савелия — стандартный, для Баси — пересчитаем позже)
             const heroBox = document.querySelector('.hero-display');
             if (heroBox) {
                 heroBox.style.borderColor = '';
@@ -238,7 +240,7 @@ function selectHero(type) {
     }, 300);
 }
 
-// ========== ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ==========
+// ========== ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ==========
 function updateUI() {
     const statLine = document.getElementById('stat-line');
     if (statLine) {
@@ -247,7 +249,6 @@ function updateUI() {
     document.title = `${coins} | 🐾КОТЯМБУСЫ🐾`;
 }
 
-// ========== СОХРАНЕНИЕ ПРОГРЕССА ==========
 function saveData() {
     localStorage.setItem('coins', coins);
     localStorage.setItem('coins_b', coinsB);
@@ -255,7 +256,6 @@ function saveData() {
     localStorage.setItem('maxUnlocked', JSON.stringify(maxUnlocked));
 }
 
-// ========== СБРОС ПРОГРЕССА ==========
 function resetAll() {
     if (confirm("🐾 Сбросить всё?")) {
         coins = 0;
@@ -270,16 +270,20 @@ function resetAll() {
         preloadArchive('b');
         preloadArchive('s');
         
-        // Сбрасываем таймеры для Баси
         lastTapTime = Date.now();
         isKusActive = false;
+        
+        if (photoTimeout) {
+            clearTimeout(photoTimeout);
+            photoTimeout = null;
+        }
+        isUpdating = false;
         
         updateUI();
         selectHero(currentHero);
     }
 }
 
-// ========== МАСТЕРСКАЯ ==========
 function openAuth() {
     document.getElementById('auth-modal').style.display = 'flex';
     document.getElementById('admin-pass').focus();
@@ -388,7 +392,6 @@ function exportPhoto(type) {
     }, 'image/webp', 0.8);
 }
 
-// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
 function createPaw(e) {
     if (document.querySelectorAll('.paw-particle').length > 20) return;
     const paw = document.createElement('div');
