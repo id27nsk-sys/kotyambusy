@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>??змз░з┤з┴зозвз╡з│з╜??</title>
+    <title>ЁЯР╛╨Ъ╨Ю╨в╨п╨Ь╨С╨г╨б╨лЁЯР╛</title>
     <link rel="icon" href="images/favicon.png" type="image/png">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="glass-container">
-        <h1 id="main-title">??змз░з┤з┴зозвз╡з│з╜??</h1>
+        <h1 id="main-title">ЁЯР╛╨Ъ╨Ю╨в╨п╨Ь╨С╨г╨б╨лЁЯР╛</h1>
         <div class="zen-stats">
-            <span id="stat-line">?? 0 | з╢зрзфзр: 1/1</span>
+            <span id="stat-line">ЁЯР╛ 0 | ╨д╨╛╤В╨╛: 1/1</span>
         </div>
         <div class="hero-display" onclick="handleAction(event)">
-            <img src="images/cats/basya/b01.webp" id="target-cat" alt="??">
+            <img src="images/cats/basya/b01.webp" id="target-cat" alt="ЁЯР╛">
         </div>
         <nav class="hero-selector">
-            <button class="selector-btn" onclick="selectHero('b')">?? звзбз│з┴</button>
-            <button class="selector-btn" onclick="selectHero('s')">?? з│збзгзжзнзкзл</button>
+            <button class="selector-btn" onclick="selectHero('b')">ЁЯР╛ ╨С╨Р╨б╨п</button>
+            <button class="selector-btn" onclick="selectHero('s')">ЁЯР╛ ╨б╨Р╨Т╨Х╨Ы╨Ш╨Щ</button>
         </nav>
         <div class="control-grid">
-            <button class="glass-btn small" onclick="showGallery()">?? здзбзнзжз▓зжз┴</button>
-            <button class="glass-btn reset" onclick="resetAll()">з│звз▓з░з│ ??</button>
+            <button class="glass-btn small" onclick="showGallery()">ЁЯР╛ ╨У╨Р╨Ы╨Х╨а╨Х╨п</button>
+            <button class="glass-btn reset" onclick="resetAll()">╨б╨С╨а╨Ю╨б ЁЯР╛</button>
         </div>
     </div>
     <footer class="admin-footer">
-        <div class="admin-trigger" onclick="openAuth()">??</div>
+        <div class="admin-trigger" onclick="openAuth()">ЁЯз╢</div>
     </footer>
     <div id="auth-modal" class="modal-overlay" onclick="closeModals(event)">
         <div class="glass-container auth-box">
@@ -36,30 +36,29 @@
     </div>
     <div id="workshop-modal" class="modal-overlay" onclick="closeModals(event)">
         <div class="glass-container workshop-box">
-            <h2 style="font-size: 1.1rem;">?? зозбз│з┤зжз▓з│змзбз┴</h2>
+            <h2 style="font-size: 1.1rem;">ЁЯР╛ ╨Ь╨Р╨б╨в╨Х╨а╨б╨Ъ╨Р╨п</h2>
             <input type="file" id="file-input" accept="image/*" onchange="handleFile(event)" class="glass-btn" style="width:100%;">
             <div id="crop-area">
                 <canvas id="crop-canvas"></canvas>
                 <div class="circle-mask"></div>
             </div>
             <div class="zoom-control">
-                <span>?</span>
+                <span>тЮЦ</span>
                 <input type="range" id="zoom-slider" min="0.1" max="3" step="0.01" value="1" oninput="handleZoom(this.value)">
-                <span>?</span>
+                <span>тЮХ</span>
             </div>
-            <p id="filename-preview" style="font-size: 0.7rem; color: rgba(255,152,0,0.8);">зйз╤з╘зтзхз┘з┌зфз╓ зцзрзфзр</p>
+            <p id="filename-preview" style="font-size: 0.7rem; color: rgba(255,152,0,0.8);">╨Ч╨░╨│╤А╤Г╨╖╨╕╤В╨╡ ╤Д╨╛╤В╨╛</p>
             <div class="workshop-controls">
-                <button class="glass-btn" id="btn-b" onclick="exportPhoto('b')">звзбз│з┴</button>
-                <button class="glass-btn" id="btn-s" onclick="exportPhoto('s')">з│збзгзжзнзкзл</button>
+                <button class="glass-btn" id="btn-b" onclick="exportPhoto('b')">╨С╨Р╨б╨п</button>
+                <button class="glass-btn" id="btn-s" onclick="exportPhoto('s')">╨б╨Р╨Т╨Х╨Ы╨Ш╨Щ</button>
             </div>
         </div>
     </div>
-    <!-- зпз░згз░зж зоз░зезбзнз╛зпз░зж з░змзпз░ зезнз┴ здзбзнзжз▓зжзк -->
     <div id="gallery-modal" class="modal-overlay" onclick="closeModals(event)">
         <div class="glass-container gallery-box">
-            <h2>?? здзбзнзжз▓зжз┴ ??</h2>
+            <h2>ЁЯР╛ ╨У╨Р╨Ы╨Х╨а╨Х╨п ЁЯР╛</h2>
             <div id="gallery-content" class="gallery-grid"></div>
-            <button class="glass-btn" onclick="closeModals({target: document.getElementById('gallery-modal')})">зйзбзмз▓з╜з┤з╛</button>
+            <button class="glass-btn" onclick="closeModals({target: document.getElementById('gallery-modal')})">╨Ч╨Р╨Ъ╨а╨л╨в╨м</button>
         </div>
     </div>
     <script src="script.js"></script>
