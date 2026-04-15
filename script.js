@@ -13,13 +13,16 @@ let currentHero = 'b';
 let heroIndices = { 'b': 1, 's': 1 };
 let totalPhotosDetected = { 'b': 1, 's': 1 };
 let isUpdating = false;
-let photoTimeout = null;               // 🆕 для отмены смены фото
+let photoTimeout = null;
 
 // Логика Куся для Баси
 let lastTapTime = Date.now();
 let isKusActive = false;
-let fastThreshold = 150;
-let slowThreshold = 3000;
+const FAST_THRESHOLD = 150;
+const SLOW_THRESHOLD = 3000;
+
+// Для оптимизации setInterval
+let borderColorInterval = null;
 
 // Мастерская
 const SECRET_CODE = "BS_0704!";
@@ -41,7 +44,7 @@ function updateBorderColor(interval) {
     
     let borderColor, boxShadow;
     
-    if (interval < fastThreshold) {
+    if (interval < FAST_THRESHOLD) {
         borderColor = '#ff4444';
         boxShadow = '0 0 20px rgba(255, 68, 68, 0.5)';
     } else if (interval < 500) {
@@ -50,7 +53,7 @@ function updateBorderColor(interval) {
     } else if (interval <= 2000) {
         borderColor = '#44ff44';
         boxShadow = '0 0 10px rgba(68, 255, 68, 0.2)';
-    } else if (interval < slowThreshold) {
+    } else if (interval < SLOW_THRESHOLD) {
         borderColor = '#ffaa44';
         boxShadow = '0 0 15px rgba(255, 170, 68, 0.3)';
     } else {
@@ -95,12 +98,14 @@ function handleAction(event) {
     const now = Date.now();
     const interval = now - lastTapTime;
     
+    if (interval < 50) return; // защита от спама
+    
     if (lastTapTime !== now && currentHero === 'b') {
-        if (interval < fastThreshold) {
+        if (interval < FAST_THRESHOLD) {
             triggerKus('fast');
             return;
         }
-        if (interval > slowThreshold) {
+        if (interval > SLOW_THRESHOLD) {
             triggerKus('slow');
             return;
         }
@@ -122,13 +127,18 @@ function handleAction(event) {
     updateBorderColor(0);
 }
 
-// ========== СМЕНА ФОТО В ЦИКЛЕ (исправлено) ==========
+// ========== СМЕНА ФОТО В ЦИКЛЕ (с Fade-in) ==========
 function tryNextPhoto() {
-    if (isKusActive) return;                      // 🆕 защита от Куся
-    if (totalPhotosDetected[currentHero] <= 1) return;
+    if (isKusActive) return;
+    if (totalPhotosDetected[currentHero] <= 1) {
+        // Подсказка, что нет других фото
+        if (totalPhotosDetected[currentHero] === 1) {
+            showToast("🐾 У котика пока только одно фото! Загрузи новые в Мастерской.", 3000);
+        }
+        return;
+    }
     
-    if (photoTimeout) clearTimeout(photoTimeout); // 🆕 отмена предыдущего
-    
+    if (photoTimeout) clearTimeout(photoTimeout);
     isUpdating = true;
     const catImg = document.getElementById('target-cat');
     catImg.classList.add('fade-out');
@@ -150,9 +160,13 @@ function tryNextPhoto() {
             }
             catImg.src = imgSrc;
             catImg.classList.remove('fade-out');
-            updateUI();
-            isUpdating = false;
-            photoTimeout = null;
+            catImg.classList.add('fade-in');
+            setTimeout(() => {
+                catImg.classList.remove('fade-in');
+                updateUI();
+                isUpdating = false;
+                photoTimeout = null;
+            }, 300);
         };
         nextImg.onerror = () => {
             console.warn(`🐾 Фото не загружено: ${imgSrc}`);
@@ -164,11 +178,10 @@ function tryNextPhoto() {
     }, 300);
 }
 
-// ========== КУСЬ! (исправлено) ==========
+// ========== КУСЬ! ==========
 function triggerKus(reason = 'random') {
     if (isKusActive) return;
     
-    // 🆕 отменяем запланированную смену фото
     if (photoTimeout) {
         clearTimeout(photoTimeout);
         photoTimeout = null;
@@ -206,7 +219,7 @@ function triggerKus(reason = 'random') {
     }, 500);
 }
 
-// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ (исправлено) ==========
+// ========== ПЕРЕКЛЮЧЕНИЕ ГЕРОЯ (с Fade-in) ==========
 function selectHero(type) {
     if (isUpdating || isKusActive) return;
     
@@ -230,17 +243,67 @@ function selectHero(type) {
         
         catImg.onload = () => {
             catImg.classList.remove('fade-out');
-            updateUI();
-            const heroBox = document.querySelector('.hero-display');
-            if (heroBox) {
-                heroBox.style.borderColor = '';
-                heroBox.style.boxShadow = '';
-            }
+            catImg.classList.add('fade-in');
+            setTimeout(() => {
+                catImg.classList.remove('fade-in');
+                updateUI();
+                const heroBox = document.querySelector('.hero-display');
+                if (heroBox) {
+                    heroBox.style.borderColor = '';
+                    heroBox.style.boxShadow = '';
+                }
+            }, 300);
         };
     }, 300);
 }
 
-// ========== ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ==========
+// ========== ГАЛЕРЕЯ (показ открытых фото) ==========
+function showGallery() {
+    const galleryModal = document.getElementById('gallery-modal');
+    const galleryContent = document.getElementById('gallery-content');
+    if (!galleryModal || !galleryContent) return;
+    
+    // Очищаем старые превью
+    galleryContent.innerHTML = '';
+    
+    const hero = currentHero;
+    const folder = hero === 'b' ? 'basya' : 'savely';
+    const prefix = hero === 'b' ? 'b' : 's';
+    const maxUnlockedCount = maxUnlocked[hero];
+    
+    if (maxUnlockedCount <= 0) {
+        galleryContent.innerHTML = '<p style="color:white;">Нет открытых фото. Погладьте котика!</p>';
+    } else {
+        for (let i = 1; i <= maxUnlockedCount; i++) {
+            const idx = i < 10 ? `0${i}` : i;
+            const imgSrc = `images/cats/${folder}/${prefix}${idx}.webp`;
+            const img = document.createElement('img');
+            img.src = imgSrc;
+            img.alt = `Фото ${i}`;
+            img.title = `Фото ${i}`;
+            // При клике на превью можно закрыть галерею и установить это фото? (по желанию)
+            img.onclick = (function(index) {
+                return function() {
+                    // Устанавливаем текущее фото в главный круг (но без нарушения цикла)
+                    if (!isUpdating && !isKusActive) {
+                        heroIndices[hero] = index;
+                        const catImg = document.getElementById('target-cat');
+                        catImg.src = imgSrc;
+                        updateUI();
+                        closeModals({target: galleryModal});
+                    } else {
+                        showToast("🐾 Подождите, сейчас нельзя сменить фото", 1500);
+                    }
+                };
+            })(i);
+            galleryContent.appendChild(img);
+        }
+    }
+    
+    galleryModal.style.display = 'flex';
+}
+
+// ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
 function updateUI() {
     const statLine = document.getElementById('stat-line');
     if (statLine) {
@@ -281,6 +344,13 @@ function resetAll() {
         
         updateUI();
         selectHero(currentHero);
+        // Сброс цвета рамки
+        const heroBox = document.querySelector('.hero-display');
+        if (heroBox) {
+            heroBox.style.borderColor = '';
+            heroBox.style.boxShadow = '';
+        }
+        updateBorderColor(0);
     }
 }
 
@@ -397,9 +467,18 @@ function createPaw(e) {
     const paw = document.createElement('div');
     paw.className = 'paw-particle';
     paw.innerHTML = '🐾';
-    const p = e.touches ? e.touches[0] : e;
-    paw.style.left = `${p.clientX}px`;
-    paw.style.top = `${p.clientY}px`;
+    let clientX, clientY;
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else if (e.clientX) {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    } else {
+        return;
+    }
+    paw.style.left = `${clientX}px`;
+    paw.style.top = `${clientY}px`;
     const dX = (Math.random() - 0.5) * 300;
     const dY = (Math.random() - 0.5) * 300;
     paw.style.setProperty('--x', `${dX}px`);
@@ -432,14 +511,34 @@ function showToast(message, duration = 2000) {
     setTimeout(() => toast.remove(), duration);
 }
 
-// ========== ПЕРИОДИЧЕСКОЕ ОБНОВЛЕНИЕ ЦВЕТА РАМКИ ==========
-setInterval(() => {
-    if (currentHero === 'b' && !isKusActive) {
-        const now = Date.now();
-        const interval = now - lastTapTime;
-        updateBorderColor(interval);
+// ========== ОПТИМИЗИРОВАННЫЙ ИНТЕРВАЛ ДЛЯ ЦВЕТА РАМКИ ==========
+function startBorderColorInterval() {
+    if (borderColorInterval) clearInterval(borderColorInterval);
+    borderColorInterval = setInterval(() => {
+        if (currentHero === 'b' && !isKusActive) {
+            const now = Date.now();
+            const interval = now - lastTapTime;
+            updateBorderColor(interval);
+        }
+    }, 100);
+}
+
+function stopBorderColorInterval() {
+    if (borderColorInterval) {
+        clearInterval(borderColorInterval);
+        borderColorInterval = null;
     }
-}, 100);
+}
+
+// Следим за сменой героя, чтобы останавливать/запускать интервал (оптимизация)
+const originalSelectHero = selectHero;
+window.selectHero = function(type) {
+    if (type !== currentHero) {
+        if (type === 'b') startBorderColorInterval();
+        else stopBorderColorInterval();
+    }
+    originalSelectHero(type);
+};
 
 // ========== ЗАПУСК ПРИ ЗАГРУЗКЕ ==========
 window.onload = () => {
@@ -447,4 +546,5 @@ window.onload = () => {
     preloadArchive('s');
     updateUI();
     initWorkshopControls();
+    if (currentHero === 'b') startBorderColorInterval();
 };
