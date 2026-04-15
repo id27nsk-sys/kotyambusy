@@ -1,13 +1,42 @@
 // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
-let coins = parseInt(localStorage.getItem('coins')) || 0;
-let coinsB = parseInt(localStorage.getItem('coins_b')) || 0;
-let coinsS = parseInt(localStorage.getItem('coins_s')) || 0;
-let maxUnlocked = { 'b': 1, 's': 1 };
 
-try {
-    const saved = JSON.parse(localStorage.getItem('maxUnlocked'));
-    if (saved) maxUnlocked = saved;
-} catch(e) { console.error("🐾 Data corrupted"); }
+// Функция безопасного преобразования в число
+function sanitizeNumber(value, defaultValue = 0) {
+    const num = Number(value);
+    return isNaN(num) ? defaultValue : Math.max(0, Math.floor(num));
+}
+
+// Функция безопасного чтения из localStorage
+function loadFromStorage() {
+    let coins = sanitizeNumber(localStorage.getItem('coins'));
+    let coinsB = sanitizeNumber(localStorage.getItem('coins_b'));
+    let coinsS = sanitizeNumber(localStorage.getItem('coins_s'));
+    let maxUnlocked = { 'b': 1, 's': 1 };
+
+    try {
+        const saved = JSON.parse(localStorage.getItem('maxUnlocked'));
+        if (saved && typeof saved === 'object' && saved !== null) {
+            maxUnlocked = {
+                'b': sanitizeNumber(saved.b, 1),
+                's': sanitizeNumber(saved.s, 1)
+            };
+            // Ограничиваем разумным максимумом
+            if (maxUnlocked.b > 100) maxUnlocked.b = 100;
+            if (maxUnlocked.s > 100) maxUnlocked.s = 100;
+        }
+    } catch(e) {
+        console.error("🐾 Данные повреждены, использую значения по умолчанию");
+    }
+    
+    return { coins, coinsB, coinsS, maxUnlocked };
+}
+
+// Инициализация переменных
+let loadResult = loadFromStorage();
+let coins = loadResult.coins;
+let coinsB = loadResult.coinsB;
+let coinsS = loadResult.coinsS;
+let maxUnlocked = loadResult.maxUnlocked;
 
 let currentHero = 'b';
 let heroIndices = { 'b': 1, 's': 1 };
@@ -21,7 +50,7 @@ let isKusActive = false;
 let fastThreshold = 150;
 let slowThreshold = 3000;
 
-// Мастерская
+// Мастерская (не меняем)
 const SECRET_CODE = "BS_0704!";
 let workshopImg = null;
 let imgX = 0, imgY = 0, imgScale = 1;
@@ -172,7 +201,7 @@ function tryNextPhoto() {
     }, 300);
 }
 
-// ========== КУСЬ! (исправлена блокировка) ==========
+// ========== КУСЬ! ==========
 function triggerKus(reason = 'random') {
     if (isKusActive) return;
     
@@ -211,7 +240,7 @@ function triggerKus(reason = 'random') {
         heroBox.style.borderColor = '';
         heroBox.style.boxShadow = '';
         
-        // Ключевое исправление: полный сброс таймера
+        // Полный сброс таймера
         lastTapTime = Date.now();
         
         updateUI();
@@ -257,13 +286,15 @@ function selectHero(type) {
     }, 300);
 }
 
-// ========== ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений) ==========
+// ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
 function updateUI() {
     const statLine = document.getElementById('stat-line');
     if (statLine) {
         statLine.innerText = `🐾 ${coins} | Фото: ${maxUnlocked[currentHero]}/${totalPhotosDetected[currentHero]}`;
     }
-    document.title = `${coins} | 🐾КОТЯМБУСЫ🐾`;
+    // Безопасная установка title
+    const safeCoins = String(coins).replace(/[^\d]/g, '');
+    document.title = `${safeCoins} | 🐾КОТЯМБУСЫ🐾`;
 }
 
 function saveData() {
@@ -281,7 +312,11 @@ function resetAll() {
         heroIndices = { 'b': 1, 's': 1 };
         maxUnlocked = { 'b': 1, 's': 1 };
         
-        localStorage.clear();
+        // Удаляем ТОЛЬКО ключи приложения
+        localStorage.removeItem('coins');
+        localStorage.removeItem('coins_b');
+        localStorage.removeItem('coins_s');
+        localStorage.removeItem('maxUnlocked');
         
         totalPhotosDetected = { 'b': 1, 's': 1 };
         preloadArchive('b');
@@ -303,34 +338,42 @@ function resetAll() {
 
 function openAuth() {
     document.getElementById('auth-modal').style.display = 'flex';
-    document.getElementById('admin-pass').focus();
+    const passInput = document.getElementById('admin-pass');
+    if (passInput) passInput.focus();
 }
 
 function closeModals(e) {
-    if (e.target.className === 'modal-overlay') e.target.style.display = 'none';
+    if (e.target.classList && e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+    }
 }
 
 function checkPass(val) {
     if (val === SECRET_CODE) {
         document.getElementById('auth-modal').style.display = 'none';
-        document.getElementById('admin-pass').value = '';
+        const passInput = document.getElementById('admin-pass');
+        if (passInput) passInput.value = '';
         document.getElementById('workshop-modal').style.display = 'flex';
         updateWorkshopButtons();
     }
 }
 
 function updateWorkshopButtons() {
-    document.getElementById('btn-b').innerText = `БАСЯ (${getFileName('b')})`;
-    document.getElementById('btn-s').innerText = `САВЕЛИЙ (${getFileName('s')})`;
+    const btnB = document.getElementById('btn-b');
+    const btnS = document.getElementById('btn-s');
+    if (btnB) btnB.innerText = `БАСЯ (${getFileName('b')})`;
+    if (btnS) btnS.innerText = `САВЕЛИЙ (${getFileName('s')})`;
 }
 
 function getFileName(type) {
-    const next = (totalPhotosDetected[type] || 0) + 1;
+    const detected = totalPhotosDetected[type];
+    const next = (detected !== undefined && detected !== null) ? detected + 1 : 1;
     const padded = next < 10 ? `0${next}` : next;
     return `${type}${padded}.webp`;
 }
 
 function handleFile(e) {
+    if (!e.target.files || e.target.files.length === 0) return;
     const reader = new FileReader();
     reader.onload = (event) => {
         workshopImg = new Image();
@@ -339,18 +382,21 @@ function handleFile(e) {
             imgScale = 800 / side;
             imgX = 0;
             imgY = 0;
-            document.getElementById('zoom-slider').value = imgScale;
+            const zoomSlider = document.getElementById('zoom-slider');
+            if (zoomSlider) zoomSlider.value = imgScale;
             drawCanvas();
-            document.getElementById('filename-preview').innerText = "Фото загружено. Двигай и зумируй!";
+            const preview = document.getElementById('filename-preview');
+            if (preview) preview.innerText = "Фото загружено. Двигай и зумируй!";
         };
         workshopImg.src = event.target.result;
     };
-    if (e.target.files) reader.readAsDataURL(e.target.files[0]);
+    reader.readAsDataURL(e.target.files[0]);
 }
 
 function drawCanvas() {
     if (!workshopImg) return;
     const canvas = document.getElementById('crop-canvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = 800;
     canvas.height = 800;
@@ -369,9 +415,15 @@ function handleZoom(val) {
 
 function initWorkshopControls() {
     const canvas = document.getElementById('crop-canvas');
-    const getPos = (e) => e.touches ? e.touches[0] : e;
+    if (!canvas) return;
+    
+    const getPos = (e) => {
+        if (e.touches && e.touches.length > 0) return e.touches[0];
+        return e;
+    };
     
     const start = (e) => {
+        e.preventDefault();
         isDragging = true;
         const p = getPos(e);
         startX = p.clientX - imgX;
@@ -380,6 +432,7 @@ function initWorkshopControls() {
     
     const move = (e) => {
         if (!isDragging || !workshopImg) return;
+        e.preventDefault();
         const p = getPos(e);
         imgX = p.clientX - startX;
         imgY = p.clientY - startY;
@@ -397,8 +450,13 @@ function initWorkshopControls() {
 }
 
 function exportPhoto(type) {
-    if (!workshopImg) return alert("🐾 Выбери фото!");
-    document.getElementById('crop-canvas').toBlob((blob) => {
+    if (!workshopImg) {
+        alert("🐾 Выбери фото!");
+        return;
+    }
+    const canvas = document.getElementById('crop-canvas');
+    if (!canvas) return;
+    canvas.toBlob((blob) => {
         const link = document.createElement('a');
         link.download = getFileName(type);
         link.href = URL.createObjectURL(blob);
@@ -410,11 +468,23 @@ function exportPhoto(type) {
 }
 
 function createPaw(e) {
+    if (!e) return;
     if (document.querySelectorAll('.paw-particle').length > 20) return;
+    
     const paw = document.createElement('div');
     paw.className = 'paw-particle';
     paw.innerHTML = '🐾';
-    const p = e.touches ? e.touches[0] : e;
+    
+    // Безопасное получение координат
+    let p = e;
+    if (e.touches && e.touches.length > 0) {
+        p = e.touches[0];
+    } else if (e.changedTouches && e.changedTouches.length > 0) {
+        p = e.changedTouches[0];
+    }
+    
+    if (!p || p.clientX === undefined) return;
+    
     paw.style.left = `${p.clientX}px`;
     paw.style.top = `${p.clientY}px`;
     const dX = (Math.random() - 0.5) * 300;
@@ -449,6 +519,68 @@ function showToast(message, duration = 2000) {
     setTimeout(() => toast.remove(), duration);
 }
 
+// ========== НАСТРОЙКА ОБРАБОТЧИКОВ СОБЫТИЙ ==========
+function bindEventHandlers() {
+    // Клик по кругу
+    const heroDisplay = document.getElementById('hero-display');
+    if (heroDisplay) {
+        heroDisplay.addEventListener('click', handleAction);
+    }
+    
+    // Кнопки выбора героя
+    document.querySelectorAll('.selector-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const hero = btn.getAttribute('data-hero');
+            if (hero === 'b' || hero === 's') selectHero(hero);
+        });
+    });
+    
+    // Кнопка ФОТО
+    const photosBtn = document.getElementById('btn-show-photos');
+    if (photosBtn) {
+        photosBtn.addEventListener('click', () => {
+            showToast("🐾 Фотоальбом в разработке");
+        });
+    }
+    
+    // Кнопка СБРОС
+    const resetBtn = document.getElementById('btn-reset');
+    if (resetBtn) resetBtn.addEventListener('click', resetAll);
+    
+    // Триггер мастерской
+    const adminTrigger = document.getElementById('admin-trigger');
+    if (adminTrigger) adminTrigger.addEventListener('click', openAuth);
+    
+    // Закрытие модалок
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', closeModals);
+    });
+    
+    // Поле пароля
+    const adminPass = document.getElementById('admin-pass');
+    if (adminPass) {
+        adminPass.addEventListener('input', (e) => checkPass(e.target.value));
+    }
+    
+    // Загрузка файла
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFile);
+    }
+    
+    // Зум слайдер
+    const zoomSlider = document.getElementById('zoom-slider');
+    if (zoomSlider) {
+        zoomSlider.addEventListener('input', (e) => handleZoom(e.target.value));
+    }
+    
+    // Кнопки экспорта
+    const exportB = document.getElementById('btn-b');
+    const exportS = document.getElementById('btn-s');
+    if (exportB) exportB.addEventListener('click', () => exportPhoto('b'));
+    if (exportS) exportS.addEventListener('click', () => exportPhoto('s'));
+}
+
 // ========== ПЕРИОДИЧЕСКОЕ ОБНОВЛЕНИЕ ЦВЕТА РАМКИ ==========
 setInterval(() => {
     if (currentHero === 'b' && !isKusActive) {
@@ -460,6 +592,7 @@ setInterval(() => {
 
 // ========== ЗАПУСК ПРИ ЗАГРУЗКЕ ==========
 window.onload = () => {
+    bindEventHandlers();
     preloadArchive('b');
     preloadArchive('s');
     updateUI();

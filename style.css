@@ -74,3 +74,33 @@ body.shake-effect { animation: screen-shake 0.5s cubic-bezier(.36,.07,.19,.97) b
 @keyframes slideDown { 0% { transform: translateY(-100px); opacity: 0; } 20% { transform: translateY(0); opacity: 1; } 80% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-100px); opacity: 0; } }
 .control-grid { display: flex; justify-content: center; gap: 8px; }
 .glass-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: white; padding: clamp(6px, 1.2vh, 12px); border-radius: 15px; cursor: pointer; font-size: clamp(0.7rem, 1.4vh, 0.9rem); }
+/* ========== ДОПОЛНЕНИЯ ДЛЯ БЕЗОПАСНОСТИ ========== */
+
+/* Отключаем анимации для пользователей с вестибулярными расстройствами */
+@media (prefers-reduced-motion: reduce) {
+    .shake-effect {
+        animation: none !important;
+        transform: none !important;
+    }
+    .paw-particle,
+    .milestone-toast,
+    .hero-display img.fade-out,
+    .hero-display img.fade-in {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* Защита от переполнения текстом */
+.glass-btn,
+.selector-btn {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ограничение размера частиц */
+.paw-particle {
+    max-width: 3rem;
+    max-height: 3rem;
+}
